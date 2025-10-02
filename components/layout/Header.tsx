@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { signOut } from 'next-auth/react';
-import { Button } from '@/components/ui/Button';
-import { useAuth } from '@/features/auth/hooks/useAuth';
+import { signOut } from "next-auth/react";
+import { Button } from "@/components/ui/Button";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { CommunitySwitcher } from "@/features/communities/components/CommunitySwitcher";
 
 export function Header() {
   const { user, isAuthenticated } = useAuth();
@@ -17,6 +18,8 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4">
+          <CommunitySwitcher />
+          
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground">
               {user?.name?.charAt(0).toUpperCase()}
