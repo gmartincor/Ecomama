@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import type { Listing, CreateListingData, UpdateListingData, ListingFilters } from "../types";
 
 type UseListingsResult = {
@@ -21,7 +21,7 @@ export const useListings = (
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchListings = useCallback(async () => {
+  const fetchListings = async () => {
     if (!communityId) return;
 
     setIsLoading(true);
@@ -48,7 +48,7 @@ export const useListings = (
     } finally {
       setIsLoading(false);
     }
-  }, [communityId, filters]);
+  };
 
   const createListing = async (data: CreateListingData) => {
     const response = await fetch("/api/listings", {
@@ -95,7 +95,7 @@ export const useListings = (
 
   useEffect(() => {
     fetchListings();
-  }, [fetchListings]);
+  }, [communityId, filters?.type, filters?.status, filters?.authorId, filters?.search]);
 
   return {
     listings,

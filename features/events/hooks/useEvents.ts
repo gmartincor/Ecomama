@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import type { Event, CreateEventData, UpdateEventData, EventFilters } from "../types";
 
 type UseEventsResult = {
@@ -22,7 +22,7 @@ export const useEvents = (
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchEvents = useCallback(async () => {
+  const fetchEvents = async () => {
     if (!communityId) return;
 
     setIsLoading(true);
@@ -51,7 +51,7 @@ export const useEvents = (
     } finally {
       setIsLoading(false);
     }
-  }, [communityId, filters]);
+  };
 
   const createEvent = async (data: CreateEventData) => {
     const response = await fetch(`/api/communities/${communityId}/events`, {
@@ -113,7 +113,7 @@ export const useEvents = (
 
   useEffect(() => {
     fetchEvents();
-  }, [fetchEvents]);
+  }, [communityId, filters?.type, filters?.isPinned, filters?.authorId]);
 
   return {
     events,

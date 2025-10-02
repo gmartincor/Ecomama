@@ -1,5 +1,6 @@
 'use client';
 
+import { use } from 'react';
 import { notFound } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -8,13 +9,14 @@ import { PageLoading } from '@/components/common/PageLoading';
 import { PageError } from '@/components/common/PageError';
 
 interface ProfilePageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function ProfilePage({ params }: ProfilePageProps) {
-  const { profile, isLoading, error, refetch } = useProfile(params.id);
+  const { id } = use(params);
+  const { profile, isLoading, error, refetch } = useProfile(id);
 
   if (isLoading) {
     return <PageLoading />;

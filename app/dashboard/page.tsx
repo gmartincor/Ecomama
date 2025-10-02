@@ -29,16 +29,15 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-8">Bienvenido, {user?.name}</h1>
 
       <Card className="p-6">
         <div className="text-center space-y-4">
-          <h2 className="text-xl font-semibold">Bienvenido, {user?.name}</h2>
-          
           {userCommunities.length === 0 ? (
             <>
-              <p className="text-gray-600">
-                Aún no eres miembro de ninguna comunidad
+              <h2 className="text-xl font-semibold">No eres miembro de ninguna comunidad</h2>
+              <p className="text-muted-foreground">
+                Explora el mapa y únete a una comunidad para comenzar
               </p>
               <Button onClick={() => router.push("/communities/map")}>
                 Explorar Comunidades
@@ -46,8 +45,9 @@ export default function DashboardPage() {
             </>
           ) : (
             <>
-              <p className="text-gray-600">
-                Selecciona una comunidad para ver su dashboard
+              <h2 className="text-xl font-semibold">Selecciona una comunidad</h2>
+              <p className="text-muted-foreground">
+                Usa el selector de comunidades en el header para ver su dashboard
               </p>
               <Button onClick={() => router.push("/settings")}>
                 Configurar Comunidad Predeterminada
