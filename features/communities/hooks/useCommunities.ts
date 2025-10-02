@@ -72,7 +72,12 @@ export const useCommunity = (id: string) => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchCommunity = async () => {
-    if (!id) return;
+    if (!id) {
+      setCommunity(null);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
 
     setIsLoading(true);
     setError(null);

@@ -23,7 +23,12 @@ export const useEvents = (
   const [error, setError] = useState<string | null>(null);
 
   const fetchEvents = async () => {
-    if (!communityId) return;
+    if (!communityId) {
+      setEvents([]);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
@@ -113,7 +118,7 @@ export const useEvents = (
 
   useEffect(() => {
     fetchEvents();
-  }, [communityId, filters?.type, filters?.isPinned, filters?.authorId]);
+  }, [communityId, JSON.stringify(filters)]);
 
   return {
     events,

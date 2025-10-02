@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import type { CommunityStats } from "../types";
 
 export const useCommunityStats = (communityId: string) => {
@@ -8,8 +8,13 @@ export const useCommunityStats = (communityId: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchStats = useCallback(async () => {
-    if (!communityId) return;
+  const fetchStats = async () => {
+    if (!communityId) {
+      setStats(null);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
@@ -28,11 +33,11 @@ export const useCommunityStats = (communityId: string) => {
     } finally {
       setIsLoading(false);
     }
-  }, [communityId]);
+  };
 
   useEffect(() => {
     fetchStats();
-  }, [fetchStats]);
+  }, [communityId]);
 
   return {
     stats,
