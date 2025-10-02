@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 
@@ -21,21 +22,23 @@ export default function Home() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <h3 className="font-semibold">✅ Fase 0 Completada</h3>
+              <h3 className="font-semibold">✅ Fase 1 Completada: Autenticación</h3>
               <ul className="ml-6 list-disc space-y-1 text-sm text-muted-foreground">
-                <li>Next.js 14+ con App Router y TypeScript</li>
-                <li>Prisma ORM con PostgreSQL configurado</li>
-                <li>NextAuth.js para autenticación</li>
-                <li>Tailwind CSS con sistema de diseño</li>
-                <li>Componentes UI base implementados</li>
-                <li>Validaciones con Zod</li>
-                <li>Estructura modular feature-based</li>
+                <li>Sistema de registro y login funcional</li>
+                <li>NextAuth.js con JWT y roles configurado</li>
+                <li>Middleware de protección de rutas</li>
+                <li>Hook useAuth para gestión de sesiones</li>
+                <li>Layout con header y logout</li>
               </ul>
             </div>
 
             <div className="flex gap-4 pt-4">
-              <Button variant="primary">Iniciar Sesión</Button>
-              <Button variant="outline">Registrarse</Button>
+              <Link href="/login">
+                <Button variant="primary">Iniciar Sesión</Button>
+              </Link>
+              <Link href="/register">
+                <Button variant="outline">Registrarse</Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
@@ -82,4 +85,3 @@ export default function Home() {
     </div>
   );
 }
-
