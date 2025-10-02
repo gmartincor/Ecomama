@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPERADMIN
+  ADMIN
+  USER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum MemberRole {
+  ADMIN
+  MEMBER
+}
+
+enum MemberStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REMOVED
+}
+
+enum CommunityStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ListingType {
+  OFFER
+  DEMAND
+}
+
+enum ListingStatus {
+  ACTIVE
+  INACTIVE
+  EXPIRED
+}
+
+enum EventType {
+  ANNOUNCEMENT
+  EVENT
+  NEWS
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         UserRole @default(USER)
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  profile              UserProfile?
+  settings             UserSettings?
+  memberships          CommunityMember[]
+  createdListings      Listing[]
+  createdEvents        Event[]
+  administeredCommunities Community[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model Community {
+  id          String   @id @default(cuid())
+  name        String
+  description String   @db.Text
+  latitude    Float
+  longitude   Float
+  address     String
+  city        String
+  country     String
+  adminId     String
+  status      CommunityStatus @default(ACTIVE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  admin   User              @relation(fields: [adminId], references: [id])
+  members CommunityMember[]
+  listings Listing[]
+  events  Event[]
+  defaultForUsers UserSettings[]
+
+  @@index([adminId])
+  @@index([latitude, longitude])
+  @@index([status])
+}
+
+model CommunityMember {
+  id             String   @id @default(cuid())
+  userId         String
+  communityId    String
+  role           MemberRole @default(MEMBER)
+  status         MemberStatus @default(PENDING)
+  requestMessage String   @db.Text
+  responseMessage String? @db.Text
+  requestedAt    DateTime @default(now())
+  respondedAt    DateTime?
+  joinedAt       DateTime?
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, communityId])
+  @@index([userId])
+  @@index([communityId])
+  @@index([status])
+}
+
+model UserProfile {
+  id       String   @id @default(cuid())
+  userId   String   @unique
+  bio      String?  @db.Text
+  phone    String?
+  location String?
+  avatar   String?  @db.Text
+  isPublic Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserSettings {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  defaultCommunityId  String?
+  emailNotifications  Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  defaultCommunity Community? @relation(fields: [defaultCommunityId], references: [id])
+
+  @@index([defaultCommunityId])
+}
+
+model Listing {
+  id          String   @id @default(cuid())
+  type        ListingType
+  title       String
+  description String   @db.Text
+  authorId    String
+  communityId String
+  status      ListingStatus @default(ACTIVE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  @@index([authorId])
+  @@index([communityId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  communityId String
+  authorId    String
+  type        EventType
+  title       String
+  description String   @db.Text
+  eventDate   DateTime?
+  location    String?
+  isPinned    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  @@index([communityId])
+  @@index([authorId])
+  @@index([isPinned])
+  @@index([createdAt])
+}
