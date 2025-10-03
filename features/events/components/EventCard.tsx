@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { CalendarIcon } from "@/components/ui/CalendarIcon";
 import type { EventWithAuthor } from "../types";
 import { EVENT_TYPE_OPTIONS } from "./EventTypeSelector";
 
@@ -20,6 +21,8 @@ export const EventCard = ({
   isAdmin = false,
 }: EventCardProps) => {
   const typeOption = EVENT_TYPE_OPTIONS.find((opt) => opt.value === event.type);
+  const hasEventDate = event.type === "EVENT" && !!event.eventDate;
+  
   const formattedDate = event.eventDate
     ? new Date(event.eventDate).toLocaleDateString("es-ES", {
         weekday: "long",
@@ -41,8 +44,11 @@ export const EventCard = ({
     <Card variant={event.isPinned ? "highlighted" : "elevated"} className="p-6">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-2xl">{typeOption?.icon}</span>
+          <div className="flex items-center gap-3 mb-2">
+            {hasEventDate && event.eventDate && (
+              <CalendarIcon date={event.eventDate} size="md" />
+            )}
+            {!hasEventDate && <span className="text-2xl">{typeOption?.icon}</span>}
             <Badge variant="primary">{typeOption?.label}</Badge>
             {event.isPinned && (
               <Badge variant="warning">📌 Fijado</Badge>
@@ -55,8 +61,7 @@ export const EventCard = ({
 
           {formattedDate && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-              <span>📅</span>
-              <span className="capitalize">{formattedDate}</span>
+              <span className="capitalize font-medium">{formattedDate}</span>
             </div>
           )}
 

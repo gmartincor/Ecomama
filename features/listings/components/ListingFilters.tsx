@@ -49,7 +49,7 @@ export const ListingFilters = ({
       <select
         value={status || ""}
         onChange={(e) => handleStatusChange(e.target.value as ListingStatus || undefined)}
-        className="px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
+        className="px-3 py-2 border border-input bg-card text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
       >
         <option value="">Todos los estados</option>
         <option value="ACTIVE">Activos</option>

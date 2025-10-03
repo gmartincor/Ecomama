@@ -14,7 +14,6 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        nav: "hsl(var(--nav))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           light: "hsl(var(--primary-light))",
