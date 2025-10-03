@@ -9,6 +9,7 @@ export const createCommunitySchema = z.object({
   address: textFieldSchema.medium,
   city: textFieldSchema.short,
   country: textFieldSchema.short,
+  adminId: z.string().cuid(),
 });
 
 export const updateCommunitySchema = z.object({

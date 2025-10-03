@@ -1,9 +1,32 @@
 import { communityRepository } from "@/lib/repositories/community-repository";
+import { prisma } from "@/lib/prisma/client";
 import type { CommunityWithAdmin, CommunityFilters } from "@/lib/repositories/community-repository";
 import type { CreateCommunityInput, UpdateCommunityInput } from "@/lib/validations/community";
 
 export const createCommunity = async (data: CreateCommunityInput, adminId: string) => {
-  return await communityRepository.createCommunity(data, adminId);
+  return await prisma.$transaction(async (tx) => {
+    const user = await tx.user.findUnique({
+      where: { id: adminId },
+      select: { role: true },
+    });
+
+    if (!user) {
+      throw new Error("Usuario no encontrado");
+    }
+
+    if (user.role === "SUPERADMIN") {
+      throw new Error("Un SUPERADMIN no puede ser administrador de una comunidad");
+    }
+
+    if (user.role === "USER") {
+      await tx.user.update({
+        where: { id: adminId },
+        data: { role: "ADMIN" },
+      });
+    }
+
+    return await communityRepository.createCommunity(data, adminId);
+  });
 };
 
 export const getCommunityById = async (id: string) => {

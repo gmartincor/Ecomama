@@ -78,6 +78,16 @@ class CommunityRepository extends BaseRepository<CommunityWithAdmin> {
         ...data,
         adminId,
         status: 'ACTIVE',
+        members: {
+          create: {
+            userId: adminId,
+            role: 'ADMIN',
+            status: 'APPROVED',
+            requestMessage: 'Asignado como administrador de la comunidad',
+            joinedAt: new Date(),
+            respondedAt: new Date(),
+          },
+        },
       },
       {
         include: { admin: { select: ADMIN_SELECT } },

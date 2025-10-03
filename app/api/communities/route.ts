@@ -16,8 +16,8 @@ export const GET = createGetHandler(async ({ searchParams }) => {
 }, false);
 
 export const POST = createPostHandler(
-  async ({ session, body }) => {
-    return await createCommunity(body, session!.user.id);
+  async ({ body }) => {
+    return await createCommunity(body, body.adminId);
   },
   createCommunitySchema,
   requireSuperAdmin

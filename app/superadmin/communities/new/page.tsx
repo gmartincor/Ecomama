@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
 import { LocationPicker } from "@/features/communities/components/LocationPicker";
+import { UserSelector } from "@/features/superadmin/components/UserSelector";
 import { createCommunitySchema } from "@/lib/validations/community";
 import type { GeocodingResult } from "@/features/communities/types";
 
@@ -23,6 +24,7 @@ export default function NewCommunityPage() {
     address: "",
     city: "",
     country: "",
+    adminId: "",
   });
 
   const handleLocationSelect = (location: GeocodingResult) => {
@@ -34,6 +36,10 @@ export default function NewCommunityPage() {
       city: location.city,
       country: location.country,
     }));
+  };
+
+  const handleAdminSelect = (userId: string) => {
+    setFormData((prev) => ({ ...prev, adminId: userId }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,7 +57,8 @@ export default function NewCommunityPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create community");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create community");
       }
 
       router.push("/superadmin/communities");
@@ -69,7 +76,9 @@ export default function NewCommunityPage() {
       <form onSubmit={handleSubmit}>
         <Card className="p-6 space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="name">Nombre de la Comunidad</Label>
+            <Label htmlFor="name">
+              Nombre de la Comunidad <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="name"
               value={formData.name}
@@ -80,7 +89,9 @@ export default function NewCommunityPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Descripción</Label>
+            <Label htmlFor="description">
+              Descripción <span className="text-destructive">*</span>
+            </Label>
             <textarea
               id="description"
               value={formData.description}
@@ -91,8 +102,15 @@ export default function NewCommunityPage() {
             />
           </div>
 
+          <UserSelector
+            value={formData.adminId}
+            onChange={handleAdminSelect}
+          />
+
           <div className="space-y-2">
-            <Label>Ubicación</Label>
+            <Label>
+              Ubicación <span className="text-destructive">*</span>
+            </Label>
             <LocationPicker
               onLocationSelect={handleLocationSelect}
               initialPosition={
@@ -104,17 +122,17 @@ export default function NewCommunityPage() {
           </div>
 
           {formData.city && (
-            <div className="bg-gray-50 p-4 rounded-md">
-              <p className="text-sm text-gray-700">
+            <div className="bg-muted p-4 rounded-md">
+              <p className="text-sm">
                 <span className="font-semibold">Dirección:</span> {formData.address}
               </p>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm">
                 <span className="font-semibold">Ciudad:</span> {formData.city}
               </p>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm">
                 <span className="font-semibold">País:</span> {formData.country}
               </p>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm">
                 <span className="font-semibold">Coordenadas:</span> {formData.latitude.toFixed(6)},{" "}
                 {formData.longitude.toFixed(6)}
               </p>
@@ -122,11 +140,11 @@ export default function NewCommunityPage() {
           )}
 
           {error && (
-            <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">{error}</div>
+            <div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm">{error}</div>
           )}
 
           <div className="flex gap-4">
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || !formData.adminId}>
               {isSubmitting ? "Creando..." : "Crear Comunidad"}
             </Button>
             <Button type="button" variant="outline" onClick={() => router.back()}>
