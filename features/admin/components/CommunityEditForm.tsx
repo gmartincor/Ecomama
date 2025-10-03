@@ -1,13 +1,13 @@
+"use client";
+
 import { useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Textarea } from "@/components/ui/textarea";
-import { LocationPicker } from "@/features/communities/components/LocationPicker";
 import type { Community } from "@prisma/client";
 import type { UpdateCommunityData } from "../types";
-import type { GeocodingResult } from "@/features/communities/types";
 
 interface CommunityEditFormProps {
   community: Community;
@@ -52,18 +52,7 @@ export function CommunityEditForm({
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleLocationSelect = (location: GeocodingResult) => {
-    setFormData((prev) => ({
-      ...prev,
-      latitude: location.latitude,
-      longitude: location.longitude,
-      address: location.address,
-      city: location.city,
-      country: location.country,
+      [name]: name === "latitude" || name === "longitude" ? parseFloat(value) : value,
     }));
   };
 
@@ -106,37 +95,75 @@ export function CommunityEditForm({
           />
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="address">Dirección</Label>
+            <Input
+              id="address"
+              name="address"
+              type="text"
+              value={formData.address}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="city">Ciudad</Label>
+            <Input
+              id="city"
+              name="city"
+              type="text"
+              value={formData.city}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        </div>
+
         <div>
-          <Label>
-            Ubicación <span className="text-destructive">*</span>
-          </Label>
-          <LocationPicker
-            onLocationSelect={handleLocationSelect}
-            initialPosition={
-              formData.latitude && formData.longitude
-                ? [formData.latitude, formData.longitude]
-                : undefined
-            }
+          <Label htmlFor="country">País</Label>
+          <Input
+            id="country"
+            name="country"
+            type="text"
+            value={formData.country}
+            onChange={handleChange}
+            required
           />
         </div>
 
-        {formData.city && (
-          <div className="bg-muted p-4 rounded-md">
-            <p className="text-sm">
-              <span className="font-semibold">Dirección:</span> {formData.address}
-            </p>
-            <p className="text-sm">
-              <span className="font-semibold">Ciudad:</span> {formData.city}
-            </p>
-            <p className="text-sm">
-              <span className="font-semibold">País:</span> {formData.country}
-            </p>
-            <p className="text-sm">
-              <span className="font-semibold">Coordenadas:</span> {formData.latitude.toFixed(6)},{" "}
-              {formData.longitude.toFixed(6)}
-            </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="latitude">Latitud</Label>
+            <Input
+              id="latitude"
+              name="latitude"
+              type="number"
+              step="0.000001"
+              value={formData.latitude}
+              onChange={handleChange}
+              required
+              min={-90}
+              max={90}
+            />
           </div>
-        )}
+
+          <div>
+            <Label htmlFor="longitude">Longitud</Label>
+            <Input
+              id="longitude"
+              name="longitude"
+              type="number"
+              step="0.000001"
+              value={formData.longitude}
+              onChange={handleChange}
+              required
+              min={-180}
+              max={180}
+            />
+          </div>
+        </div>
 
         <div className="flex gap-4 pt-4">
           <Button type="submit" disabled={isSubmitting}>

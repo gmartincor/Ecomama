@@ -1,3 +1,5 @@
+"use client";
+
 import { Card } from "@/components/ui/Card";
 import type { CommunityStats as Stats } from "../types";
 
