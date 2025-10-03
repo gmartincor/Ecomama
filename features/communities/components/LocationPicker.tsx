@@ -53,9 +53,16 @@ export const LocationPicker = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<GeocodingResult[]>([]);
   const [selectedPosition, setSelectedPosition] = useState<LatLngExpression>(initialPosition);
-  const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
+  const [mapZoom, setMapZoom] = useState(
+    initialPosition !== DEFAULT_CENTER ? LOCATION_ZOOM : DEFAULT_ZOOM
+  );
   const [isSearching, setIsSearching] = useState(false);
   const [activeTab, setActiveTab] = useState<"map" | "manual">("map");
+
+  useEffect(() => {
+    setSelectedPosition(initialPosition);
+    setMapZoom(initialPosition !== DEFAULT_CENTER ? LOCATION_ZOOM : DEFAULT_ZOOM);
+  }, [initialPosition]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
