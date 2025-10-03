@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { Button } from "@/components/ui/Button";
+import { ActionButton } from "@/components/ui/ActionButton";
 import { CommunityManagementTable } from "@/features/superadmin/components";
 import { useSuperadminCommunities } from "@/features/superadmin/hooks";
 
@@ -33,11 +32,9 @@ export default function CommunitiesListPage() {
             Administra todas las comunidades de la plataforma
           </p>
         </div>
-        <Link href="/superadmin/communities/new" className="w-full sm:w-auto">
-          <Button variant="outline" className="bg-card shadow-sm w-full sm:w-auto">
-            + Nueva Comunidad
-          </Button>
-        </Link>
+        <ActionButton href="/superadmin/communities/new" className="w-full sm:w-auto">
+          + Nueva Comunidad
+        </ActionButton>
       </div>
 
       <CommunityManagementTable

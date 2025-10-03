@@ -7,6 +7,7 @@ import { useListings } from "@/features/listings/hooks/useListings";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { ActionButton } from "@/components/ui/ActionButton";
 import { TabNavigation } from "@/features/dashboard/components";
 import { ListingGrid, ListingFilters } from "@/features/listings/components";
 import { PageError } from "@/components/common/PageError";
@@ -79,9 +80,12 @@ export default function CommunityDemandsPage() {
           <h1 className="text-2xl sm:text-3xl font-bold mb-2 break-words">Demandas de {activeCommunity.name}</h1>
           <p className="text-sm sm:text-base text-muted-foreground">Productos y servicios buscados por los miembros</p>
         </div>
-        <Button onClick={() => router.push("/listings/new?type=DEMAND")} className="w-full sm:w-auto text-sm flex-shrink-0">
-          ➕ Nueva Demanda
-        </Button>
+        <ActionButton 
+          onClick={() => router.push("/listings/new?type=DEMAND")} 
+          className="w-full sm:w-auto text-sm flex-shrink-0"
+        >
+          + Nueva Demanda
+        </ActionButton>
       </div>
 
       <TabNavigation tabs={DASHBOARD_TABS} />
