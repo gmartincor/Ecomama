@@ -20,7 +20,7 @@ export const paginationSchema = z.object({
 
 export const textFieldSchema = {
   short: z.string().min(3).max(100),
-  medium: z.string().min(3).max(200),
+  medium: z.string().min(0).max(200),
   long: z.string().min(10).max(500),
   extraLong: z.string().min(10).max(5000),
 };

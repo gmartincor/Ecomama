@@ -95,3 +95,53 @@ export const reverseGeocode = async ({ latitude, longitude }: LocationCoordinate
 
   return buildGeocodingResult(data.display_name, data.lat, data.lon, data.address);
 };
+
+export type StructuredAddress = {
+  street?: string;
+  city: string;
+  postalCode?: string;
+  country: string;
+};
+
+export const geocodeAddress = async (address: StructuredAddress): Promise<GeocodingResult> => {
+  const parts = [
+    address.street,
+    address.postalCode,
+    address.city,
+    address.country
+  ].filter(Boolean);
+  
+  const query = parts.join(", ");
+  
+  const params = new URLSearchParams({
+    q: query,
+    format: "json",
+    addressdetails: "1",
+    limit: "1",
+  });
+
+  const response = await fetch(`${NOMINATIM_BASE_URL}/search?${params}`, {
+    headers: HEADERS,
+  });
+
+  if (!response.ok) {
+    throw new Error("Address geocoding failed");
+  }
+
+  const data: NominatimSearchResult[] = await response.json();
+  
+  if (data.length === 0) {
+    throw new Error("Address not found");
+  }
+
+  const result = data[0];
+  
+  return {
+    displayName: result.display_name,
+    latitude: parseFloat(result.lat),
+    longitude: parseFloat(result.lon),
+    address: address.street || result.address.road || "",
+    city: address.city,
+    country: address.country,
+  };
+};
