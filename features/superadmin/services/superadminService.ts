@@ -123,6 +123,19 @@ export const updateUser = async (userId: string, data: UpdateUserData) => {
   });
 };
 
+export const updateUserStatus = async (userId: string, status: UpdateUserData["status"]) => {
+  if (!status) {
+    throw new Error("Status is required");
+  }
+  
+  return await updateUser(userId, { status });
+};
+
+export const toggleUserRole = async (userId: string, currentRole: UpdateUserData["role"]) => {
+  const newRole = currentRole === "ADMIN" ? "USER" : "ADMIN";
+  return await updateUser(userId, { role: newRole });
+};
+
 export const updateCommunityStatus = async (
   communityId: string,
   data: UpdateCommunityStatusData
@@ -130,13 +143,6 @@ export const updateCommunityStatus = async (
   return await prisma.community.update({
     where: { id: communityId },
     data: { status: data.status },
-  });
-};
-
-export const deleteUser = async (userId: string) => {
-  return await prisma.user.update({
-    where: { id: userId },
-    data: { status: "SUSPENDED" },
   });
 };
 

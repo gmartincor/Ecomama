@@ -13,8 +13,8 @@ export interface SuperadminUser {
   id: string;
   name: string;
   email: string;
-  role: "USER" | "ADMIN" | "SUPERADMIN";
-  status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
+  role: UserRole;
+  status: UserStatus;
   createdAt: string;
   communitiesCount: number;
   listingsCount: number;
@@ -37,9 +37,12 @@ export interface SuperadminCommunity {
   eventsCount: number;
 }
 
+export type UserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";
+export type UserRole = "USER" | "ADMIN" | "SUPERADMIN";
+
 export interface UpdateUserData {
-  role?: "USER" | "ADMIN" | "SUPERADMIN";
-  status?: "ACTIVE" | "INACTIVE" | "SUSPENDED";
+  role?: UserRole;
+  status?: UserStatus;
 }
 
 export interface UpdateCommunityStatusData {

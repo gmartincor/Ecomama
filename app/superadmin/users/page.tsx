@@ -6,7 +6,7 @@ import { useSuperadminUsers } from "@/features/superadmin/hooks";
 
 export default function SuperadminUsersPage() {
   const { data: session } = useSession();
-  const { users, isLoading, error, updateUser, deleteUser } = useSuperadminUsers();
+  const { users, isLoading, error, updateUserStatus, toggleUserRole } = useSuperadminUsers();
 
   if (isLoading || !session) {
     return (
@@ -19,7 +19,7 @@ export default function SuperadminUsersPage() {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg text-red-600">Error: {error}</p>
+        <p className="text-lg text-destructive">Error: {error}</p>
       </div>
     );
   }
@@ -35,8 +35,8 @@ export default function SuperadminUsersPage() {
       <UserManagementTable
         users={users}
         currentUserId={session.user.id}
-        onUpdateUser={updateUser}
-        onDeleteUser={deleteUser}
+        onUpdateUserStatus={updateUserStatus}
+        onToggleUserRole={toggleUserRole}
       />
     </div>
   );

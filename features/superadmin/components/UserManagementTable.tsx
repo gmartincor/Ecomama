@@ -1,22 +1,22 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useRouter } from "next/navigation";
-import type { SuperadminUser, UpdateUserData } from "../types";
+import { UserActionButtons } from "./UserActionButtons";
+import type { SuperadminUser, UserStatus, UserRole } from "../types";
 
 interface UserManagementTableProps {
   users: SuperadminUser[];
   currentUserId: string;
-  onUpdateUser: (userId: string, data: UpdateUserData) => Promise<void>;
-  onDeleteUser: (userId: string) => Promise<void>;
+  onUpdateUserStatus: (userId: string, status: UserStatus) => Promise<void>;
+  onToggleUserRole: (userId: string, currentRole: UserRole) => Promise<void>;
 }
 
 export function UserManagementTable({
   users,
   currentUserId,
-  onUpdateUser,
-  onDeleteUser,
+  onUpdateUserStatus,
+  onToggleUserRole,
 }: UserManagementTableProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
@@ -28,38 +28,21 @@ export function UserManagementTable({
       user.email.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleStatusToggle = async (userId: string, currentStatus: string) => {
+  const handleStatusChange = async (userId: string, status: UserStatus) => {
     setProcessingId(userId);
     try {
-      const newStatus = currentStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
-      await onUpdateUser(userId, { 
-        status: newStatus as "ACTIVE" | "INACTIVE" | "SUSPENDED"
-      });
+      await onUpdateUserStatus(userId, status);
     } finally {
       setProcessingId(null);
     }
   };
 
-  const handleRoleChange = async (userId: string, currentRole: string) => {
+  const handleRoleToggle = async (userId: string, currentRole: UserRole) => {
     setProcessingId(userId);
     try {
-      const newRole = currentRole === "USER" ? "ADMIN" : "USER";
-      await onUpdateUser(userId, { 
-        role: newRole as "USER" | "ADMIN" | "SUPERADMIN"
-      });
+      await onToggleUserRole(userId, currentRole);
     } finally {
       setProcessingId(null);
-    }
-  };
-
-  const handleDelete = async (userId: string) => {
-    if (confirm("¿Estás seguro de que quieres suspender este usuario?")) {
-      setProcessingId(userId);
-      try {
-        await onDeleteUser(userId);
-      } finally {
-        setProcessingId(null);
-      }
     }
   };
 
@@ -69,6 +52,28 @@ export function UserManagementTable({
       month: "short",
       day: "numeric",
     });
+  };
+
+  const getStatusBadgeClass = (status: UserStatus) => {
+    switch (status) {
+      case "ACTIVE":
+        return "bg-green-100 text-green-800";
+      case "SUSPENDED":
+        return "bg-red-100 text-red-800";
+      case "INACTIVE":
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getRoleBadgeClass = (role: UserRole) => {
+    switch (role) {
+      case "SUPERADMIN":
+        return "bg-red-100 text-red-800";
+      case "ADMIN":
+        return "bg-purple-100 text-purple-800";
+      case "USER":
+        return "bg-green-100 text-green-800";
+    }
   };
 
   return (
@@ -88,24 +93,24 @@ export function UserManagementTable({
 
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-muted border-b">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Usuario
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Rol
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Estado
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Registro
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Actividad
               </th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Acciones
               </th>
             </tr>
@@ -114,11 +119,12 @@ export function UserManagementTable({
             {filteredUsers.map((user) => {
               const isCurrentUser = user.id === currentUserId;
               const isProcessing = processingId === user.id;
+              const canModify = !isCurrentUser && user.role !== "SUPERADMIN";
 
               return (
                 <tr
                   key={user.id}
-                  className="hover:bg-gray-50 transition-colors"
+                  className="hover:bg-muted/50 transition-colors"
                 >
                   <td className="px-4 py-4">
                     <div
@@ -126,20 +132,20 @@ export function UserManagementTable({
                       onClick={() => router.push(`/profile/${user.id}`)}
                     >
                       <div className="h-10 w-10 flex-shrink-0">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white font-semibold">
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground font-semibold">
                           {user.name.charAt(0).toUpperCase()}
                         </div>
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-foreground">
                           {user.name}
                           {isCurrentUser && (
-                            <span className="ml-2 text-xs text-blue-600 font-normal">
+                            <span className="ml-2 text-xs text-primary font-normal">
                               (Tú)
                             </span>
                           )}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-muted-foreground">
                           {user.email}
                         </div>
                       </div>
@@ -147,69 +153,43 @@ export function UserManagementTable({
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <span
-                      className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        user.role === "SUPERADMIN"
-                          ? "bg-red-100 text-red-800"
-                          : user.role === "ADMIN"
-                          ? "bg-purple-100 text-purple-800"
-                          : "bg-green-100 text-green-800"
-                      }`}
+                      className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeClass(
+                        user.role
+                      )}`}
                     >
                       {user.role}
                     </span>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <span
-                      className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        user.status === "ACTIVE"
-                          ? "bg-green-100 text-green-800"
-                          : user.status === "SUSPENDED"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
+                      className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(
+                        user.status
+                      )}`}
                     >
                       {user.status}
                     </span>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-muted-foreground">
                     {formatDate(user.createdAt)}
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-muted-foreground">
                     <div className="space-y-1">
                       <div>🏘️ {user.communitiesCount} comunidades</div>
                       <div>📦 {user.listingsCount} publicaciones</div>
                       <div>📅 {user.eventsCount} eventos</div>
                     </div>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                    {!isCurrentUser && user.role !== "SUPERADMIN" && (
-                      <>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleRoleChange(user.id, user.role)}
-                          disabled={isProcessing}
-                        >
-                          {user.role === "ADMIN" ? "↓ USER" : "↑ ADMIN"}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleStatusToggle(user.id, user.status)}
-                          disabled={isProcessing}
-                        >
-                          {user.status === "ACTIVE" ? "Desactivar" : "Activar"}
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDelete(user.id)}
-                          disabled={isProcessing || user.status === "SUSPENDED"}
-                        >
-                          Suspender
-                        </Button>
-                      </>
-                    )}
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    {canModify ? (
+                      <UserActionButtons
+                        userId={user.id}
+                        currentStatus={user.status}
+                        currentRole={user.role}
+                        isProcessing={isProcessing}
+                        onStatusChange={handleStatusChange}
+                        onRoleToggle={handleRoleToggle}
+                      />
+                    ) : null}
                   </td>
                 </tr>
               );
@@ -218,7 +198,7 @@ export function UserManagementTable({
         </table>
 
         {filteredUsers.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-muted-foreground">
             No se encontraron usuarios
           </div>
         )}

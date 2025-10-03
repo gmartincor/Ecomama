@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { SuperadminUser, UpdateUserData } from "../types";
+import type { SuperadminUser, UpdateUserData, UserStatus, UserRole } from "../types";
 
 export const useSuperadminUsers = () => {
   const [users, setUsers] = useState<SuperadminUser[]>([]);
@@ -46,20 +46,13 @@ export const useSuperadminUsers = () => {
     }
   };
 
-  const deleteUser = async (userId: string) => {
-    try {
-      const response = await fetch(`/api/superadmin/users/${userId}`, {
-        method: "DELETE",
-      });
+  const updateUserStatus = async (userId: string, status: UserStatus) => {
+    return updateUser(userId, { status });
+  };
 
-      if (!response.ok) {
-        throw new Error("Failed to delete user");
-      }
-
-      await fetchUsers();
-    } catch (err) {
-      throw err;
-    }
+  const toggleUserRole = async (userId: string, currentRole: UserRole) => {
+    const newRole: UserRole = currentRole === "ADMIN" ? "USER" : "ADMIN";
+    return updateUser(userId, { role: newRole });
   };
 
   useEffect(() => {
@@ -71,7 +64,8 @@ export const useSuperadminUsers = () => {
     isLoading,
     error,
     updateUser,
-    deleteUser,
+    updateUserStatus,
+    toggleUserRole,
     refetch: fetchUsers,
   };
 };
