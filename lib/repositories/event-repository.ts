@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/prisma/client';
 import { BaseRepository } from '@/lib/repositories/base-repository';
 import { Event, EventType } from '@prisma/client';
-import { buildWhereClause, withAuthor } from '@/lib/utils/prisma-helpers';
 
 export type EventWithAuthor = Event & {
   author: {
@@ -18,6 +17,16 @@ export type EventFilters = {
   authorId?: string;
 };
 
+export type CreateEventData = {
+  type: EventType;
+  title: string;
+  description: string;
+  eventDate?: Date | null;
+  location?: string | null;
+};
+
+export type UpdateEventData = Partial<CreateEventData>;
+
 class EventRepository extends BaseRepository<EventWithAuthor> {
   protected model = prisma.event;
 
@@ -26,7 +35,7 @@ class EventRepository extends BaseRepository<EventWithAuthor> {
 
     const where = {
       communityId,
-      ...buildWhereClause(restFilters),
+      ...this.buildSafeUpdateData(restFilters),
     };
 
     return this.findMany(where, {
@@ -38,21 +47,13 @@ class EventRepository extends BaseRepository<EventWithAuthor> {
   async createEvent(
     communityId: string,
     authorId: string,
-    data: {
-      type: EventType;
-      title: string;
-      description: string;
-      eventDate?: Date | null;
-      location?: string | null;
-    }
+    data: CreateEventData
   ): Promise<EventWithAuthor> {
     return this.create(
       {
         communityId,
         authorId,
-        type: data.type,
-        title: data.title,
-        description: data.description,
+        ...data,
         eventDate: data.eventDate || null,
         location: data.location || null,
         isPinned: false,
@@ -61,25 +62,11 @@ class EventRepository extends BaseRepository<EventWithAuthor> {
     );
   }
 
-  async updateEvent(
-    id: string,
-    data: Partial<{
-      type: EventType;
-      title: string;
-      description: string;
-      eventDate: Date | string | null;
-      location: string | null;
-    }>
-  ): Promise<EventWithAuthor> {
-    const updateData: any = {};
-    
-    if (data.type !== undefined) updateData.type = data.type;
-    if (data.title !== undefined) updateData.title = data.title;
-    if (data.description !== undefined) updateData.description = data.description;
-    if (data.location !== undefined) updateData.location = data.location;
-    if (data.eventDate !== undefined) {
-      updateData.eventDate = data.eventDate ? new Date(data.eventDate) : null;
-    }
+  async updateEvent(id: string, data: UpdateEventData): Promise<EventWithAuthor> {
+    const updateData = this.buildSafeUpdateData({
+      ...data,
+      eventDate: data.eventDate !== undefined ? (data.eventDate ? new Date(data.eventDate) : null) : undefined,
+    });
     
     return this.update(id, updateData, { includeAuthor: true });
   }

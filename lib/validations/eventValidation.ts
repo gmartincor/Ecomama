@@ -1,13 +1,14 @@
 import { z } from "zod";
+import { eventTypeEnum, textFieldSchema, timestampSchema } from "./shared";
 
-export const eventTypeEnum = z.enum(["ANNOUNCEMENT", "EVENT", "NEWS"]);
+export { eventTypeEnum };
 
 export const createEventSchema = z.object({
   type: eventTypeEnum,
-  title: z.string().min(3, "El título debe tener al menos 3 caracteres").max(200, "El título es muy largo"),
-  description: z.string().min(10, "La descripción debe tener al menos 10 caracteres").max(5000, "La descripción es muy larga"),
-  eventDate: z.string().datetime().optional().nullable(),
-  location: z.string().max(200, "La ubicación es muy larga").optional().nullable(),
+  title: textFieldSchema.medium,
+  description: textFieldSchema.extraLong,
+  eventDate: timestampSchema.optional().nullable(),
+  location: textFieldSchema.medium.optional().nullable(),
 });
 
 export const updateEventSchema = createEventSchema.partial();

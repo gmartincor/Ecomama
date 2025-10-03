@@ -1,14 +1,13 @@
 import { z } from "zod";
+import { textFieldSchema } from "./shared";
 
-const MAX_BIO_LENGTH = 500;
-const MAX_PHONE_LENGTH = 20;
-const MAX_LOCATION_LENGTH = 100;
+const phoneRegex = /^\+?[1-9]\d{1,14}$/;
 
 export const profileSchema = z.object({
-  bio: z.string().max(MAX_BIO_LENGTH).optional(),
-  phone: z.string().max(MAX_PHONE_LENGTH).optional(),
-  location: z.string().max(MAX_LOCATION_LENGTH).optional(),
-  avatar: z.string().url().optional().or(z.literal("")),
+  bio: textFieldSchema.long.optional().nullable(),
+  phone: z.string().regex(phoneRegex, "Formato de teléfono inválido").optional().nullable(),
+  location: textFieldSchema.short.optional().nullable(),
+  avatar: z.string().url("URL de avatar inválida").optional().nullable(),
   isPublic: z.boolean().optional(),
 });
 

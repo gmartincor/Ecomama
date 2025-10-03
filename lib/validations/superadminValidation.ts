@@ -1,19 +1,20 @@
 import { z } from "zod";
+import { cuidSchema, userRoleEnum, userStatusEnum, communityStatusEnum, textFieldSchema } from "./shared";
 
 export const updateUserSchema = z.object({
-  role: z.enum(["USER", "ADMIN", "SUPERADMIN"]).optional(),
-  status: z.enum(["ACTIVE", "INACTIVE", "SUSPENDED"]).optional(),
+  role: userRoleEnum.optional(),
+  status: userStatusEnum.optional(),
 });
 
 export const updateCommunityStatusSchema = z.object({
-  status: z.enum(["ACTIVE", "INACTIVE"]),
-  reason: z.string().max(500).optional(),
+  status: communityStatusEnum,
+  reason: textFieldSchema.long.optional(),
 });
 
 export const deleteUserSchema = z.object({
-  userId: z.string().cuid(),
+  userId: cuidSchema,
 });
 
 export const deleteCommunitySchema = z.object({
-  communityId: z.string().cuid(),
+  communityId: cuidSchema,
 });

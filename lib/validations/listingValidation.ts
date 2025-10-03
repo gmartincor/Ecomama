@@ -1,12 +1,12 @@
 import { z } from "zod";
+import { listingTypeEnum, listingStatusEnum, textFieldSchema } from "./shared";
 
-export const listingTypeEnum = z.enum(["OFFER", "DEMAND"]);
-export const listingStatusEnum = z.enum(["ACTIVE", "INACTIVE", "EXPIRED"]);
+export { listingTypeEnum, listingStatusEnum };
 
 export const createListingSchema = z.object({
   type: listingTypeEnum,
-  title: z.string().min(3, "El título debe tener al menos 3 caracteres").max(200, "El título es muy largo"),
-  description: z.string().min(10, "La descripción debe tener al menos 10 caracteres").max(5000, "La descripción es muy larga"),
+  title: textFieldSchema.medium,
+  description: textFieldSchema.extraLong,
 });
 
 export const updateListingSchema = createListingSchema.partial().extend({

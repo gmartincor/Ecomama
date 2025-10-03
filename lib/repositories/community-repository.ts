@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/prisma/client';
 import { BaseRepository } from '@/lib/repositories/base-repository';
 import { Community, CommunityStatus } from '@prisma/client';
-import { buildWhereClause } from '@/lib/utils/prisma-helpers';
 
 export type CommunityWithAdmin = Community & {
   admin: {
@@ -29,20 +28,21 @@ export type CreateCommunityData = {
   country: string;
 };
 
+export type UpdateCommunityData = Partial<CreateCommunityData>;
+
+const ADMIN_SELECT = {
+  id: true,
+  name: true,
+  email: true,
+};
+
 class CommunityRepository extends BaseRepository<CommunityWithAdmin> {
   protected model = prisma.community;
 
   async findByIdWithAdmin(id: string): Promise<CommunityWithAdmin | null> {
-    return prisma.community.findUnique({
-      where: { id },
+    return this.findById(id, {
       include: {
-        admin: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
+        admin: { select: ADMIN_SELECT },
       },
     });
   }
@@ -50,7 +50,7 @@ class CommunityRepository extends BaseRepository<CommunityWithAdmin> {
   async findAll(filters: CommunityFilters): Promise<CommunityWithAdmin[]> {
     const { latitude, longitude, radiusKm, status, search } = filters;
 
-    const where: any = buildWhereClause({ status });
+    const where: any = this.buildSafeUpdateData({ status });
 
     if (search) {
       where.OR = [
@@ -60,17 +60,8 @@ class CommunityRepository extends BaseRepository<CommunityWithAdmin> {
       ];
     }
 
-    const communities = await prisma.community.findMany({
-      where,
-      include: {
-        admin: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-      },
+    const communities = await this.findMany(where, {
+      include: { admin: { select: ADMIN_SELECT } },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -82,43 +73,28 @@ class CommunityRepository extends BaseRepository<CommunityWithAdmin> {
   }
 
   async createCommunity(data: CreateCommunityData, adminId: string): Promise<CommunityWithAdmin> {
-    return prisma.community.create({
-      data: {
+    return this.create(
+      {
         ...data,
         adminId,
         status: 'ACTIVE',
       },
-      include: {
-        admin: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-      },
-    });
+      {
+        include: { admin: { select: ADMIN_SELECT } },
+      }
+    );
   }
 
-  async updateCommunity(
-    id: string,
-    data: Partial<Omit<CreateCommunityData, 'adminId'>>
-  ): Promise<CommunityWithAdmin> {
-    const updateData = buildWhereClause(data);
+  async updateCommunity(id: string, data: UpdateCommunityData): Promise<CommunityWithAdmin> {
+    const updateData = this.buildSafeUpdateData(data);
     
-    return prisma.community.update({
-      where: { id },
-      data: updateData,
-      include: {
-        admin: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-      },
-    });
+    return this.update(
+      id, 
+      updateData, 
+      {
+        include: { admin: { select: ADMIN_SELECT } },
+      }
+    );
   }
 
   async isUserAdmin(userId: string, communityId: string): Promise<boolean> {
@@ -127,18 +103,10 @@ class CommunityRepository extends BaseRepository<CommunityWithAdmin> {
 
   async getStats(communityId: string) {
     const [totalMembers, activeMembers, totalListings, totalEvents] = await Promise.all([
-      prisma.communityMember.count({
-        where: { communityId },
-      }),
-      prisma.communityMember.count({
-        where: { communityId, status: 'APPROVED' },
-      }),
-      prisma.listing.count({
-        where: { communityId },
-      }),
-      prisma.event.count({
-        where: { communityId },
-      }),
+      prisma.communityMember.count({ where: { communityId } }),
+      prisma.communityMember.count({ where: { communityId, status: 'APPROVED' } }),
+      prisma.listing.count({ where: { communityId } }),
+      prisma.event.count({ where: { communityId } }),
     ]);
 
     return {
@@ -172,7 +140,7 @@ class CommunityRepository extends BaseRepository<CommunityWithAdmin> {
     lat2: number,
     lon2: number
   ): number {
-    const R = 6371;
+    const EARTH_RADIUS_KM = 6371;
     const dLat = this.toRad(lat2 - lat1);
     const dLon = this.toRad(lon2 - lon1);
     const a =
@@ -182,7 +150,7 @@ class CommunityRepository extends BaseRepository<CommunityWithAdmin> {
         Math.sin(dLon / 2) *
         Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
+    return EARTH_RADIUS_KM * c;
   }
 
   private toRad(deg: number): number {

@@ -1,36 +1,32 @@
 import { z } from "zod";
-
-const COORDINATE_MIN = -90;
-const COORDINATE_MAX = 90;
-const LONGITUDE_MIN = -180;
-const LONGITUDE_MAX = 180;
+import { textFieldSchema, coordinateSchema, communityStatusEnum } from "./shared";
 
 export const createCommunitySchema = z.object({
-  name: z.string().min(3).max(100),
-  description: z.string().min(10).max(500),
-  latitude: z.number().min(COORDINATE_MIN).max(COORDINATE_MAX),
-  longitude: z.number().min(LONGITUDE_MIN).max(LONGITUDE_MAX),
-  address: z.string().min(3).max(200),
-  city: z.string().min(2).max(100),
-  country: z.string().min(2).max(100),
+  name: textFieldSchema.short,
+  description: textFieldSchema.long,
+  latitude: coordinateSchema.latitude,
+  longitude: coordinateSchema.longitude,
+  address: textFieldSchema.medium,
+  city: textFieldSchema.short,
+  country: textFieldSchema.short,
 });
 
 export const updateCommunitySchema = z.object({
-  name: z.string().min(3).max(100).optional(),
-  description: z.string().min(10).max(500).optional(),
-  latitude: z.number().min(COORDINATE_MIN).max(COORDINATE_MAX).optional(),
-  longitude: z.number().min(LONGITUDE_MIN).max(LONGITUDE_MAX).optional(),
-  address: z.string().min(3).max(200).optional(),
-  city: z.string().min(2).max(100).optional(),
-  country: z.string().min(2).max(100).optional(),
-  status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
+  name: textFieldSchema.short.optional(),
+  description: textFieldSchema.long.optional(),
+  latitude: coordinateSchema.latitude.optional(),
+  longitude: coordinateSchema.longitude.optional(),
+  address: textFieldSchema.medium.optional(),
+  city: textFieldSchema.short.optional(),
+  country: textFieldSchema.short.optional(),
+  status: communityStatusEnum.optional(),
 });
 
 export const communityFiltersSchema = z.object({
-  latitude: z.number().min(COORDINATE_MIN).max(COORDINATE_MAX).optional(),
-  longitude: z.number().min(LONGITUDE_MIN).max(LONGITUDE_MAX).optional(),
+  latitude: coordinateSchema.latitude.optional(),
+  longitude: coordinateSchema.longitude.optional(),
   radiusKm: z.number().min(1).max(1000).optional(),
-  status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
+  status: communityStatusEnum.optional(),
   search: z.string().optional(),
 });
 

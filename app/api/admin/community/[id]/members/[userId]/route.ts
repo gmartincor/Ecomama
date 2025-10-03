@@ -1,5 +1,5 @@
-import { adminService } from "@/features/admin/services/adminService";
-import { createDeleteHandler } from "@/lib/api";
+import { removeMember } from "@/features/admin/services/adminService";
+import { createDeleteHandler, communityAdminFromId } from "@/lib/api";
 import { ValidationError } from "@/lib/utils/api-response";
 
 export const DELETE = createDeleteHandler(
@@ -10,12 +10,8 @@ export const DELETE = createDeleteHandler(
       throw new ValidationError("No puedes eliminarte a ti mismo");
     }
 
-    await adminService.removeMember(communityId, userId);
+    await removeMember(communityId, userId);
     return { success: true };
   },
-  async ({ session, params }) => {
-    if (!session) return false;
-    const communityId = params!.id;
-    return await adminService.isUserCommunityAdmin(session.user.id, communityId);
-  }
+  communityAdminFromId
 );

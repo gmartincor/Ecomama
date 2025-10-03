@@ -1,6 +1,6 @@
-import { getListingById, updateListing, deleteListing, isUserListingAuthor } from "@/features/listings/services/listingService";
+import { getListingById, updateListing, deleteListing } from "@/features/listings/services/listingService";
 import { updateListingSchema } from "@/lib/validations/listingValidation";
-import { createGetHandler, createPutHandler, createDeleteHandler } from "@/lib/api";
+import { createGetHandler, createPutHandler, createDeleteHandler, listingOwnerCheck } from "@/lib/api";
 import { NotFoundError } from "@/lib/utils/api-response";
 
 export const GET = createGetHandler(async ({ params }) => {
@@ -20,10 +20,7 @@ export const PUT = createPutHandler(
     return await updateListing(listingId, body);
   },
   updateListingSchema,
-  async ({ session, params }) => {
-    const listingId = params!.id;
-    return await isUserListingAuthor(session!.user.id, listingId);
-  }
+  listingOwnerCheck
 );
 
 export const DELETE = createDeleteHandler(
@@ -32,8 +29,5 @@ export const DELETE = createDeleteHandler(
     await deleteListing(listingId);
     return { success: true };
   },
-  async ({ session, params }) => {
-    const listingId = params!.id;
-    return await isUserListingAuthor(session!.user.id, listingId);
-  }
+  listingOwnerCheck
 );

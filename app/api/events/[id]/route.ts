@@ -1,6 +1,6 @@
-import { getEventById, updateEvent, deleteEvent, isUserAdminOfEventCommunity } from "@/features/events/services/eventService";
+import { getEventById, updateEvent, deleteEvent } from "@/features/events/services/eventService";
 import { updateEventSchema } from "@/lib/validations/eventValidation";
-import { createGetHandler, createPutHandler, createDeleteHandler } from "@/lib/api";
+import { createGetHandler, createPutHandler, createDeleteHandler, eventOwnerCheck } from "@/lib/api";
 import { NotFoundError } from "@/lib/utils/api-response";
 
 export const GET = createGetHandler(async ({ params }) => {
@@ -20,10 +20,7 @@ export const PUT = createPutHandler(
     return await updateEvent(eventId, body);
   },
   updateEventSchema,
-  async ({ session, params }) => {
-    const eventId = params!.id;
-    return await isUserAdminOfEventCommunity(session!.user.id, eventId);
-  }
+  eventOwnerCheck
 );
 
 export const DELETE = createDeleteHandler(
@@ -32,8 +29,5 @@ export const DELETE = createDeleteHandler(
     await deleteEvent(eventId);
     return { success: true };
   },
-  async ({ session, params }) => {
-    const eventId = params!.id;
-    return await isUserAdminOfEventCommunity(session!.user.id, eventId);
-  }
+  eventOwnerCheck
 );

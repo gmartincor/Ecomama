@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma/client';
 import { BaseRepository } from '@/lib/repositories/base-repository';
 import { Listing, ListingType, ListingStatus } from '@prisma/client';
-import { buildWhereClause, buildSearchClause, withAuthor } from '@/lib/utils/prisma-helpers';
+import { buildSearchClause } from '@/lib/utils/prisma-helpers';
 
 export type ListingWithAuthor = Listing & {
   author: {
@@ -19,6 +19,14 @@ export type ListingFilters = {
   search?: string;
 };
 
+export type CreateListingData = {
+  type: ListingType;
+  title: string;
+  description: string;
+};
+
+export type UpdateListingData = Partial<CreateListingData & { status: ListingStatus }>;
+
 class ListingRepository extends BaseRepository<ListingWithAuthor> {
   protected model = prisma.listing;
 
@@ -27,39 +35,37 @@ class ListingRepository extends BaseRepository<ListingWithAuthor> {
 
     const where: any = {
       communityId,
-      ...buildWhereClause(restFilters),
+      ...this.buildSafeUpdateData(restFilters),
     };
 
     if (search) {
       where.OR = buildSearchClause(['title', 'description'], search);
     }
 
-    return this.findMany(where, { orderBy: { createdAt: 'desc' }, includeAuthor: true });
+    return this.findMany(where, { 
+      orderBy: { createdAt: 'desc' }, 
+      includeAuthor: true 
+    });
   }
 
   async createListing(
     communityId: string,
     authorId: string,
-    data: { type: ListingType; title: string; description: string }
+    data: CreateListingData
   ): Promise<ListingWithAuthor> {
     return this.create(
       {
         communityId,
         authorId,
-        type: data.type,
-        title: data.title,
-        description: data.description,
+        ...data,
         status: 'ACTIVE',
       },
       { includeAuthor: true }
     );
   }
 
-  async updateListing(
-    id: string,
-    data: Partial<{ type: ListingType; title: string; description: string; status: ListingStatus }>
-  ): Promise<ListingWithAuthor> {
-    const updateData = buildWhereClause(data);
+  async updateListing(id: string, data: UpdateListingData): Promise<ListingWithAuthor> {
+    const updateData = this.buildSafeUpdateData(data);
     return this.update(id, updateData, { includeAuthor: true });
   }
 

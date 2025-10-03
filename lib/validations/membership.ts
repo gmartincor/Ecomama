@@ -1,13 +1,14 @@
 import { z } from "zod";
+import { cuidSchema, memberStatusEnum, textFieldSchema } from "./shared";
 
 export const membershipRequestSchema = z.object({
-  communityId: z.string().cuid(),
-  message: z.string().min(10).max(500),
+  communityId: cuidSchema,
+  message: textFieldSchema.long,
 });
 
 export const respondToRequestSchema = z.object({
-  status: z.enum(["APPROVED", "REJECTED"]),
-  responseMessage: z.string().max(500).optional(),
+  status: memberStatusEnum.extract(["APPROVED", "REJECTED"]),
+  responseMessage: textFieldSchema.long.optional(),
 });
 
 export type MembershipRequestInput = z.infer<typeof membershipRequestSchema>;

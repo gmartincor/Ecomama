@@ -1,8 +1,7 @@
 import { updateCommunitySchema } from "@/lib/validations/community";
-import { getCommunityById, updateCommunity, deleteCommunity, isUserCommunityAdmin } from "@/features/communities/services/communityService";
-import { createGetHandler, createPutHandler, createDeleteHandler, requireSuperAdmin } from "@/lib/api";
+import { getCommunityById, updateCommunity, deleteCommunity } from "@/features/communities/services/communityService";
+import { createGetHandler, createPutHandler, createDeleteHandler, requireSuperAdmin, communityOwnerCheck } from "@/lib/api";
 import { NotFoundError } from "@/lib/utils/api-response";
-import { UserRole } from "@prisma/client";
 
 export const GET = createGetHandler(async ({ params }) => {
   const communityId = params!.id;
@@ -21,15 +20,7 @@ export const PUT = createPutHandler(
     return await updateCommunity(communityId, body);
   },
   updateCommunitySchema,
-  async ({ session, params }) => {
-    if (!session) return false;
-    
-    const isSuperAdmin = session.user.role === UserRole.SUPERADMIN;
-    if (isSuperAdmin) return true;
-
-    const communityId = params!.id;
-    return await isUserCommunityAdmin(session.user.id, communityId);
-  }
+  communityOwnerCheck
 );
 
 export const DELETE = createDeleteHandler(

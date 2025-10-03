@@ -1,10 +1,11 @@
 import { z } from "zod";
+import { cuidSchema, memberRoleEnum } from "./shared";
 
 export const removeMemberSchema = z.object({
-  userId: z.string().cuid(),
+  userId: cuidSchema,
 });
 
 export const updateMemberRoleSchema = z.object({
-  userId: z.string().cuid(),
-  role: z.enum(["ADMIN", "MEMBER"]),
+  userId: cuidSchema,
+  role: memberRoleEnum,
 });
