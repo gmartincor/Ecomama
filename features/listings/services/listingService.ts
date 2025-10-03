@@ -9,7 +9,7 @@ export const getListings = async (
 };
 
 export const getListingById = async (listingId: string): Promise<ListingWithAuthor | null> => {
-  return listingRepository.findById(listingId, true);
+  return listingRepository.findById(listingId, { includeAuthor: true });
 };
 
 export const createListing = async (

@@ -3,17 +3,17 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import type { ListingStatus } from "../types";
 
-type ListingFiltersProps = {
+type ListingFiltersPanelProps = {
   onSearchChange: (search: string) => void;
   onStatusChange: (status: ListingStatus | undefined) => void;
   onClearFilters: () => void;
 };
 
-export const ListingFilters = ({
+export const ListingFiltersPanel = ({
   onSearchChange,
   onStatusChange,
   onClearFilters,
-}: ListingFiltersProps) => {
+}: ListingFiltersPanelProps) => {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<ListingStatus | undefined>(undefined);
 

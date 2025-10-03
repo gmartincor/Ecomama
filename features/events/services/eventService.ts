@@ -9,7 +9,7 @@ export const getEvents = async (
 };
 
 export const getEventById = async (eventId: string): Promise<EventWithAuthor | null> => {
-  return eventRepository.findById(eventId, true);
+  return eventRepository.findById(eventId, { includeAuthor: true });
 };
 
 export const createEvent = async (

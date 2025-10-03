@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { TabNavigation } from "@/features/dashboard/components";
-import { ListingGrid, ListingFilters } from "@/features/listings/components";
+import { ListingGrid, ListingFiltersPanel } from "@/features/listings/components";
 import { PageError } from "@/components/common/PageError";
 import type { TabConfig } from "@/features/dashboard/types";
 import type { ListingStatus } from "@/features/listings/types";
@@ -91,7 +91,7 @@ export default function CommunityOffersPage() {
       <TabNavigation tabs={DASHBOARD_TABS} />
 
       <div className="mt-3 sm:mt-4">
-        <ListingFilters
+        <ListingFiltersPanel
           onSearchChange={setSearch}
           onStatusChange={setStatus}
           onClearFilters={handleClearFilters}
