@@ -1,26 +1,21 @@
 "use client";
 
 import { ActionButton } from "@/components/ui/ActionButton";
-import { CommunityManagementTable } from "@/features/superadmin/components";
-import { useSuperadminCommunities } from "@/features/superadmin/hooks";
+import { PageLoading, PageError } from "@/components/common";
+import { DataTable } from "@/features/superadmin/components/data-table";
+import { useCommunities } from "@/features/superadmin/hooks/useCommunities";
+import { useCommunityTableConfig } from "@/features/superadmin/config/community-table-config";
 
 export default function CommunitiesListPage() {
-  const { communities, isLoading, error, updateCommunityStatus } = useSuperadminCommunities();
+  const { communities, isLoading, error, updateCommunityStatus, refetch } = useCommunities();
+  const { columns, getActions, mobileCard } = useCommunityTableConfig(updateCommunityStatus);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg">Cargando comunidades...</p>
-      </div>
-    );
+    return <PageLoading title="Gestión de Comunidades" />;
   }
 
   if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg text-red-600">Error: {error}</p>
-      </div>
-    );
+    return <PageError message={error} onRetry={refetch} />;
   }
 
   return (
@@ -37,9 +32,16 @@ export default function CommunitiesListPage() {
         </ActionButton>
       </div>
 
-      <CommunityManagementTable
-        communities={communities}
-        onUpdateStatus={updateCommunityStatus}
+      <DataTable
+        data={communities}
+        columns={columns}
+        actions={(community) => getActions(community)}
+        searchable
+        searchPlaceholder="Buscar..."
+        searchKeys={["name", "city", "adminName"]}
+        emptyMessage="No se encontraron comunidades"
+        getItemKey={(community) => community.id}
+        mobileCard={mobileCard}
       />
     </div>
   );

@@ -116,24 +116,33 @@ export const getAllCommunities = async (): Promise<SuperadminCommunity[]> => {
   }));
 };
 
+export const getSelectableUsers = async () => {
+  const users = await prisma.user.findMany({
+    where: {
+      role: {
+        in: ["USER", "ADMIN"],
+      },
+      status: "ACTIVE",
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+    },
+    orderBy: {
+      name: "asc",
+    },
+  });
+
+  return users;
+};
+
 export const updateUser = async (userId: string, data: UpdateUserData) => {
   return await prisma.user.update({
     where: { id: userId },
     data,
   });
-};
-
-export const updateUserStatus = async (userId: string, status: UpdateUserData["status"]) => {
-  if (!status) {
-    throw new Error("Status is required");
-  }
-  
-  return await updateUser(userId, { status });
-};
-
-export const toggleUserRole = async (userId: string, currentRole: UpdateUserData["role"]) => {
-  const newRole = currentRole === "ADMIN" ? "USER" : "ADMIN";
-  return await updateUser(userId, { role: newRole });
 };
 
 export const updateCommunityStatus = async (

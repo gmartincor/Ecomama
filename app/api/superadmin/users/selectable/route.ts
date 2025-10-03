@@ -1,5 +1,5 @@
 import { createGetHandler, requireSuperAdmin } from "@/lib/api";
-import { getSelectableUsers } from "@/features/superadmin/services/userSelectionService";
+import { getSelectableUsers } from "@/features/superadmin/services/superadminService";
 
 export const GET = createGetHandler(
   async () => {

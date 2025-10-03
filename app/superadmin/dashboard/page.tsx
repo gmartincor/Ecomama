@@ -1,39 +1,25 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { GlobalStats } from "@/features/superadmin/components";
-import { useSuperadminStats } from "@/features/superadmin/hooks";
+import { PageLoading } from "@/components/common";
+import { PageError } from "@/components/common";
+import { MetricsGrid } from "@/features/superadmin/components/MetricsGrid";
+import { useStats } from "@/features/superadmin/hooks/useStats";
 
 export default function SuperadminDashboardPage() {
-  const router = useRouter();
-  const { stats, isLoading, error } = useSuperadminStats();
+  const { data: stats, isLoading, error, refetch } = useStats();
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg">Cargando estadísticas...</p>
-      </div>
-    );
+    return <PageLoading title="Panel de Superadministrador" />;
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg text-red-600">Error: {error}</p>
-      </div>
-    );
+  if (error || !stats) {
+    return <PageError message={error || "Error al cargar estadísticas"} onRetry={refetch} />;
   }
 
   return (
     <div>
       <h1 className="text-3xl font-bold mb-8">Panel de Superadministrador</h1>
-      {stats && (
-        <GlobalStats
-          stats={stats}
-          onViewUsers={() => router.push("/superadmin/users")}
-          onViewCommunities={() => router.push("/superadmin/communities")}
-        />
-      )}
+      <MetricsGrid stats={stats} />
     </div>
   );
 }

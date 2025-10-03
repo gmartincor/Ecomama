@@ -1,27 +1,27 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { UserManagementTable } from "@/features/superadmin/components";
-import { useSuperadminUsers } from "@/features/superadmin/hooks";
+import { PageLoading, PageError } from "@/components/common";
+import { DataTable } from "@/features/superadmin/components/data-table";
+import { useUsers } from "@/features/superadmin/hooks/useUsers";
+import { useUserTableConfig } from "@/features/superadmin/config/user-table-config";
 
 export default function SuperadminUsersPage() {
   const { data: session } = useSession();
-  const { users, isLoading, error, updateUserStatus, toggleUserRole } = useSuperadminUsers();
+  const { users, isLoading, error, updateUserStatus, toggleUserRole, refetch } = useUsers();
+  
+  const { columns, getActions } = useUserTableConfig(
+    session?.user?.id || "",
+    updateUserStatus,
+    toggleUserRole
+  );
 
   if (isLoading || !session) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg">Cargando usuarios...</p>
-      </div>
-    );
+    return <PageLoading title="Gestión de Usuarios" />;
   }
 
   if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg text-destructive">Error: {error}</p>
-      </div>
-    );
+    return <PageError message={error} onRetry={refetch} />;
   }
 
   return (
@@ -32,11 +32,15 @@ export default function SuperadminUsersPage() {
           Administra todos los usuarios de la plataforma
         </p>
       </div>
-      <UserManagementTable
-        users={users}
-        currentUserId={session.user.id}
-        onUpdateUserStatus={updateUserStatus}
-        onToggleUserRole={toggleUserRole}
+      <DataTable
+        data={users}
+        columns={columns}
+        actions={(user) => getActions(user)}
+        searchable
+        searchPlaceholder="Buscar por nombre o email..."
+        searchKeys={["name", "email"]}
+        emptyMessage="No se encontraron usuarios"
+        getItemKey={(user) => user.id}
       />
     </div>
   );

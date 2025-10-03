@@ -1,6 +1,6 @@
-export { GlobalStats } from "./GlobalStats";
-export { UserManagementTable } from "./UserManagementTable";
-export { CommunityManagementTable } from "./CommunityManagementTable";
+export { MetricCard } from "./MetricCard";
+export { MetricsGrid } from "./MetricsGrid";
 export { SuperadminNav } from "./SuperadminNav";
 export { UserSelector } from "./UserSelector";
-export { UserActionButtons } from "./UserActionButtons";
+export { DataTable } from "./data-table";
+export type { Column, Action, DataTableProps } from "./data-table";
