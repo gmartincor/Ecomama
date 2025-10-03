@@ -30,18 +30,18 @@ export const CommunitySwitcher = () => {
     setIsOpen(false);
   };
 
+  const displayText = activeCommunity?.name || "Seleccionar comunidad";
+
   return (
-    <div className="relative w-full sm:w-auto" ref={dropdownRef}>
+    <div className="relative w-full" ref={dropdownRef}>
       <Button
         variant="outline"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 w-full sm:w-auto justify-between text-xs sm:text-sm"
+        className="flex items-center justify-between gap-2 w-full"
       >
-        <span className="truncate max-w-[120px] sm:max-w-[200px]">
-          {activeCommunity ? activeCommunity.name : "Seleccionar comunidad"}
-        </span>
+        <span className="truncate">{displayText}</span>
         <svg
-          className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform flex-shrink-0 ${isOpen ? "rotate-180" : ""}`}
+          className={`w-4 h-4 transition-transform flex-shrink-0 ${isOpen ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -51,20 +51,20 @@ export const CommunitySwitcher = () => {
       </Button>
 
       {isOpen && (
-        <Card className="absolute left-0 sm:right-0 sm:left-auto mt-2 w-full sm:w-64 shadow-lg z-50 overflow-hidden">
+        <Card className="absolute left-0 right-0 md:left-auto md:right-0 md:w-72 mt-2 shadow-lg z-50 overflow-hidden">
           <div className="p-2 border-b border-border bg-muted">
             <p className="text-xs text-muted-foreground px-2">Mis Comunidades</p>
           </div>
-          <div className="py-1 max-h-60 sm:max-h-80 overflow-y-auto">
+          <div className="py-1 max-h-60 md:max-h-80 overflow-y-auto">
             {userCommunities.map((community) => (
               <button
                 key={community.id}
                 onClick={() => handleCommunityChange(community)}
-                className={`w-full text-left px-3 sm:px-4 py-2 hover:bg-muted transition-colors ${
+                className={`w-full text-left px-4 py-2.5 hover:bg-muted transition-colors ${
                   activeCommunity?.id === community.id ? "bg-primary/10 border-l-2 border-primary" : ""
                 }`}
               >
-                <div className="font-medium text-xs sm:text-sm text-foreground truncate">{community.name}</div>
+                <div className="font-medium text-sm text-foreground truncate">{community.name}</div>
                 <div className="text-xs text-muted-foreground truncate">
                   {community.city}, {community.country}
                 </div>
