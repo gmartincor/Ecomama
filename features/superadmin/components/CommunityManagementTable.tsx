@@ -97,7 +97,7 @@ export function CommunityManagementTable({
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-card divide-y divide-border">
             {filteredCommunities.map((community) => {
               const isProcessing = processingId === community.id;
 

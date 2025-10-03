@@ -85,7 +85,7 @@ export function MemberManagementTable({
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-card divide-y divide-border">
             {filteredMembers.map((member) => {
               const isCurrentUser = member.userId === currentUserId;
               const isRemoving = removingId === member.userId;

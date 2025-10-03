@@ -103,7 +103,7 @@ export const LocationPicker = ({
       </div>
 
       {searchResults.length > 0 && (
-        <div className="bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+        <div className="bg-card border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
           {searchResults.map((result, index) => (
             <button
               key={index}

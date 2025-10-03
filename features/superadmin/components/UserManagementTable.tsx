@@ -110,7 +110,7 @@ export function UserManagementTable({
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-card divide-y divide-border">
             {filteredUsers.map((user) => {
               const isCurrentUser = user.id === currentUserId;
               const isProcessing = processingId === user.id;

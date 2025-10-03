@@ -4,5 +4,6 @@ export {
   badgeVariants,
   textVariants,
   cardVariants,
+  navVariants,
   getVariant,
 } from './variants';

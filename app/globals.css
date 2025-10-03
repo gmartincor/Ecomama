@@ -1,80 +1,60 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-  --color-background: oklch(0.98 0.01 85);
-  --color-foreground: oklch(0.28 0.03 45);
-  --color-primary: oklch(0.55 0.15 150);
-  --color-primary-light: oklch(0.65 0.12 150);
-  --color-primary-dark: oklch(0.45 0.18 150);
-  --color-primary-foreground: oklch(1 0 0);
-  --color-secondary: oklch(0.65 0.15 45);
-  --color-secondary-light: oklch(0.75 0.12 45);
-  --color-secondary-dark: oklch(0.55 0.18 45);
-  --color-secondary-foreground: oklch(1 0 0);
-  --color-muted: oklch(0.96 0.01 85);
-  --color-muted-foreground: oklch(0.55 0.02 45);
-  --color-accent: oklch(0.85 0.15 95);
-  --color-accent-light: oklch(0.90 0.12 95);
-  --color-accent-dark: oklch(0.75 0.18 95);
-  --color-accent-foreground: oklch(0.28 0.03 45);
-  --color-destructive: oklch(0.60 0.22 25);
-  --color-destructive-foreground: oklch(1 0 0);
-  --color-border: oklch(0.90 0.01 85);
-  --color-input: oklch(0.90 0.01 85);
-  --color-ring: oklch(0.55 0.15 150);
-  --color-success: oklch(0.55 0.15 145);
-  --color-success-light: oklch(0.95 0.05 145);
-  --color-warning: oklch(0.70 0.18 75);
-  --color-warning-light: oklch(0.97 0.05 75);
-  --color-info: oklch(0.60 0.15 240);
-  --color-info-light: oklch(0.95 0.05 240);
-  --radius: 0.5rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  @theme {
-    --color-background: oklch(0.18 0.02 45);
-    --color-foreground: oklch(0.95 0.01 85);
-    --color-primary: oklch(0.62 0.15 150);
-    --color-primary-light: oklch(0.70 0.12 150);
-    --color-primary-dark: oklch(0.52 0.18 150);
-    --color-primary-foreground: oklch(0.18 0.02 45);
-    --color-secondary: oklch(0.68 0.15 45);
-    --color-secondary-light: oklch(0.76 0.12 45);
-    --color-secondary-dark: oklch(0.58 0.18 45);
-    --color-secondary-foreground: oklch(0.18 0.02 45);
-    --color-muted: oklch(0.25 0.02 45);
-    --color-muted-foreground: oklch(0.68 0.02 45);
-    --color-accent: oklch(0.80 0.15 95);
-    --color-accent-light: oklch(0.85 0.12 95);
-    --color-accent-dark: oklch(0.72 0.18 95);
-    --color-accent-foreground: oklch(0.18 0.02 45);
-    --color-destructive: oklch(0.65 0.22 25);
-    --color-destructive-foreground: oklch(0.18 0.02 45);
-    --color-border: oklch(0.30 0.02 45);
-    --color-input: oklch(0.30 0.02 45);
-    --color-ring: oklch(0.62 0.15 150);
-    --color-success: oklch(0.62 0.15 145);
-    --color-success-light: oklch(0.28 0.08 145);
-    --color-warning: oklch(0.72 0.18 75);
-    --color-warning-light: oklch(0.28 0.08 75);
-    --color-info: oklch(0.65 0.15 240);
-    --color-info-light: oklch(0.28 0.08 240);
+@layer base {
+  :root {
+    --background: 48 35% 96%;
+    --foreground: 140 35% 18%;
+    --card: 0 0% 100%;
+    --card-foreground: 140 35% 18%;
+    --nav: 140 50% 98%;
+    --primary: 138 55% 42%;
+    --primary-light: 138 50% 52%;
+    --primary-dark: 138 60% 32%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 42 75% 52%;
+    --secondary-light: 42 70% 62%;
+    --secondary-dark: 42 80% 42%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 140 25% 95%;
+    --muted-foreground: 140 20% 42%;
+    --accent: 75 60% 68%;
+    --accent-light: 75 55% 78%;
+    --accent-dark: 75 65% 58%;
+    --accent-foreground: 140 35% 18%;
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 140 25% 88%;
+    --input: 140 20% 92%;
+    --ring: 138 55% 42%;
+    --success: 145 58% 45%;
+    --success-light: 145 50% 94%;
+    --warning: 38 95% 58%;
+    --warning-light: 38 90% 94%;
+    --info: 205 70% 50%;
+    --info-light: 205 65% 94%;
+    --radius: 0.5rem;
   }
-}
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+  body {
+    @apply bg-background text-foreground;
+  }
 
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-input[type="number"] {
-  -moz-appearance: textfield;
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
 }

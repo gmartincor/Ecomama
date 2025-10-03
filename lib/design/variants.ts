@@ -38,10 +38,16 @@ export const textVariants = {
 } as const;
 
 export const cardVariants = {
-  default: 'rounded-lg border border-border bg-background shadow-sm',
-  elevated: 'rounded-lg border border-border bg-background shadow-md hover:shadow-lg transition-shadow duration-200',
-  interactive: 'rounded-lg border border-border bg-background shadow-sm hover:shadow-md hover:border-primary/40 hover:scale-[1.01] transition-all duration-200 cursor-pointer',
-  highlighted: 'rounded-lg border-2 border-primary bg-background shadow-md',
+  default: 'bg-card text-card-foreground rounded-lg border border-border shadow-sm',
+  elevated: 'bg-card text-card-foreground rounded-lg border border-border shadow-md hover:shadow-lg transition-shadow duration-200',
+  interactive: 'bg-card text-card-foreground rounded-lg border border-border shadow-sm hover:shadow-md hover:border-primary/40 hover:scale-[1.01] transition-all duration-200 cursor-pointer',
+  highlighted: 'bg-card text-card-foreground rounded-lg border-2 border-primary shadow-md',
+} as const;
+
+export const navVariants = {
+  default: 'bg-nav border-b border-border',
+  sticky: 'bg-nav/95 backdrop-blur-sm border-b border-border sticky top-0 z-50',
+  floating: 'bg-nav/90 backdrop-blur-md border border-border rounded-lg shadow-lg',
 } as const;
 
 export function getVariant<T extends Record<string, string>>(
@@ -51,4 +57,3 @@ export function getVariant<T extends Record<string, string>>(
 ): string {
   return cn(variants[variant], className);
 }
-
