@@ -49,22 +49,6 @@ export const useSuperadminCommunities = () => {
     }
   };
 
-  const deleteCommunity = async (communityId: string) => {
-    try {
-      const response = await fetch(`/api/superadmin/communities/${communityId}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete community");
-      }
-
-      await fetchCommunities();
-    } catch (err) {
-      throw err;
-    }
-  };
-
   useEffect(() => {
     fetchCommunities();
   }, []);
@@ -74,7 +58,6 @@ export const useSuperadminCommunities = () => {
     isLoading,
     error,
     updateCommunityStatus,
-    deleteCommunity,
     refetch: fetchCommunities,
   };
 };

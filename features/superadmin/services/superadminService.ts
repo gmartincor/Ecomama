@@ -140,13 +140,6 @@ export const deleteUser = async (userId: string) => {
   });
 };
 
-export const deleteCommunity = async (communityId: string) => {
-  return await prisma.community.update({
-    where: { id: communityId },
-    data: { status: "INACTIVE" },
-  });
-};
-
 export const isUserSuperadmin = async (userId: string): Promise<boolean> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },

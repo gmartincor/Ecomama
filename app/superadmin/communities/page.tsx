@@ -6,7 +6,7 @@ import { CommunityManagementTable } from "@/features/superadmin/components";
 import { useSuperadminCommunities } from "@/features/superadmin/hooks";
 
 export default function CommunitiesListPage() {
-  const { communities, isLoading, error, updateCommunityStatus, deleteCommunity } = useSuperadminCommunities();
+  const { communities, isLoading, error, updateCommunityStatus } = useSuperadminCommunities();
 
   if (isLoading) {
     return (
@@ -25,23 +25,24 @@ export default function CommunitiesListPage() {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
+    <div className="px-4 sm:px-0">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Gestión de Comunidades</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-2xl sm:text-3xl font-bold">Gestión de Comunidades</h1>
+          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
             Administra todas las comunidades de la plataforma
           </p>
         </div>
-        <Link href="/superadmin/communities/new">
-          <Button>+ Nueva Comunidad</Button>
+        <Link href="/superadmin/communities/new" className="w-full sm:w-auto">
+          <Button variant="outline" className="bg-card shadow-sm w-full sm:w-auto">
+            + Nueva Comunidad
+          </Button>
         </Link>
       </div>
 
       <CommunityManagementTable
         communities={communities}
         onUpdateStatus={updateCommunityStatus}
-        onDelete={deleteCommunity}
       />
     </div>
   );
