@@ -1,6 +1,7 @@
 "use client";
 
 import { SuperadminNav } from "@/features/superadmin/components";
+import { SuperadminHeader } from "@/components/layout/SuperadminHeader";
 
 export default function SuperadminLayout({
   children,
@@ -8,8 +9,9 @@ export default function SuperadminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8 px-4">
+    <div className="min-h-screen bg-background flex flex-col">
+      <SuperadminHeader />
+      <div className="flex-1 container mx-auto py-8 px-4">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <aside className="lg:col-span-1">
             <SuperadminNav />

@@ -23,6 +23,10 @@ export const CommunityInitializer = () => {
         return;
       }
 
+      if (session.user.role === "SUPERADMIN") {
+        return;
+      }
+
       try {
         const [communitiesRes, settingsRes] = await Promise.all([
           fetch("/api/users/me/communities"),

@@ -10,14 +10,19 @@ import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, isSuperAdmin } = useAuth();
   const { activeCommunity, userCommunities } = useCommunityStore();
 
   useEffect(() => {
+    if (!isLoading && isSuperAdmin) {
+      router.push("/superadmin/dashboard");
+      return;
+    }
+
     if (!isLoading && activeCommunity) {
       router.push("/community");
     }
-  }, [isLoading, activeCommunity, router]);
+  }, [isLoading, isSuperAdmin, activeCommunity, router]);
 
   if (isLoading) {
     return (
