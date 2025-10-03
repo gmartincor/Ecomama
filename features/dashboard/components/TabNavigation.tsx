@@ -25,7 +25,7 @@ export const TabNavigation = ({ tabs }: TabNavigationProps) => {
                 ${
                   isActive
                     ? "border-primary text-primary"
-                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
                 }
               `}
             >

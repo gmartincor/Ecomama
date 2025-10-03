@@ -26,7 +26,7 @@ export const HeaderContent = ({ user, onLogout }: HeaderContentProps) => {
         </div>
       </nav>
 
-      <div className="md:hidden border-t border-border px-4 py-2.5">
+      <div className="md:hidden px-4 py-2.5">
         <CommunitySwitcher />
       </div>
     </>

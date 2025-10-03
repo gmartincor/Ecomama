@@ -45,8 +45,8 @@ export const cardVariants = {
 } as const;
 
 export const navVariants = {
-  default: 'bg-card border-b border-border',
-  sticky: 'bg-card/95 backdrop-blur-sm border-b border-border sticky top-0 z-50 shadow-sm',
+  default: 'bg-card',
+  sticky: 'bg-card/95 backdrop-blur-sm sticky top-0 z-50',
   floating: 'bg-card/90 backdrop-blur-md border border-border rounded-lg shadow-lg',
 } as const;
 
