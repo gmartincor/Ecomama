@@ -34,12 +34,12 @@ export default function CommunityDashboardPage() {
 
   if (!activeCommunity) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <Card className="p-6 text-center">
-          <p className="text-muted-foreground mb-4">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <Card className="p-4 sm:p-6 text-center">
+          <p className="text-sm sm:text-base text-muted-foreground mb-4">
             No tienes una comunidad activa seleccionada
           </p>
-          <Button onClick={() => router.push("/communities/map")}>
+          <Button onClick={() => router.push("/communities/map")} className="w-full sm:w-auto">
             Explorar Comunidades
           </Button>
         </Card>
@@ -87,11 +87,11 @@ export default function CommunityDashboardPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       <DashboardHeader community={community} />
 
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8">
           <StatCard
             title="Miembros"
             value={stats.membersCount}
@@ -114,10 +114,10 @@ export default function CommunityDashboardPage() {
 
       <TabNavigation tabs={DASHBOARD_TABS} />
 
-      <div className="mt-8">
+      <div className="mt-4 sm:mt-8">
         {isAdmin && (
-          <div className="mb-6 flex justify-end">
-            <Button onClick={() => router.push("/admin/community/events/new")}>
+          <div className="mb-4 sm:mb-6 flex justify-end">
+            <Button onClick={() => router.push("/admin/community/events/new")} className="w-full sm:w-auto text-sm">
               📝 Crear Publicación
             </Button>
           </div>

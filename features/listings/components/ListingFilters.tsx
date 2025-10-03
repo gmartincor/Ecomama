@@ -36,20 +36,21 @@ export const ListingFilters = ({
   const hasActiveFilters = search || status;
 
   return (
-    <div className="flex flex-col sm:flex-row gap-3 mb-6">
+    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4 sm:mb-6">
       <div className="flex-1">
         <Input
           type="search"
-          placeholder="Buscar por título o descripción..."
+          placeholder="Buscar..."
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
+          className="text-sm"
         />
       </div>
 
       <select
         value={status || ""}
         onChange={(e) => handleStatusChange(e.target.value as ListingStatus || undefined)}
-        className="px-3 py-2 border border-input bg-card text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
+        className="px-3 py-2 border border-input bg-card text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring transition-shadow text-sm w-full sm:w-auto"
       >
         <option value="">Todos los estados</option>
         <option value="ACTIVE">Activos</option>
@@ -58,7 +59,7 @@ export const ListingFilters = ({
       </select>
 
       {hasActiveFilters && (
-        <Button variant="ghost" onClick={handleClear}>
+        <Button variant="ghost" onClick={handleClear} className="w-full sm:w-auto text-sm">
           Limpiar
         </Button>
       )}

@@ -26,31 +26,31 @@ export const ProfileCard = ({ member, onClick }: ProfileCardProps) => {
   return (
     <Card
       variant={onClick ? "interactive" : "default"}
-      className="p-4"
+      className="p-3 sm:p-4"
       onClick={onClick}
     >
-      <div className="flex flex-col items-center text-center space-y-3">
+      <div className="flex flex-col items-center text-center space-y-2 sm:space-y-3">
         {member.profile?.avatar ? (
           <img
             src={member.profile.avatar}
             alt={member.name}
-            className="w-16 h-16 rounded-full object-cover"
+            className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover"
           />
         ) : (
-          <div className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-semibold">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-lg sm:text-xl font-semibold">
             {getInitials(member.name)}
           </div>
         )}
 
-        <div>
-          <h3 className="font-semibold">{member.name}</h3>
+        <div className="w-full min-w-0">
+          <h3 className="font-semibold text-sm sm:text-base truncate">{member.name}</h3>
           {member.profile?.location && (
-            <p className="text-sm text-muted-foreground">📍 {member.profile.location}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground truncate">📍 {member.profile.location}</p>
           )}
         </div>
 
         {member.profile?.bio && (
-          <p className="text-sm text-muted-foreground line-clamp-2">{member.profile.bio}</p>
+          <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 w-full">{member.profile.bio}</p>
         )}
 
         <p className="text-xs text-muted-foreground">Miembro desde {formatDate(member.memberSince)}</p>

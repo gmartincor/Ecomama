@@ -41,57 +41,63 @@ export const EventCard = ({
   });
 
   return (
-    <Card variant={event.isPinned ? "highlighted" : "elevated"} className="p-6">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
+    <Card variant={event.isPinned ? "highlighted" : "elevated"} className="p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
             {hasEventDate && event.eventDate && (
               <CalendarIcon date={event.eventDate} size="md" />
             )}
-            {!hasEventDate && <span className="text-2xl">{typeOption?.icon}</span>}
-            <Badge variant="primary">{typeOption?.label}</Badge>
+            {!hasEventDate && <span className="text-xl sm:text-2xl flex-shrink-0">{typeOption?.icon}</span>}
+            <Badge variant="primary" className="text-xs">{typeOption?.label}</Badge>
             {event.isPinned && (
-              <Badge variant="warning">📌 Fijado</Badge>
+              <Badge variant="warning" className="text-xs">📌 Fijado</Badge>
             )}
           </div>
 
-          <h3 className="text-xl font-bold mb-2">{event.title}</h3>
+          <h3 className="text-lg sm:text-xl font-bold mb-2 break-words">{event.title}</h3>
 
-          <p className="text-muted-foreground whitespace-pre-wrap mb-4">{event.description}</p>
+          <p className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap break-words mb-4">{event.description}</p>
 
           {formattedDate && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-              <span className="capitalize font-medium">{formattedDate}</span>
+            <div className="flex items-start gap-2 text-xs sm:text-sm text-muted-foreground mb-2">
+              <span className="capitalize font-medium break-words">{formattedDate}</span>
             </div>
           )}
 
           {event.location && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-              <span>📍</span>
-              <span>{event.location}</span>
+            <div className="flex items-start gap-2 text-xs sm:text-sm text-muted-foreground mb-2">
+              <span className="flex-shrink-0">📍</span>
+              <span className="break-words">{event.location}</span>
             </div>
           )}
 
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mt-4">
-            <span>Publicado por {event.author.name}</span>
-            <span>•</span>
-            <span>{createdDate}</span>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mt-4">
+            <span className="truncate">Publicado por {event.author.name}</span>
+            <span className="hidden sm:inline">•</span>
+            <span className="whitespace-nowrap">{createdDate}</span>
           </div>
         </div>
 
         {isAdmin && (
-          <div className="flex flex-col gap-2">
+          <div className="flex sm:flex-col gap-2 justify-end sm:justify-start flex-shrink-0">
             {onTogglePin && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => onTogglePin(event.id, !event.isPinned)}
+                className="text-xs sm:text-sm"
               >
                 {event.isPinned ? "Desfijar" : "Fijar"}
               </Button>
             )}
             {onEdit && (
-              <Button variant="ghost" size="sm" onClick={() => onEdit(event.id)}>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => onEdit(event.id)}
+                className="text-xs sm:text-sm"
+              >
                 Editar
               </Button>
             )}
@@ -100,6 +106,7 @@ export const EventCard = ({
                 variant="destructive"
                 size="sm"
                 onClick={() => onDelete(event.id)}
+                className="text-xs sm:text-sm"
               >
                 Eliminar
               </Button>

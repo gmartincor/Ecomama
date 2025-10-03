@@ -25,12 +25,12 @@ export default function CommunityMembersPage() {
 
   if (!activeCommunity) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <Card className="p-6 text-center">
-          <p className="text-muted-foreground mb-4">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <Card className="p-4 sm:p-6 text-center">
+          <p className="text-sm sm:text-base text-muted-foreground mb-4">
             No tienes una comunidad activa seleccionada
           </p>
-          <Button onClick={() => router.push('/communities/map')}>
+          <Button onClick={() => router.push('/communities/map')} className="w-full sm:w-auto">
             Explorar Comunidades
           </Button>
         </Card>
@@ -43,19 +43,19 @@ export default function CommunityMembersPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Miembros de {activeCommunity.name}</h1>
-        <p className="text-muted-foreground mt-2">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold break-words">Miembros de {activeCommunity.name}</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mt-2">
           {members.length} {members.length === 1 ? 'miembro' : 'miembros'}
         </p>
       </div>
 
       <TabNavigation tabs={DASHBOARD_TABS} />
 
-      <div className="mt-8">
+      <div className="mt-4 sm:mt-8">
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {[...Array(8)].map((_, i) => (
               <Card key={i} className="p-4">
                 <div className="animate-pulse space-y-3">

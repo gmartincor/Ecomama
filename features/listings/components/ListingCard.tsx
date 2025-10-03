@@ -39,31 +39,31 @@ export const ListingCard = ({
   const status = statusConfig[listing.status];
 
   return (
-    <Card variant="elevated" className="p-6">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-2xl">{typeIcon}</span>
-            <Badge variant={typeVariant}>{typeLabel}</Badge>
-            <Badge variant={status.variant}>{status.label}</Badge>
+    <Card variant="elevated" className="p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <span className="text-xl sm:text-2xl">{typeIcon}</span>
+            <Badge variant={typeVariant} className="text-xs">{typeLabel}</Badge>
+            <Badge variant={status.variant} className="text-xs">{status.label}</Badge>
           </div>
 
-          <h3 className="text-xl font-bold mb-2">{listing.title}</h3>
-          <p className="text-muted-foreground whitespace-pre-wrap mb-4">{listing.description}</p>
+          <h3 className="text-lg sm:text-xl font-bold mb-2 break-words">{listing.title}</h3>
+          <p className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap break-words mb-4 line-clamp-3">{listing.description}</p>
 
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span>Publicado por {listing.author.name}</span>
-            <span>•</span>
-            <span>{createdDate}</span>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className="truncate">Publicado por {listing.author.name}</span>
+            <span className="hidden sm:inline">•</span>
+            <span className="whitespace-nowrap">{createdDate}</span>
           </div>
         </div>
 
         {showActions && (
-          <div className="flex flex-col gap-2">
+          <div className="flex sm:flex-col gap-2 justify-end sm:justify-start flex-shrink-0">
             {isAuthor ? (
               <>
                 {onEdit && (
-                  <Button variant="ghost" size="sm" onClick={() => onEdit(listing.id)}>
+                  <Button variant="ghost" size="sm" onClick={() => onEdit(listing.id)} className="text-xs sm:text-sm">
                     Editar
                   </Button>
                 )}
@@ -72,6 +72,7 @@ export const ListingCard = ({
                     variant="destructive"
                     size="sm"
                     onClick={() => onDelete(listing.id)}
+                    className="text-xs sm:text-sm"
                   >
                     Eliminar
                   </Button>
@@ -79,7 +80,7 @@ export const ListingCard = ({
               </>
             ) : (
               onContactAuthor && (
-                <Button size="sm" variant="primary" onClick={() => onContactAuthor(listing.author.id)}>
+                <Button size="sm" variant="primary" onClick={() => onContactAuthor(listing.author.id)} className="text-xs sm:text-sm">
                   Ver Perfil
                 </Button>
               )

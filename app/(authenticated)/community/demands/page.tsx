@@ -36,12 +36,12 @@ export default function CommunityDemandsPage() {
 
   if (!activeCommunity) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <Card className="p-6 text-center">
-          <p className="text-muted-foreground mb-4">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <Card className="p-4 sm:p-6 text-center">
+          <p className="text-sm sm:text-base text-muted-foreground mb-4">
             No tienes una comunidad activa seleccionada
           </p>
-          <Button onClick={() => router.push("/communities/map")}>
+          <Button onClick={() => router.push("/communities/map")} className="w-full sm:w-auto">
             Explorar Comunidades
           </Button>
         </Card>
@@ -73,20 +73,20 @@ export default function CommunityDemandsPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Demandas de {activeCommunity.name}</h1>
-          <p className="text-muted-foreground">Productos y servicios buscados por los miembros</p>
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+      <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2 break-words">Demandas de {activeCommunity.name}</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Productos y servicios buscados por los miembros</p>
         </div>
-        <Button onClick={() => router.push("/listings/new?type=DEMAND")}>
+        <Button onClick={() => router.push("/listings/new?type=DEMAND")} className="w-full sm:w-auto text-sm flex-shrink-0">
           ➕ Nueva Demanda
         </Button>
       </div>
 
       <TabNavigation tabs={DASHBOARD_TABS} />
 
-      <div className="mt-8">
+      <div className="mt-4 sm:mt-8">
         <ListingFilters
           onSearchChange={setSearch}
           onStatusChange={setStatus}
