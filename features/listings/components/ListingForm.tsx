@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert } from "@/components/ui/Alert";
 import type { ListingType, CreateListingData, Listing } from "../types";
 
 type ListingFormProps = {
@@ -64,11 +65,11 @@ export const ListingForm = ({
   return (
     <Card className="p-6">
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">
           <span className="text-3xl">{typeIcon}</span>
           <div>
             <h3 className="font-semibold text-lg">{typeLabel}</h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               {type === "OFFER" 
                 ? "Productos o servicios que ofreces" 
                 : "Productos o servicios que necesitas"}
@@ -77,7 +78,7 @@ export const ListingForm = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-muted-foreground mb-1">
             Título
           </label>
           <Input
@@ -91,7 +92,7 @@ export const ListingForm = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-muted-foreground mb-1">
             Descripción
           </label>
           <Textarea
@@ -103,20 +104,20 @@ export const ListingForm = ({
             maxLength={5000}
             disabled={isLoading}
           />
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             {description.length}/5000 caracteres
           </p>
         </div>
 
         {errors.submit && (
-          <p className="text-sm text-red-600">{errors.submit}</p>
+          <Alert variant="destructive">{errors.submit}</Alert>
         )}
 
         <div className="flex justify-end gap-3">
           <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
             Cancelar
           </Button>
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" variant="primary" disabled={isLoading}>
             {isLoading ? "Guardando..." : initialData ? "Actualizar" : "Publicar"}
           </Button>
         </div>

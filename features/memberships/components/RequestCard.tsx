@@ -31,39 +31,40 @@ export const RequestCard = ({
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <h3 className="font-semibold text-lg">{request.user.name}</h3>
-          <p className="text-sm text-gray-600">{request.user.email}</p>
+          <p className="text-sm text-muted-foreground">{request.user.email}</p>
         </div>
         <RequestStatus status={request.status} />
       </div>
 
-      <div className="space-y-2">
-        <div>
-          <p className="text-sm font-medium text-gray-700">Mensaje:</p>
-          <p className="text-sm text-gray-600">{request.requestMessage}</p>
+      {request.requestMessage && (
+        <div className="mb-3">
+          <p className="text-sm font-medium text-muted-foreground">Mensaje:</p>
+          <p className="text-sm">{request.requestMessage}</p>
         </div>
+      )}
 
-        {request.responseMessage && (
-          <div>
-            <p className="text-sm font-medium text-gray-700">Respuesta:</p>
-            <p className="text-sm text-gray-600">{request.responseMessage}</p>
-          </div>
-        )}
+      {request.responseMessage && (
+        <div className="mb-3">
+          <p className="text-sm font-medium text-muted-foreground">Respuesta:</p>
+          <p className="text-sm">{request.responseMessage}</p>
+        </div>
+      )}
 
-        <p className="text-xs text-gray-500">
-          Solicitado el {formatDate(request.requestedAt)}
+      <p className="text-xs text-muted-foreground">
+        Solicitado el {formatDate(request.requestedAt)}
+      </p>
+
+      {request.respondedAt && (
+        <p className="text-xs text-muted-foreground">
+          Respondido el {formatDate(request.respondedAt)}
         </p>
-
-        {request.respondedAt && (
-          <p className="text-xs text-gray-500">
-            Respondido el {formatDate(request.respondedAt)}
-          </p>
-        )}
-      </div>
+      )}
 
       {isAdmin && request.status === "PENDING" && (
-        <div className="flex gap-2 mt-4 pt-4 border-t">
+        <div className="flex gap-2 mt-4 pt-4 border-t border-border">
           <Button
             size="sm"
+            variant="success"
             onClick={() => onApprove?.(request.id)}
             className="flex-1"
           >

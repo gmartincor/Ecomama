@@ -38,7 +38,7 @@ export default function CommunityOffersPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card className="p-6 text-center">
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             No tienes una comunidad activa seleccionada
           </p>
           <Button onClick={() => router.push("/communities/map")}>
@@ -77,7 +77,7 @@ export default function CommunityOffersPage() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold mb-2">Ofertas de {activeCommunity.name}</h1>
-          <p className="text-gray-600">Productos y servicios disponibles de los miembros</p>
+          <p className="text-muted-foreground">Productos y servicios disponibles de los miembros</p>
         </div>
         <Button onClick={() => router.push("/listings/new?type=OFFER")}>
           ➕ Nueva Oferta

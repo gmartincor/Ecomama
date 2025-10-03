@@ -90,7 +90,7 @@ export default function SettingsPage() {
       <div className="space-y-6">
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">Comunidad por defecto</h2>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             Selecciona la comunidad que se mostrará automáticamente al iniciar sesión
           </p>
 
@@ -105,7 +105,7 @@ export default function SettingsPage() {
                   defaultCommunityId: e.target.value || null,
                 }))
               }
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <option value="">Sin comunidad por defecto</option>
               {userCommunities.map((community) => (

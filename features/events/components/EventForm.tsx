@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert } from "@/components/ui/Alert";
 import { EventTypeSelector } from "./EventTypeSelector";
 import type { EventType, CreateEventData, Event } from "../types";
 
@@ -76,7 +77,7 @@ export const EventForm = ({
         <EventTypeSelector value={type} onChange={setType} error={errors.type} />
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-muted-foreground mb-1">
             Título
           </label>
           <Input
@@ -90,7 +91,7 @@ export const EventForm = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-muted-foreground mb-1">
             Descripción
           </label>
           <Textarea
@@ -107,7 +108,7 @@ export const EventForm = ({
         {type === "EVENT" && (
           <>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Fecha y hora del evento
               </label>
               <Input
@@ -120,7 +121,7 @@ export const EventForm = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Ubicación (opcional)
               </label>
               <Input
@@ -135,14 +136,14 @@ export const EventForm = ({
         )}
 
         {errors.submit && (
-          <p className="text-sm text-red-600">{errors.submit}</p>
+          <Alert variant="destructive">{errors.submit}</Alert>
         )}
 
         <div className="flex justify-end gap-3">
           <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
             Cancelar
           </Button>
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" variant="primary" disabled={isLoading}>
             {isLoading ? "Guardando..." : initialData ? "Actualizar" : "Publicar"}
           </Button>
         </div>

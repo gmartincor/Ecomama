@@ -25,7 +25,8 @@ export const ProfileCard = ({ member, onClick }: ProfileCardProps) => {
 
   return (
     <Card
-      className={`p-4 ${onClick ? "cursor-pointer hover:shadow-lg transition-shadow" : ""}`}
+      variant={onClick ? "interactive" : "default"}
+      className="p-4"
       onClick={onClick}
     >
       <div className="flex flex-col items-center text-center space-y-3">
@@ -44,15 +45,15 @@ export const ProfileCard = ({ member, onClick }: ProfileCardProps) => {
         <div>
           <h3 className="font-semibold">{member.name}</h3>
           {member.profile?.location && (
-            <p className="text-sm text-gray-600">📍 {member.profile.location}</p>
+            <p className="text-sm text-muted-foreground">📍 {member.profile.location}</p>
           )}
         </div>
 
         {member.profile?.bio && (
-          <p className="text-sm text-gray-600 line-clamp-2">{member.profile.bio}</p>
+          <p className="text-sm text-muted-foreground line-clamp-2">{member.profile.bio}</p>
         )}
 
-        <p className="text-xs text-gray-500">Miembro desde {formatDate(member.memberSince)}</p>
+        <p className="text-xs text-muted-foreground">Miembro desde {formatDate(member.memberSince)}</p>
       </div>
     </Card>
   );

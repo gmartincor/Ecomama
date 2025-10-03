@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { Listing, CreateListingData, UpdateListingData, ListingFilters } from "../types";
+import type { ListingWithAuthor, CreateListingData, UpdateListingData, ListingFilters } from "../types";
 
 type UseListingsResult = {
-  listings: Listing[];
+  listings: ListingWithAuthor[];
   isLoading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
@@ -17,7 +17,7 @@ export const useListings = (
   communityId: string,
   filters?: ListingFilters
 ): UseListingsResult => {
-  const [listings, setListings] = useState<Listing[]>([]);
+  const [listings, setListings] = useState<ListingWithAuthor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

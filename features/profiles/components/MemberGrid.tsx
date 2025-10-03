@@ -14,7 +14,7 @@ export const MemberGrid = ({
 }: MemberGridProps) => {
   if (members.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-muted-foreground">
         <p>{emptyMessage}</p>
       </div>
     );

@@ -1,13 +1,16 @@
 import { HTMLAttributes, forwardRef } from 'react';
 import { cn } from '@/lib/utils/cn';
+import { cardVariants } from '@/lib/design';
 
-interface CardProps extends HTMLAttributes<HTMLDivElement> {}
+interface CardProps extends HTMLAttributes<HTMLDivElement> {
+  variant?: keyof typeof cardVariants;
+}
 
 const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ className, ...props }, ref) => (
+  ({ className, variant = 'default', ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('rounded-lg border border-border bg-background shadow-sm', className)}
+      className={cn(cardVariants[variant], className)}
       {...props}
     />
   )
@@ -72,3 +75,4 @@ const CardFooter = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
 CardFooter.displayName = 'CardFooter';
 
 export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter };
+export type { CardProps };

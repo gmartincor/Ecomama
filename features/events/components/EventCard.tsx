@@ -1,10 +1,11 @@
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import type { Event } from "../types";
+import { Badge } from "@/components/ui/Badge";
+import type { EventWithAuthor } from "../types";
 import { EVENT_TYPE_OPTIONS } from "./EventTypeSelector";
 
 type EventCardProps = {
-  event: Event;
+  event: EventWithAuthor;
   onEdit?: (eventId: string) => void;
   onDelete?: (eventId: string) => void;
   onTogglePin?: (eventId: string, isPinned: boolean) => void;
@@ -37,40 +38,36 @@ export const EventCard = ({
   });
 
   return (
-    <Card className={`p-6 ${event.isPinned ? "border-2 border-primary" : ""}`}>
+    <Card variant={event.isPinned ? "highlighted" : "elevated"} className="p-6">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-2xl">{typeOption?.icon}</span>
-            <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">
-              {typeOption?.label}
-            </span>
+            <Badge variant="primary">{typeOption?.label}</Badge>
             {event.isPinned && (
-              <span className="text-xs font-medium text-amber-700 bg-amber-100 px-2 py-1 rounded">
-                📌 Fijado
-              </span>
+              <Badge variant="warning">📌 Fijado</Badge>
             )}
           </div>
 
           <h3 className="text-xl font-bold mb-2">{event.title}</h3>
 
-          <p className="text-gray-700 whitespace-pre-wrap mb-4">{event.description}</p>
+          <p className="text-muted-foreground whitespace-pre-wrap mb-4">{event.description}</p>
 
           {formattedDate && (
-            <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
               <span>📅</span>
               <span className="capitalize">{formattedDate}</span>
             </div>
           )}
 
           {event.location && (
-            <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
               <span>📍</span>
               <span>{event.location}</span>
             </div>
           )}
 
-          <div className="flex items-center gap-2 text-xs text-gray-500 mt-4">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground mt-4">
             <span>Publicado por {event.author.name}</span>
             <span>•</span>
             <span>{createdDate}</span>
@@ -95,10 +92,9 @@ export const EventCard = ({
             )}
             {onDelete && (
               <Button
-                variant="ghost"
+                variant="destructive"
                 size="sm"
                 onClick={() => onDelete(event.id)}
-                className="text-red-600 hover:text-red-700"
               >
                 Eliminar
               </Button>

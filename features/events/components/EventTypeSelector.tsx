@@ -36,8 +36,8 @@ type EventTypeSelectorProps = {
 
 export const EventTypeSelector = ({ value, onChange, error }: EventTypeSelectorProps) => {
   return (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
+    <div>
+      <label className="block text-sm font-medium text-muted-foreground mb-2">
         Tipo de publicación
       </label>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -51,7 +51,7 @@ export const EventTypeSelector = ({ value, onChange, error }: EventTypeSelectorP
               ${
                 value === option.value
                   ? "border-primary bg-primary/5"
-                  : "border-gray-200 hover:border-gray-300"
+                  : "border-border hover:border-primary/30 hover:bg-muted"
               }
             `}
           >
@@ -59,13 +59,13 @@ export const EventTypeSelector = ({ value, onChange, error }: EventTypeSelectorP
               <span className="text-2xl">{option.icon}</span>
               <div>
                 <div className="font-semibold">{option.label}</div>
-                <div className="text-xs text-gray-600 mt-1">{option.description}</div>
+                <div className="text-xs text-muted-foreground mt-1">{option.description}</div>
               </div>
             </div>
           </button>
         ))}
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-destructive mt-2">{error}</p>}
     </div>
   );
 };

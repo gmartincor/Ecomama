@@ -36,7 +36,7 @@ export default function CommunityDashboardPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card className="p-6 text-center">
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             No tienes una comunidad activa seleccionada
           </p>
           <Button onClick={() => router.push("/communities/map")}>

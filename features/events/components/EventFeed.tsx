@@ -1,9 +1,9 @@
 import { EventCard } from "./EventCard";
 import { EmptyState } from "@/features/dashboard/components";
-import type { Event } from "../types";
+import type { EventWithAuthor } from "../types";
 
 type EventFeedProps = {
-  events: Event[];
+  events: EventWithAuthor[];
   isLoading?: boolean;
   isAdmin?: boolean;
   onEdit?: (eventId: string) => void;
@@ -30,7 +30,7 @@ export const EventFeed = ({
       <div className="space-y-4">
         {[...Array(3)].map((_, i) => (
           <div key={i} className="animate-pulse">
-            <div className="h-48 bg-gray-200 rounded-lg" />
+            <div className="h-48 bg-muted rounded-lg" />
           </div>
         ))}
       </div>

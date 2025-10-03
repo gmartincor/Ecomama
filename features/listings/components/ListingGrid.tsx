@@ -1,9 +1,9 @@
 import { ListingCard } from "./ListingCard";
 import { EmptyState } from "@/features/dashboard/components";
-import type { Listing, ListingType } from "../types";
+import type { ListingWithAuthor, ListingType } from "../types";
 
 type ListingGridProps = {
-  listings: Listing[];
+  listings: ListingWithAuthor[];
   type: ListingType;
   isLoading?: boolean;
   currentUserId?: string;
@@ -36,7 +36,7 @@ export const ListingGrid = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[...Array(4)].map((_, i) => (
           <div key={i} className="animate-pulse">
-            <div className="h-48 bg-gray-200 rounded-lg" />
+            <div className="h-48 bg-muted rounded-lg" />
           </div>
         ))}
       </div>

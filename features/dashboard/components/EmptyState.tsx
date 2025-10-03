@@ -20,11 +20,11 @@ export const EmptyState = ({
     <Card className="p-12">
       <div className="text-center space-y-4">
         <div className="text-6xl">{icon}</div>
-        <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
-        <p className="text-gray-600 max-w-md mx-auto">{description}</p>
+        <h3 className="text-xl font-semibold">{title}</h3>
+        <p className="text-muted-foreground max-w-md mx-auto">{description}</p>
         {actionLabel && onAction && (
           <div className="pt-4">
-            <Button onClick={onAction}>{actionLabel}</Button>
+            <Button variant="primary" onClick={onAction}>{actionLabel}</Button>
           </div>
         )}
       </div>

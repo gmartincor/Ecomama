@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { Event, CreateEventData, UpdateEventData, EventFilters } from "../types";
+import type { EventWithAuthor, CreateEventData, UpdateEventData, EventFilters } from "../types";
 
 type UseEventsResult = {
-  events: Event[];
+  events: EventWithAuthor[];
   isLoading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
@@ -18,7 +18,7 @@ export const useEvents = (
   communityId: string,
   filters?: EventFilters
 ): UseEventsResult => {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<EventWithAuthor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

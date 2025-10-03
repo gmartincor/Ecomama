@@ -27,7 +27,7 @@ export default function CommunityMembersPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card className="p-6 text-center">
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             No tienes una comunidad activa seleccionada
           </p>
           <Button onClick={() => router.push('/communities/map')}>
@@ -46,7 +46,7 @@ export default function CommunityMembersPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Miembros de {activeCommunity.name}</h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-muted-foreground mt-2">
           {members.length} {members.length === 1 ? 'miembro' : 'miembros'}
         </p>
       </div>
