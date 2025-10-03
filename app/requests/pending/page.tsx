@@ -19,7 +19,7 @@ export default function PendingRequestsPage() {
   if (error) {
     return (
       <div className="container mx-auto py-8 px-4">
-        <div className="bg-red-50 text-red-600 p-4 rounded-md">{error}</div>
+        <div className="bg-destructive/10 text-destructive p-4 rounded-md border border-destructive/20">{error}</div>
       </div>
     );
   }
@@ -38,7 +38,7 @@ export default function PendingRequestsPage() {
 
       {requests.length === 0 ? (
         <Card className="p-8 text-center">
-          <p className="text-gray-500">No tienes solicitudes de membresía</p>
+          <p className="text-muted-foreground">No tienes solicitudes de membresía</p>
         </Card>
       ) : (
         <div className="space-y-4">
@@ -47,7 +47,7 @@ export default function PendingRequestsPage() {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold">{request.community.name}</h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     {request.community.city}, {request.community.country}
                   </p>
                 </div>
@@ -56,23 +56,23 @@ export default function PendingRequestsPage() {
 
               <div className="space-y-2">
                 <div>
-                  <p className="text-sm font-medium text-gray-700">Tu mensaje:</p>
-                  <p className="text-sm text-gray-600">{request.requestMessage}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Tu mensaje:</p>
+                  <p className="text-sm text-foreground">{request.requestMessage}</p>
                 </div>
 
                 {request.responseMessage && (
                   <div>
-                    <p className="text-sm font-medium text-gray-700">Respuesta del administrador:</p>
-                    <p className="text-sm text-gray-600">{request.responseMessage}</p>
+                    <p className="text-sm font-medium text-muted-foreground">Respuesta del administrador:</p>
+                    <p className="text-sm text-foreground">{request.responseMessage}</p>
                   </div>
                 )}
 
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Solicitado el {formatDate(request.requestedAt)}
                 </p>
 
                 {request.respondedAt && (
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     Respondido el {formatDate(request.respondedAt)}
                   </p>
                 )}

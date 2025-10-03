@@ -66,11 +66,11 @@ export const RequestForm = ({
             minLength={10}
             maxLength={500}
           />
-          <p className="text-xs text-gray-500">{message.length}/500 caracteres</p>
+          <p className="text-xs text-muted-foreground">{message.length}/500 caracteres</p>
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">{error}</div>
+          <div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm border border-destructive/20">{error}</div>
         )}
 
         <div className="flex gap-4">

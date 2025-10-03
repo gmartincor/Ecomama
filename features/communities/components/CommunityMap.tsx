@@ -51,7 +51,7 @@ export const CommunityMap = ({
           <Popup>
             <div className="text-sm">
               <h3 className="font-semibold">{marker.name}</h3>
-              {marker.description && <p className="text-gray-600">{marker.description}</p>}
+              {marker.description && <p className="text-muted-foreground">{marker.description}</p>}
             </div>
           </Popup>
         </Marker>

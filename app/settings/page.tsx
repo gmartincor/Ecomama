@@ -140,11 +140,11 @@ export default function SettingsPage() {
         </Card>
 
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">{error}</div>
+          <div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm border border-destructive/20">{error}</div>
         )}
 
         {success && (
-          <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm">
+          <div className="bg-success-light text-success p-3 rounded-md text-sm border border-success/20">
             Configuración guardada correctamente
           </div>
         )}

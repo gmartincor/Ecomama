@@ -22,7 +22,7 @@ export default function AdminMembersPage() {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg text-red-600">Error: {error}</p>
+        <p className="text-lg text-destructive">Error: {error}</p>
       </div>
     );
   }

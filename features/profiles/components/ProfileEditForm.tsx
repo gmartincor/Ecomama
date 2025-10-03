@@ -59,7 +59,7 @@ export const ProfileEditForm = ({ initialData, onSuccess, onCancel }: ProfileEdi
             className="w-full min-h-24 px-3 py-2 border rounded-md"
             maxLength={500}
           />
-          <p className="text-xs text-gray-500">{formData.bio?.length || 0}/500 caracteres</p>
+          <p className="text-xs text-muted-foreground">{formData.bio?.length || 0}/500 caracteres</p>
         </div>
 
         <div className="space-y-2">

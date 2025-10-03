@@ -47,7 +47,7 @@ export default function EditEventPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card className="p-6 text-center">
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             No tienes una comunidad activa seleccionada
           </p>
           <Button onClick={() => router.push("/communities/map")}>
@@ -88,7 +88,7 @@ export default function EditEventPage() {
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Editar Publicación</h1>
-        <p className="text-gray-600">
+        <p className="text-muted-foreground">
           Edita la publicación de la comunidad {activeCommunity.name}
         </p>
       </div>

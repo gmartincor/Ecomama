@@ -49,7 +49,7 @@ export default function AdminRequestsPage({ params }: PageProps) {
   if (error) {
     return (
       <div className="container mx-auto py-8 px-4">
-        <div className="bg-red-50 text-red-600 p-4 rounded-md">{error}</div>
+        <div className="bg-destructive/10 text-destructive p-4 rounded-md border border-destructive/20">{error}</div>
       </div>
     );
   }
@@ -59,7 +59,7 @@ export default function AdminRequestsPage({ params }: PageProps) {
       <h1 className="text-3xl font-bold mb-8">Solicitudes Pendientes</h1>
 
       {actionLoading && (
-        <div className="mb-4 bg-blue-50 text-blue-600 p-3 rounded-md text-sm">
+        <div className="mb-4 bg-info-light text-info p-3 rounded-md text-sm border border-info/20">
           Procesando solicitud...
         </div>
       )}

@@ -43,10 +43,10 @@ export default function CommunityMapPage() {
       {isLoading ? (
         <LoadingSpinner />
       ) : error ? (
-        <div className="bg-red-50 text-red-600 p-4 rounded-md">{error}</div>
+        <div className="bg-destructive/10 text-destructive p-4 rounded-md border border-destructive/20">{error}</div>
       ) : (
         <div className="space-y-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             {communities.length} {communities.length === 1 ? "comunidad encontrada" : "comunidades encontradas"}
           </p>
           <CommunityMap

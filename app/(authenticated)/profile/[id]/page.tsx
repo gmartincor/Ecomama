@@ -42,41 +42,41 @@ export default function ProfilePage({ params }: ProfilePageProps) {
                 className="h-24 w-24 rounded-full object-cover"
               />
             ) : (
-              <div className="h-24 w-24 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white text-3xl font-semibold">
+              <div className="h-24 w-24 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-3xl font-semibold">
                 {profile.user.name.charAt(0).toUpperCase()}
               </div>
             )}
 
             <div className="text-center">
               <h1 className="text-2xl font-bold">{profile.user.name}</h1>
-              <p className="text-gray-600">{profile.user.email}</p>
+              <p className="text-muted-foreground">{profile.user.email}</p>
             </div>
 
             {profile.bio && (
               <div className="w-full mt-6">
                 <h2 className="text-lg font-semibold mb-2">Biografía</h2>
-                <p className="text-gray-700 whitespace-pre-wrap">{profile.bio}</p>
+                <p className="text-foreground whitespace-pre-wrap">{profile.bio}</p>
               </div>
             )}
 
             <div className="w-full space-y-3 mt-6">
               {profile.phone && (
                 <div className="flex items-center space-x-3">
-                  <span className="text-gray-500 font-medium min-w-[100px]">Teléfono:</span>
-                  <span className="text-gray-900">{profile.phone}</span>
+                  <span className="text-muted-foreground font-medium min-w-[100px]">Teléfono:</span>
+                  <span className="text-foreground">{profile.phone}</span>
                 </div>
               )}
 
               {profile.location && (
                 <div className="flex items-center space-x-3">
-                  <span className="text-gray-500 font-medium min-w-[100px]">Ubicación:</span>
-                  <span className="text-gray-900">{profile.location}</span>
+                  <span className="text-muted-foreground font-medium min-w-[100px]">Ubicación:</span>
+                  <span className="text-foreground">{profile.location}</span>
                 </div>
               )}
 
               <div className="flex items-center space-x-3">
-                <span className="text-gray-500 font-medium min-w-[100px]">Miembro desde:</span>
-                <span className="text-gray-900">
+                <span className="text-muted-foreground font-medium min-w-[100px]">Miembro desde:</span>
+                <span className="text-foreground">
                   {new Date(profile.createdAt).toLocaleDateString('es-ES', {
                     year: 'numeric',
                     month: 'long',
@@ -86,8 +86,8 @@ export default function ProfilePage({ params }: ProfilePageProps) {
               </div>
 
               <div className="flex items-center space-x-3">
-                <span className="text-gray-500 font-medium min-w-[100px]">Perfil:</span>
-                <span className="text-gray-900">
+                <span className="text-muted-foreground font-medium min-w-[100px]">Perfil:</span>
+                <span className="text-foreground">
                   {profile.isPublic ? 'Público' : 'Privado'}
                 </span>
               </div>

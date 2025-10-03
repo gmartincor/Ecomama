@@ -50,7 +50,7 @@ export default function AdminSettingsPage() {
   if (error || !community) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg text-red-600">Error: {error || "Community not found"}</p>
+        <p className="text-lg text-destructive">Error: {error || "Community not found"}</p>
       </div>
     );
   }
