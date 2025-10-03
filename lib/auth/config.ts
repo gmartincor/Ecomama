@@ -28,7 +28,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           },
         });
 
-        if (!user || user.status !== 'ACTIVE') {
+        if (!user) {
+          return null;
+        }
+
+        if (user.status !== 'ACTIVE') {
           return null;
         }
 
@@ -72,4 +76,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: 'jwt',
   },
+  trustHost: true,
 });
