@@ -21,7 +21,7 @@ export const TabNavigation = ({ tabs }: TabNavigationProps) => {
               key={tab.id}
               href={tab.href}
               className={`
-                whitespace-nowrap py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors flex items-center gap-1 sm:gap-2
+                whitespace-nowrap py-2 sm:py-3 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors flex items-center gap-1 sm:gap-2
                 ${
                   isActive
                     ? "border-primary text-primary"

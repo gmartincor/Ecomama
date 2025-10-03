@@ -114,7 +114,7 @@ export default function CommunityDashboardPage() {
 
       <TabNavigation tabs={DASHBOARD_TABS} />
 
-      <div className="mt-4 sm:mt-8">
+      <div className="mt-3 sm:mt-4">
         {isAdmin && (
           <div className="mb-4 sm:mb-6 flex justify-end">
             <Button onClick={() => router.push("/admin/community/events/new")} className="w-full sm:w-auto text-sm">

@@ -90,7 +90,7 @@ export default function CommunityOffersPage() {
 
       <TabNavigation tabs={DASHBOARD_TABS} />
 
-      <div className="mt-4 sm:mt-8">
+      <div className="mt-3 sm:mt-4">
         <ListingFilters
           onSearchChange={setSearch}
           onStatusChange={setStatus}

@@ -53,7 +53,7 @@ export default function CommunityMembersPage() {
 
       <TabNavigation tabs={DASHBOARD_TABS} />
 
-      <div className="mt-4 sm:mt-8">
+      <div className="mt-3 sm:mt-4">
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {[...Array(8)].map((_, i) => (
