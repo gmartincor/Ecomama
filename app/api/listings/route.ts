@@ -1,85 +1,43 @@
-import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth/config";
 import { getListings, createListing } from "@/features/listings/services/listingService";
 import { isUserMemberOfCommunity } from "@/features/memberships/services/membershipService";
 import { createListingSchema } from "@/lib/validations/listingValidation";
+import { createGetHandler, createPostHandler, parseFilters, extractRequiredParam } from "@/lib/api";
+import type { ListingFilters } from "@/features/listings/types";
+import { ForbiddenError, ValidationError } from "@/lib/utils/api-response";
+import { z } from "zod";
 
-export async function GET(request: Request) {
-  const session = await auth();
+const createListingWithCommunitySchema = createListingSchema.extend({
+  communityId: z.string(),
+});
 
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export const GET = createGetHandler(async ({ session, searchParams }) => {
+  const communityId = extractRequiredParam(searchParams!, 'communityId', 'El ID de comunidad es requerido');
+
+  const isMember = await isUserMemberOfCommunity(session!.user.id, communityId);
+  if (!isMember) {
+    throw new ForbiddenError('Debes ser miembro para ver anuncios');
   }
 
-  try {
-    const { searchParams } = new URL(request.url);
-    const communityId = searchParams.get("communityId");
+  const filters = parseFilters<Omit<ListingFilters, 'communityId'>>(searchParams!, {
+    type: { type: 'enum', enumValues: ['OFFER', 'DEMAND'] as const },
+    status: { type: 'enum', enumValues: ['ACTIVE', 'INACTIVE', 'EXPIRED'] as const },
+    authorId: { type: 'string' },
+    search: { type: 'string' },
+  });
 
-    if (!communityId) {
-      return NextResponse.json({ error: "Community ID is required" }, { status: 400 });
-    }
+  return await getListings(communityId, filters);
+});
 
-    const isMember = await isUserMemberOfCommunity(session.user.id, communityId);
-
-    if (!isMember) {
-      return NextResponse.json(
-        { error: "You must be a member to view listings" },
-        { status: 403 }
-      );
-    }
-
-    const type = searchParams.get("type");
-    const status = searchParams.get("status");
-    const authorId = searchParams.get("authorId");
-    const search = searchParams.get("search");
-
-    const filters = {
-      ...(type && { type: type as any }),
-      ...(status && { status: status as any }),
-      ...(authorId && { authorId }),
-      ...(search && { search }),
-    };
-
-    const listings = await getListings(communityId, filters);
-    return NextResponse.json(listings);
-  } catch (error) {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  }
-}
-
-export async function POST(request: Request) {
-  const session = await auth();
-
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  try {
-    const body = await request.json();
+export const POST = createPostHandler(
+  async ({ session, body }) => {
     const { communityId, ...listingData } = body;
 
-    if (!communityId) {
-      return NextResponse.json({ error: "Community ID is required" }, { status: 400 });
-    }
-
-    const isMember = await isUserMemberOfCommunity(session.user.id, communityId);
-
+    const isMember = await isUserMemberOfCommunity(session!.user.id, communityId);
     if (!isMember) {
-      return NextResponse.json(
-        { error: "You must be a member to create listings" },
-        { status: 403 }
-      );
+      throw new ForbiddenError('Debes ser miembro para crear anuncios');
     }
 
-    const validatedData = createListingSchema.parse(listingData);
-
-    const listing = await createListing(communityId, session.user.id, validatedData);
-
-    return NextResponse.json(listing, { status: 201 });
-  } catch (error) {
-    if (error instanceof Error && error.name === "ZodError") {
-      return NextResponse.json({ error: "Invalid data" }, { status: 400 });
-    }
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  }
-}
+    return await createListing(communityId, session!.user.id, listingData);
+  },
+  createListingWithCommunitySchema
+);

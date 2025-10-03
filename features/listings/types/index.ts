@@ -1,17 +1,8 @@
-export type ListingType = "OFFER" | "DEMAND";
+import { Listing, ListingType, ListingStatus } from '@prisma/client';
 
-export type ListingStatus = "ACTIVE" | "INACTIVE" | "EXPIRED";
+export type { Listing, ListingType, ListingStatus };
 
-export type Listing = {
-  id: string;
-  type: ListingType;
-  title: string;
-  description: string;
-  authorId: string;
-  communityId: string;
-  status: ListingStatus;
-  createdAt: Date;
-  updatedAt: Date;
+export type ListingWithAuthor = Listing & {
   author: {
     id: string;
     name: string;

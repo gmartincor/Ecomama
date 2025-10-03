@@ -1,85 +1,43 @@
-import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth/config";
 import { getEvents, createEvent } from "@/features/events/services/eventService";
 import { isUserMemberOfCommunity } from "@/features/memberships/services/membershipService";
 import { createEventSchema } from "@/lib/validations/eventValidation";
+import { createGetHandler, createPostHandler, parseFilters } from "@/lib/api";
+import { ForbiddenError } from "@/lib/utils/api-response";
+import type { EventFilters } from "@/features/events/types";
 
-type Params = {
-  params: Promise<{
-    id: string;
-  }>;
-};
+export const GET = createGetHandler(async ({ session, params, searchParams }) => {
+  const communityId = params!.id;
 
-export async function GET(request: Request, { params }: Params) {
-  const { id: communityId } = await params;
-  const session = await auth();
-
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const isMember = await isUserMemberOfCommunity(session!.user.id, communityId);
+  if (!isMember) {
+    throw new ForbiddenError('Debes ser miembro para ver eventos');
   }
 
-  try {
-    const isMember = await isUserMemberOfCommunity(session.user.id, communityId);
+  const filters = parseFilters<EventFilters>(searchParams!, {
+    type: { type: 'enum', enumValues: ['ANNOUNCEMENT', 'EVENT', 'NEWS'] as const },
+    isPinned: { type: 'boolean' },
+    authorId: { type: 'string' },
+  });
 
+  return await getEvents(communityId, filters);
+});
+
+export const POST = createPostHandler(
+  async ({ session, params, body }) => {
+    const communityId = params!.id;
+
+    const isMember = await isUserMemberOfCommunity(session!.user.id, communityId);
     if (!isMember) {
-      return NextResponse.json(
-        { error: "You must be a member to view events" },
-        { status: 403 }
-      );
+      throw new ForbiddenError('Debes ser miembro para crear eventos');
     }
 
-    const { searchParams } = new URL(request.url);
-    const type = searchParams.get("type");
-    const isPinned = searchParams.get("isPinned");
-    const authorId = searchParams.get("authorId");
-
-    const filters = {
-      ...(type && { type: type as any }),
-      ...(isPinned !== null && { isPinned: isPinned === "true" }),
-      ...(authorId && { authorId }),
-    };
-
-    const events = await getEvents(communityId, filters);
-    return NextResponse.json(events);
-  } catch (error) {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  }
-}
-
-export async function POST(request: Request, { params }: Params) {
-  const { id: communityId } = await params;
-  const session = await auth();
-
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  try {
-    const isMember = await isUserMemberOfCommunity(session.user.id, communityId);
-
-    if (!isMember) {
-      return NextResponse.json(
-        { error: "You must be a member to create events" },
-        { status: 403 }
-      );
-    }
-
-    const body = await request.json();
-    const validatedData = createEventSchema.parse(body);
-
-    const event = await createEvent(communityId, session.user.id, {
-      type: validatedData.type,
-      title: validatedData.title,
-      description: validatedData.description,
-      eventDate: validatedData.eventDate ? new Date(validatedData.eventDate) : null,
-      location: validatedData.location || null,
+    return await createEvent(communityId, session!.user.id, {
+      type: body.type,
+      title: body.title,
+      description: body.description,
+      eventDate: body.eventDate ? new Date(body.eventDate) : null,
+      location: body.location || null,
     });
-
-    return NextResponse.json(event, { status: 201 });
-  } catch (error) {
-    if (error instanceof Error && error.name === "ZodError") {
-      return NextResponse.json({ error: "Invalid data" }, { status: 400 });
-    }
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  }
-}
+  },
+  createEventSchema
+);

@@ -1,80 +1,19 @@
-import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth/config";
-import { prisma } from "@/lib/prisma/client";
+import { getUserSettings, updateUserSettings } from "@/features/settings/services/settingsService";
+import { createGetHandler, createPutHandler } from "@/lib/api";
+import { z } from "zod";
 
-export async function GET() {
-  const session = await auth();
+const updateSettingsSchema = z.object({
+  defaultCommunityId: z.string().nullable().optional(),
+  emailNotifications: z.boolean().optional(),
+});
 
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export const GET = createGetHandler(async ({ session }) => {
+  return await getUserSettings(session!.user.id);
+});
 
-  try {
-    const settings = await prisma.userSettings.findUnique({
-      where: { userId: session.user.id },
-      include: {
-        defaultCommunity: {
-          select: {
-            id: true,
-            name: true,
-            city: true,
-            country: true,
-          },
-        },
-      },
-    });
-
-    if (!settings) {
-      return NextResponse.json({
-        userId: session.user.id,
-        defaultCommunityId: null,
-        emailNotifications: true,
-        defaultCommunity: null,
-      });
-    }
-
-    return NextResponse.json(settings);
-  } catch (error) {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  }
-}
-
-export async function PUT(request: Request) {
-  const session = await auth();
-
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  try {
-    const body = await request.json();
-    const { defaultCommunityId, emailNotifications } = body;
-
-    const settings = await prisma.userSettings.upsert({
-      where: { userId: session.user.id },
-      update: {
-        ...(defaultCommunityId !== undefined && { defaultCommunityId }),
-        ...(emailNotifications !== undefined && { emailNotifications }),
-      },
-      create: {
-        userId: session.user.id,
-        defaultCommunityId: defaultCommunityId || null,
-        emailNotifications: emailNotifications ?? true,
-      },
-      include: {
-        defaultCommunity: {
-          select: {
-            id: true,
-            name: true,
-            city: true,
-            country: true,
-          },
-        },
-      },
-    });
-
-    return NextResponse.json(settings);
-  } catch (error) {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  }
-}
+export const PUT = createPutHandler(
+  async ({ session, body }) => {
+    return await updateUserSettings(session!.user.id, body);
+  },
+  updateSettingsSchema
+);

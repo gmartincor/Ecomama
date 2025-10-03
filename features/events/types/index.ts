@@ -1,16 +1,8 @@
-export type EventType = "ANNOUNCEMENT" | "EVENT" | "NEWS";
+import { Event, EventType } from '@prisma/client';
 
-export type Event = {
-  id: string;
-  communityId: string;
-  authorId: string;
-  type: EventType;
-  title: string;
-  description: string;
-  eventDate: Date | null;
-  location: string | null;
-  isPinned: boolean;
-  createdAt: Date;
+export type { Event, EventType };
+
+export type EventWithAuthor = Event & {
   author: {
     id: string;
     name: string;

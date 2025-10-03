@@ -13,23 +13,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         try {
           if (!credentials?.email || !credentials?.password) {
-            console.error('[AUTH] Missing credentials');
             return null;
           }
 
           const email = credentials.email as string;
           const password = credentials.password as string;
 
-          console.log('[AUTH] Attempting login for:', email);
-
           const user = await authService.validateCredentials({ email, password });
 
           if (!user) {
-            console.error('[AUTH] Authentication failed for:', email);
             return null;
           }
-
-          console.log('[AUTH] Login successful for:', email, 'Role:', user.role);
 
           return user;
         } catch (error) {

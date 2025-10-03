@@ -1,141 +1,56 @@
-import { prisma } from "@/lib/prisma/client";
-import type { MemberWithUser, MemberWithCommunity, CommunityMember } from "../types";
+import { membershipRepository, MemberWithUser, MemberWithCommunity } from '@/lib/repositories/membership-repository';
+import type { CommunityMember } from '@prisma/client';
 
 export const createMembershipRequest = async (
   userId: string,
   communityId: string,
   message: string
 ): Promise<CommunityMember> => {
-  const existingMembership = await prisma.communityMember.findFirst({
-    where: {
-      userId,
-      communityId,
-      status: {
-        in: ["PENDING", "APPROVED"],
-      },
-    },
-  });
+  const hasActiveRequest = await membershipRepository.existsActiveRequest(userId, communityId);
 
-  if (existingMembership) {
-    throw new Error("You already have an active request or membership");
+  if (hasActiveRequest) {
+    throw new Error('You already have an active request or membership');
   }
 
-  return await prisma.communityMember.create({
-    data: {
-      userId,
-      communityId,
-      requestMessage: message,
-      status: "PENDING",
-      role: "MEMBER",
-      requestedAt: new Date(),
-    },
-  });
+  return membershipRepository.createRequest(userId, communityId, message);
 };
 
 export const getMembershipRequestsByUser = async (userId: string): Promise<MemberWithCommunity[]> => {
-  return await prisma.communityMember.findMany({
-    where: { userId },
-    include: {
-      community: {
-        select: {
-          id: true,
-          name: true,
-          city: true,
-          country: true,
-        },
-      },
-    },
-    orderBy: { requestedAt: "desc" },
-  });
+  return membershipRepository.findRequestsByUser(userId);
 };
 
-export const getPendingRequestsByCommunity = async (
-  communityId: string
-): Promise<MemberWithUser[]> => {
-  return await prisma.communityMember.findMany({
-    where: {
-      communityId,
-      status: "PENDING",
-    },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      },
-    },
-    orderBy: { requestedAt: "asc" },
-  });
+export const getPendingRequestsByCommunity = async (communityId: string): Promise<MemberWithUser[]> => {
+  return membershipRepository.findPendingRequestsByCommunity(communityId);
 };
 
 export const approveMembershipRequest = async (
   requestId: string,
   responseMessage?: string
 ): Promise<CommunityMember> => {
-  return await prisma.communityMember.update({
-    where: { id: requestId },
-    data: {
-      status: "APPROVED",
-      responseMessage,
-      respondedAt: new Date(),
-      joinedAt: new Date(),
-    },
-  });
+  return membershipRepository.approveRequest(requestId, responseMessage);
 };
 
 export const rejectMembershipRequest = async (
   requestId: string,
   responseMessage?: string
 ): Promise<CommunityMember> => {
-  return await prisma.communityMember.update({
-    where: { id: requestId },
-    data: {
-      status: "REJECTED",
-      responseMessage,
-      respondedAt: new Date(),
-    },
-  });
+  return membershipRepository.rejectRequest(requestId, responseMessage);
 };
 
 export const getUserApprovedCommunities = async (userId: string): Promise<string[]> => {
-  const memberships = await prisma.communityMember.findMany({
-    where: {
-      userId,
-      status: "APPROVED",
-    },
-    select: {
-      communityId: true,
-    },
-  });
-
-  return memberships.map((m: { communityId: string }) => m.communityId);
+  return membershipRepository.getApprovedCommunityIds(userId);
 };
 
 export const isUserMemberOfCommunity = async (
   userId: string,
   communityId: string
 ): Promise<boolean> => {
-  const membership = await prisma.communityMember.findFirst({
-    where: {
-      userId,
-      communityId,
-      status: "APPROVED",
-    },
-  });
-
-  return !!membership;
+  return membershipRepository.isUserMember(userId, communityId);
 };
 
 export const getUserMembershipInCommunity = async (
   userId: string,
   communityId: string
 ): Promise<CommunityMember | null> => {
-  return await prisma.communityMember.findFirst({
-    where: {
-      userId,
-      communityId,
-    },
-  });
+  return membershipRepository.findByUserAndCommunity(userId, communityId);
 };

@@ -1,39 +1,19 @@
-import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth/config";
 import { getUserProfile, canViewProfile } from "@/features/profiles/services/profileService";
+import { createGetHandler } from "@/lib/api";
+import { NotFoundError, ForbiddenError } from "@/lib/utils/api-response";
 
-type Params = {
-  params: Promise<{
-    id: string;
-  }>;
-};
+export const GET = createGetHandler(async ({ session, params }) => {
+  const userId = params!.id;
 
-export async function GET(request: Request, { params }: Params) {
-  const { id: userId } = await params;
-  const session = await auth();
-
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const canView = await canViewProfile(session!.user.id, userId);
+  if (!canView) {
+    throw new ForbiddenError('Solo puedes ver perfiles de miembros en tus comunidades');
   }
 
-  try {
-    const canView = await canViewProfile(session.user.id, userId);
-
-    if (!canView) {
-      return NextResponse.json(
-        { error: "You can only view profiles of members in your communities" },
-        { status: 403 }
-      );
-    }
-
-    const profile = await getUserProfile(userId);
-
-    if (!profile) {
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(profile);
-  } catch (error) {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  const profile = await getUserProfile(userId);
+  if (!profile) {
+    throw new NotFoundError('Perfil no encontrado');
   }
-}
+
+  return profile;
+});

@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma/client';
 import { registerSchema } from '@/lib/validations/auth';
+import { PasswordService } from '@/lib/utils/password';
+import { ApiResponse, handleApiError } from '@/lib/utils/api-response';
 
 export async function POST(request: Request) {
   try {
@@ -9,10 +9,7 @@ export async function POST(request: Request) {
     
     const validation = registerSchema.safeParse(body);
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.issues[0].message },
-        { status: 400 }
-      );
+      return ApiResponse.badRequest(validation.error.issues[0].message);
     }
 
     const { email, password, name } = validation.data;
@@ -22,13 +19,10 @@ export async function POST(request: Request) {
     });
 
     if (existingUser) {
-      return NextResponse.json(
-        { error: 'El email ya está registrado' },
-        { status: 400 }
-      );
+      return ApiResponse.badRequest('El email ya está registrado');
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await PasswordService.hash(password);
 
     const user = await prisma.user.create({
       data: {
@@ -46,15 +40,8 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json(
-      { message: 'Usuario creado exitosamente', user },
-      { status: 201 }
-    );
+    return ApiResponse.created({ message: 'Usuario creado exitosamente', user });
   } catch (error) {
-    console.error('Error en registro:', error);
-    return NextResponse.json(
-      { error: 'Error al crear usuario' },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 }

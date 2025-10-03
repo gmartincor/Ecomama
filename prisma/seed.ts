@@ -1,12 +1,12 @@
 import { PrismaClient, UserRole, UserStatus, MemberRole, MemberStatus, CommunityStatus, ListingType, ListingStatus, EventType } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import { PasswordService } from '../lib/utils/password';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('🌱 Starting seed...');
 
-  const hashedPassword = await bcrypt.hash('password123', 10);
+  const hashedPassword = await PasswordService.hash('password123');
 
   console.log('Creating superadmin...');
   const superadmin = await prisma.user.upsert({
