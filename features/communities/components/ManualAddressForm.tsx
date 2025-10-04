@@ -21,7 +21,9 @@ export function ManualAddressForm({ onAddressGeocoded }: ManualAddressFormProps)
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleGeocode = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
     if (!formData.city || !formData.country) {
       setError("Ciudad y país son obligatorios");
       return;
@@ -44,15 +46,8 @@ export function ManualAddressForm({ onAddressGeocoded }: ManualAddressFormProps)
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleGeocode();
-    }
-  };
-
   return (
-    <div className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="street">Calle y número</Label>
         <Input
@@ -61,7 +56,6 @@ export function ManualAddressForm({ onAddressGeocoded }: ManualAddressFormProps)
           placeholder="Calle Principal, 123"
           value={formData.street}
           onChange={(e) => handleChange("street", e.target.value)}
-          onKeyDown={handleKeyDown}
         />
       </div>
 
@@ -76,7 +70,7 @@ export function ManualAddressForm({ onAddressGeocoded }: ManualAddressFormProps)
             placeholder="Madrid"
             value={formData.city}
             onChange={(e) => handleChange("city", e.target.value)}
-            onKeyDown={handleKeyDown}
+            required
           />
         </div>
 
@@ -88,7 +82,6 @@ export function ManualAddressForm({ onAddressGeocoded }: ManualAddressFormProps)
             placeholder="28001"
             value={formData.postalCode}
             onChange={(e) => handleChange("postalCode", e.target.value)}
-            onKeyDown={handleKeyDown}
           />
         </div>
       </div>
@@ -103,7 +96,7 @@ export function ManualAddressForm({ onAddressGeocoded }: ManualAddressFormProps)
           placeholder="España"
           value={formData.country}
           onChange={(e) => handleChange("country", e.target.value)}
-          onKeyDown={handleKeyDown}
+          required
         />
       </div>
 
@@ -113,9 +106,9 @@ export function ManualAddressForm({ onAddressGeocoded }: ManualAddressFormProps)
         </div>
       )}
 
-      <Button type="button" onClick={handleGeocode} disabled={isGeocoding} className="w-full">
+      <Button type="submit" disabled={isGeocoding} className="w-full">
         {isGeocoding ? "Localizando..." : "Localizar en el mapa"}
       </Button>
-    </div>
+    </form>
   );
 }

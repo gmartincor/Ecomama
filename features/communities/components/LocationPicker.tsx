@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
+import { useState, useCallback } from "react";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import type { LatLngExpression } from "leaflet";
+import { useEffect } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { searchLocation, reverseGeocode } from "../services/geocodingService";
@@ -17,7 +18,6 @@ type LocationPickerProps = {
 
 const DEFAULT_CENTER: LatLngExpression = [40.4168, -3.7038];
 const DEFAULT_ZOOM = 6;
-const LOCATION_ZOOM = 15;
 
 const MapClickHandler = ({
   onLocationChange,
@@ -35,16 +35,6 @@ const MapClickHandler = ({
   return null;
 };
 
-const MapController = ({ center, zoom }: { center: LatLngExpression; zoom: number }) => {
-  const map = useMap();
-  
-  useEffect(() => {
-    map.setView(center, zoom);
-  }, [map, center, zoom]);
-  
-  return null;
-};
-
 export const LocationPicker = ({
   initialPosition = DEFAULT_CENTER,
   onLocationSelect,
@@ -53,16 +43,8 @@ export const LocationPicker = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<GeocodingResult[]>([]);
   const [selectedPosition, setSelectedPosition] = useState<LatLngExpression>(initialPosition);
-  const [mapZoom, setMapZoom] = useState(
-    initialPosition !== DEFAULT_CENTER ? LOCATION_ZOOM : DEFAULT_ZOOM
-  );
   const [isSearching, setIsSearching] = useState(false);
   const [activeTab, setActiveTab] = useState<"map" | "manual">("map");
-
-  useEffect(() => {
-    setSelectedPosition(initialPosition);
-    setMapZoom(initialPosition !== DEFAULT_CENTER ? LOCATION_ZOOM : DEFAULT_ZOOM);
-  }, [initialPosition]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -92,7 +74,6 @@ export const LocationPicker = ({
 
   const handleResultClick = (result: GeocodingResult) => {
     setSelectedPosition([result.latitude, result.longitude]);
-    setMapZoom(LOCATION_ZOOM);
     onLocationSelect(result);
     setSearchResults([]);
     setSearchQuery("");
@@ -110,7 +91,6 @@ export const LocationPicker = ({
 
   const handleManualAddressGeocoded = (result: GeocodingResult) => {
     setSelectedPosition([result.latitude, result.longitude]);
-    setMapZoom(LOCATION_ZOOM);
     onLocationSelect(result);
     setActiveTab("map");
   };
@@ -182,7 +162,6 @@ export const LocationPicker = ({
             />
             <Marker position={selectedPosition} />
             <MapClickHandler onLocationChange={handleMapClick} />
-            <MapController center={selectedPosition} zoom={mapZoom} />
           </MapContainer>
         </>
       ) : (
