@@ -1,6 +1,5 @@
 import { prisma } from '@/lib/prisma/client';
-import { AttendeeStatus } from '@prisma/client';
-import type { EventAttendee } from '@prisma/client';
+import { AttendeeStatus, EventAttendee } from '@prisma/client';
 import type { UserEventWithDetails } from '../types';
 
 export const registerForEvent = async (

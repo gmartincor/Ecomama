@@ -1,6 +1,6 @@
-import { Event, EventType, EventAttendee, AttendeeStatus } from '@prisma/client';
+import { Event, EventType } from '@prisma/client';
 
-export type { Event, EventType, EventAttendee, AttendeeStatus };
+export type { Event, EventType };
 
 export type EventWithAuthor = Event & {
   author: {
