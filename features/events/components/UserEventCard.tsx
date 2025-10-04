@@ -1,7 +1,6 @@
 "use client";
 
 import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
 import { CalendarIcon } from "@/components/ui/CalendarIcon";
 import type { UserEventWithDetails } from "../types";
 import { EVENT_TYPE_OPTIONS } from "./EventTypeSelector";
@@ -40,7 +39,6 @@ export const UserEventCard = ({ event }: UserEventCardProps) => {
               <CalendarIcon date={event.eventDate} size="md" />
             )}
             {!hasEventDate && <span className="text-xl sm:text-2xl flex-shrink-0">{typeOption?.icon}</span>}
-            <Badge variant="primary" className="text-xs">{typeOption?.label}</Badge>
           </div>
 
           <h3 className="text-lg sm:text-xl font-bold mb-2 break-words">{event.title}</h3>

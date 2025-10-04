@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { CalendarIcon } from "@/components/ui/CalendarIcon";
 import type { UserEventWithDetails } from "../types";
 
 type UserEventsCalendarProps = {
@@ -54,52 +55,53 @@ export const UserEventsCalendar = ({ events }: UserEventsCalendarProps) => {
     <div className="space-y-4">
       {groupedEvents.map((group, idx) => (
         <Card key={idx} className="p-4 sm:p-6">
-          <div className="mb-4">
-            <h3 className="text-lg font-bold capitalize flex items-center gap-2">
-              <span>📅</span>
-              {group.date}
-            </h3>
-            <Badge variant="muted" className="mt-2 text-xs">
-              {group.events.length} {group.events.length === 1 ? "evento" : "eventos"}
-            </Badge>
-          </div>
-          
-          <div className="space-y-3">
-            {group.events.map((event) => {
-              const eventTime = new Date(event.eventDate!).toLocaleTimeString("es-ES", {
-                hour: "2-digit",
-                minute: "2-digit",
-              });
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+            <div className="flex items-center gap-3 sm:flex-col sm:items-start">
+              <CalendarIcon date={group.events[0].eventDate!} size="md" />
+              {group.events.length > 1 && (
+                <Badge variant="muted" className="text-xs">
+                  {group.events.length} eventos
+                </Badge>
+              )}
+            </div>
+            
+            <div className="flex-1 space-y-3">
+              {group.events.map((event) => {
+                const eventTime = new Date(event.eventDate!).toLocaleTimeString("es-ES", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
 
-              return (
-                <div
-                  key={event.id}
-                  className="flex flex-col sm:flex-row sm:items-start gap-3 p-3 bg-background/50 rounded-lg border border-border/50"
-                >
-                  <div className="flex-shrink-0 text-sm font-medium text-primary min-w-[60px]">
-                    {eventTime}
-                  </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-sm sm:text-base break-words mb-1">
-                      {event.title}
-                    </h4>
+                return (
+                  <div
+                    key={event.id}
+                    className="flex flex-col sm:flex-row sm:items-start gap-3 p-3 bg-background/50 rounded-lg border border-border/50"
+                  >
+                    <div className="flex-shrink-0 text-sm font-medium text-primary min-w-[60px]">
+                      {eventTime}
+                    </div>
                     
-                    {event.location && (
-                      <p className="text-xs text-muted-foreground flex items-start gap-1 mb-1">
-                        <span>📍</span>
-                        <span className="break-words">{event.location}</span>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-sm sm:text-base break-words mb-1">
+                        {event.title}
+                      </h4>
+                      
+                      {event.location && (
+                        <p className="text-xs text-muted-foreground flex items-start gap-1 mb-1">
+                          <span>📍</span>
+                          <span className="break-words">{event.location}</span>
+                        </p>
+                      )}
+                      
+                      <p className="text-xs text-muted-foreground flex items-start gap-1">
+                        <span>🏘️</span>
+                        <span className="break-words">{event.community.name}</span>
                       </p>
-                    )}
-                    
-                    <p className="text-xs text-muted-foreground flex items-start gap-1">
-                      <span>🏘️</span>
-                      <span className="break-words">{event.community.name}</span>
-                    </p>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </Card>
       ))}
