@@ -10,7 +10,7 @@ interface ProvidersProps {
   children: ReactNode;
 }
 
-const PUBLIC_ROUTES = ["/", "/login", "/register"];
+const PUBLIC_ROUTES = ["/", "/login", "/register", "/communities/map"];
 const STANDALONE_ROUTES = ["/superadmin"];
 
 export function Providers({ children }: ProvidersProps) {

@@ -9,7 +9,10 @@ export const useProfile = (userId: string) => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchProfile = useCallback(async () => {
-    if (!userId) return;
+    if (!userId) {
+      setError("ID de usuario no proporcionado");
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
@@ -21,13 +24,16 @@ export const useProfile = (userId: string) => {
         if (response.status === 403) {
           throw new Error("No tienes permiso para ver este perfil");
         }
-        throw new Error("Failed to fetch profile");
+        if (response.status === 404) {
+          throw new Error("Perfil no encontrado");
+        }
+        throw new Error(`Error al cargar el perfil (${response.status})`);
       }
 
       const data = await response.json();
       setProfile(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : "Error al cargar el perfil");
     } finally {
       setIsLoading(false);
     }
@@ -51,7 +57,10 @@ export const useCommunityMembers = (communityId: string) => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchMembers = useCallback(async () => {
-    if (!communityId) return;
+    if (!communityId) {
+      setError("ID de comunidad no proporcionado");
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
@@ -60,13 +69,19 @@ export const useCommunityMembers = (communityId: string) => {
       const response = await fetch(`/api/communities/${communityId}/members`);
 
       if (!response.ok) {
-        throw new Error("Failed to fetch members");
+        if (response.status === 403) {
+          throw new Error("No tienes permiso para ver los miembros de esta comunidad");
+        }
+        if (response.status === 404) {
+          throw new Error("Comunidad no encontrada");
+        }
+        throw new Error(`Error al cargar los miembros (${response.status})`);
       }
 
       const data = await response.json();
       setMembers(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : "Error al cargar los miembros");
     } finally {
       setIsLoading(false);
     }

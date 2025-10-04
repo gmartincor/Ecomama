@@ -1,7 +1,6 @@
 'use client';
 
 import { use } from 'react';
-import { notFound } from 'next/navigation';
 import { useProfile } from '@/features/profiles/hooks/useProfile';
 import { ProfileDetailView } from '@/features/profiles/components/ProfileDetailView';
 import { PageLoading } from '@/components/common/PageLoading';
@@ -12,6 +11,9 @@ interface ProfilePageProps {
     id: string;
   }>;
 }
+
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
 
 export default function ProfilePage({ params }: ProfilePageProps) {
   const { id } = use(params);
@@ -30,7 +32,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   }
 
   if (!profile) {
-    notFound();
+    return <PageError message="Perfil no encontrado" onRetry={refetch} onBack={handleBack} />;
   }
 
   return (
