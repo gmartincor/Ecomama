@@ -8,7 +8,7 @@ export const buttonVariants = {
   destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm',
   outline: 'border-2 border-border bg-background hover:bg-muted hover:border-primary/50 transition-all',
   ghost: 'hover:bg-muted hover:text-foreground transition-colors',
-  success: 'bg-success text-primary-foreground hover:bg-success/90 shadow-sm',
+  success: 'bg-primary text-primary-foreground hover:bg-primary-dark shadow-sm font-medium',
 } as const;
 
 export const buttonSizes = {

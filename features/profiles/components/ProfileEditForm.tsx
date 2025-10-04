@@ -93,15 +93,15 @@ export const ProfileEditForm = ({ initialData, onSuccess, onCancel }: ProfileEdi
 
         {error && <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">{error}</div>}
 
-        <div className="flex gap-4">
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Guardando..." : "Guardar Cambios"}
-          </Button>
+        <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
           {onCancel && (
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar
             </Button>
           )}
+          <Button type="submit" variant="success" disabled={isSubmitting}>
+            {isSubmitting ? "Guardando..." : "Guardar Cambios"}
+          </Button>
         </div>
       </form>
   );

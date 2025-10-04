@@ -69,20 +69,20 @@ export const AvatarUpload = ({ currentAvatar, onAvatarChange, disabled }: Avatar
     <div className="space-y-4">
       <Label>Foto de Perfil</Label>
       
-      <div className="flex items-center gap-6">
-        <div className="relative">
-          <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200 flex items-center justify-center">
+      <div className="flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-6">
+        <div className="relative shrink-0">
+          <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200 flex items-center justify-center">
             {previewUrl ? (
               <Image
                 src={previewUrl}
                 alt="Avatar"
-                width={96}
-                height={96}
+                width={144}
+                height={144}
                 className="w-full h-full object-cover"
               />
             ) : (
               <svg
-                className="w-12 h-12 text-gray-400"
+                className="w-14 h-14 sm:w-16 sm:h-16 text-gray-400"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -96,7 +96,7 @@ export const AvatarUpload = ({ currentAvatar, onAvatarChange, disabled }: Avatar
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3 w-full sm:w-auto">
           <input
             ref={fileInputRef}
             type="file"
@@ -106,27 +106,33 @@ export const AvatarUpload = ({ currentAvatar, onAvatarChange, disabled }: Avatar
             className="hidden"
           />
           
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleClick}
-            disabled={disabled || isUploading}
-          >
-            {isUploading ? 'Subiendo...' : previewUrl ? 'Cambiar Foto' : 'Subir Foto'}
-          </Button>
-
-          {previewUrl && (
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <Button
               type="button"
               variant="outline"
-              onClick={handleRemove}
+              size="sm"
+              onClick={handleClick}
               disabled={disabled || isUploading}
+              className="text-sm"
             >
-              Eliminar Foto
+              {isUploading ? 'Subiendo...' : previewUrl ? 'Cambiar Foto' : 'Subir Foto'}
             </Button>
-          )}
 
-          <p className="text-xs text-muted-foreground">
+            {previewUrl && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleRemove}
+                disabled={disabled || isUploading}
+                className="text-sm"
+              >
+                Eliminar Foto
+              </Button>
+            )}
+          </div>
+
+          <p className="text-xs text-muted-foreground text-center sm:text-left">
             JPG, PNG, GIF o WEBP. Máx 5MB.
           </p>
         </div>
