@@ -9,6 +9,11 @@ type EventFeedProps = {
   onEdit?: (eventId: string) => void;
   onDelete?: (eventId: string) => void;
   onTogglePin?: (eventId: string, isPinned: boolean) => void;
+  onRegister?: (eventId: string) => void;
+  onCancelRegistration?: (eventId: string) => void;
+  registeredEventIds?: Set<string>;
+  isRegistering?: boolean;
+  attendeesCounts?: Map<string, number>;
   emptyMessage?: string;
   emptyActionLabel?: string;
   onEmptyAction?: () => void;
@@ -21,6 +26,11 @@ export const EventFeed = ({
   onEdit,
   onDelete,
   onTogglePin,
+  onRegister,
+  onCancelRegistration,
+  registeredEventIds,
+  isRegistering = false,
+  attendeesCounts,
   emptyMessage = "No hay publicaciones aún",
   emptyActionLabel,
   onEmptyAction,
@@ -59,6 +69,11 @@ export const EventFeed = ({
           onEdit={onEdit}
           onDelete={onDelete}
           onTogglePin={onTogglePin}
+          onRegister={onRegister}
+          onCancelRegistration={onCancelRegistration}
+          isRegistered={registeredEventIds?.has(event.id)}
+          isRegistering={isRegistering}
+          attendeesCount={attendeesCounts?.get(event.id)}
         />
       ))}
     </div>

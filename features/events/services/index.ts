@@ -7,3 +7,11 @@ export {
   togglePinEvent,
   isUserAdminOfEventCommunity,
 } from "./eventService";
+
+export {
+  registerForEvent,
+  cancelEventRegistration,
+  getUserEvents,
+  isUserRegistered,
+  getEventAttendeesCount,
+} from "./eventAttendeeService";

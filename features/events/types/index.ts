@@ -1,6 +1,6 @@
-import { Event, EventType } from '@prisma/client';
+import { Event, EventType, EventAttendee, AttendeeStatus } from '@prisma/client';
 
-export type { Event, EventType };
+export type { Event, EventType, EventAttendee, AttendeeStatus };
 
 export type EventWithAuthor = Event & {
   author: {
@@ -8,6 +8,25 @@ export type EventWithAuthor = Event & {
     name: string;
     email: string;
   };
+};
+
+export type UserEventWithDetails = {
+  id: string;
+  title: string;
+  description: string;
+  type: EventType;
+  eventDate: Date | null;
+  location: string | null;
+  community: {
+    id: string;
+    name: string;
+    city: string;
+  };
+  author: {
+    id: string;
+    name: string;
+  };
+  registeredAt: Date;
 };
 
 export type CreateEventData = {
