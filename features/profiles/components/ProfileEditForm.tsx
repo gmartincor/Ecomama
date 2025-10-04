@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
+import { AvatarUpload } from "@/components/ui/AvatarUpload";
 import type { ProfileInput } from "@/lib/validations/profile";
 
 type ProfileEditFormProps = {
@@ -48,6 +49,12 @@ export const ProfileEditForm = ({ initialData, onSuccess, onCancel }: ProfileEdi
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+        <AvatarUpload
+          currentAvatar={formData.avatar}
+          onAvatarChange={(url) => setFormData((prev) => ({ ...prev, avatar: url }))}
+          disabled={isSubmitting}
+        />
+
         <div className="space-y-2">
           <Label htmlFor="bio">Biografía</Label>
           <textarea
@@ -81,17 +88,6 @@ export const ProfileEditForm = ({ initialData, onSuccess, onCancel }: ProfileEdi
             onChange={(e) => setFormData((prev) => ({ ...prev, location: e.target.value }))}
             placeholder="Ciudad, País"
             maxLength={100}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="avatar">URL del Avatar</Label>
-          <Input
-            id="avatar"
-            type="url"
-            value={formData.avatar || ""}
-            onChange={(e) => setFormData((prev) => ({ ...prev, avatar: e.target.value }))}
-            placeholder="https://ejemplo.com/avatar.jpg"
           />
         </div>
 

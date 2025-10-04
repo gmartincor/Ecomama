@@ -60,12 +60,19 @@ export const updateUserProfile = async (
   userId: string,
   data: ProfileInput
 ): Promise<UserProfile> => {
+  const cleanData = {
+    bio: data.bio || null,
+    phone: data.phone || null,
+    location: data.location || null,
+    avatar: data.avatar || null,
+  };
+
   return await prisma.userProfile.upsert({
     where: { userId },
-    update: data,
+    update: cleanData,
     create: {
       userId,
-      ...data,
+      ...cleanData,
     },
   });
 };

@@ -1,13 +1,11 @@
 import { z } from "zod";
 import { textFieldSchema } from "./shared";
 
-const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-
 export const profileSchema = z.object({
   bio: textFieldSchema.long.optional().nullable(),
-  phone: z.string().regex(phoneRegex, "Formato de teléfono inválido").optional().nullable(),
+  phone: z.string().min(1).max(20).optional().nullable().or(z.literal('')),
   location: textFieldSchema.short.optional().nullable(),
-  avatar: z.string().url("URL de avatar inválida").optional().nullable(),
+  avatar: z.string().optional().nullable().or(z.literal('')),
 });
 
 export type ProfileInput = z.infer<typeof profileSchema>;
