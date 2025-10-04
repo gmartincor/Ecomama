@@ -23,7 +23,6 @@ async function main() {
           bio: 'Platform superadmin with full access to all communities and features.',
           phone: '+34 600 111 111',
           location: 'Madrid, España',
-          isPublic: true,
         },
       },
       settings: {
@@ -49,7 +48,6 @@ async function main() {
           bio: 'Agricultora ecológica con 15 años de experiencia. Fundadora de la comunidad de Valencia.',
           phone: '+34 600 222 222',
           location: 'Valencia, España',
-          isPublic: true,
         },
       },
       settings: {
@@ -74,7 +72,6 @@ async function main() {
           bio: 'Coordinador de huertos urbanos y promotor de agricultura sostenible en Barcelona.',
           phone: '+34 600 333 333',
           location: 'Barcelona, España',
-          isPublic: true,
         },
       },
       settings: {
@@ -99,7 +96,6 @@ async function main() {
           bio: 'Ingeniera agrónoma especializada en permacultura. Líder de la comunidad de Sevilla.',
           phone: '+34 600 444 444',
           location: 'Sevilla, España',
-          isPublic: true,
         },
       },
       settings: {
@@ -125,7 +121,6 @@ async function main() {
           bio: 'Apasionado por la agricultura ecológica y el consumo responsable.',
           phone: '+34 600 555 555',
           location: 'Valencia, España',
-          isPublic: true,
         },
       },
       settings: {
@@ -150,7 +145,6 @@ async function main() {
           bio: 'Chef interesada en productos locales y de temporada.',
           phone: '+34 600 666 666',
           location: 'Barcelona, España',
-          isPublic: true,
         },
       },
       settings: {
@@ -175,7 +169,6 @@ async function main() {
           bio: 'Productor de aceite de oliva ecológico.',
           phone: '+34 600 777 777',
           location: 'Sevilla, España',
-          isPublic: true,
         },
       },
       settings: {
@@ -200,7 +193,6 @@ async function main() {
           bio: 'Nutricionista especializada en alimentación orgánica.',
           phone: '+34 600 888 888',
           location: 'Valencia, España',
-          isPublic: true,
         },
       },
       settings: {
@@ -225,7 +217,6 @@ async function main() {
           bio: 'Activista medioambiental y promotor del comercio justo.',
           phone: '+34 600 999 999',
           location: 'Barcelona, España',
-          isPublic: true,
         },
       },
       settings: {

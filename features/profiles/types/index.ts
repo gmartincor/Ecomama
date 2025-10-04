@@ -5,7 +5,6 @@ export type UserProfile = {
   phone: string | null;
   location: string | null;
   avatar: string | null;
-  isPublic: boolean;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -16,6 +15,14 @@ export type ProfileWithUser = UserProfile & {
     name: string;
     email: string;
   };
+  communities?: {
+    id: string;
+    name: string;
+    city: string;
+    country: string;
+    role: string;
+    joinedAt: Date;
+  }[];
 };
 
 export type MemberProfile = {
@@ -31,5 +38,4 @@ export type ProfileUpdateInput = {
   phone?: string;
   location?: string;
   avatar?: string;
-  isPublic?: boolean;
 };

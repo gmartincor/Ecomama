@@ -28,7 +28,6 @@ export default function EditProfilePage() {
         phone: data.phone || '',
         location: data.location || '',
         avatar: data.avatar || '',
-        isPublic: data.isPublic ?? true,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido');

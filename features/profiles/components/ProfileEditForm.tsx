@@ -18,7 +18,6 @@ export const ProfileEditForm = ({ initialData, onSuccess, onCancel }: ProfileEdi
     phone: initialData?.phone || "",
     location: initialData?.location || "",
     avatar: initialData?.avatar || "",
-    isPublic: initialData?.isPublic ?? true,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -94,19 +93,6 @@ export const ProfileEditForm = ({ initialData, onSuccess, onCancel }: ProfileEdi
             onChange={(e) => setFormData((prev) => ({ ...prev, avatar: e.target.value }))}
             placeholder="https://ejemplo.com/avatar.jpg"
           />
-        </div>
-
-        <div className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            id="isPublic"
-            checked={formData.isPublic}
-            onChange={(e) => setFormData((prev) => ({ ...prev, isPublic: e.target.checked }))}
-            className="w-4 h-4"
-          />
-          <Label htmlFor="isPublic" className="cursor-pointer">
-            Hacer perfil público para miembros de la comunidad
-          </Label>
         </div>
 
         {error && <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">{error}</div>}

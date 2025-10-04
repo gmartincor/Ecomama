@@ -11,12 +11,49 @@ export const getUserProfile = async (userId: string): Promise<ProfileWithUser | 
           id: true,
           name: true,
           email: true,
+          memberships: {
+            where: {
+              status: "APPROVED",
+            },
+            select: {
+              role: true,
+              joinedAt: true,
+              community: {
+                select: {
+                  id: true,
+                  name: true,
+                  city: true,
+                  country: true,
+                },
+              },
+            },
+            orderBy: {
+              joinedAt: "desc",
+            },
+          },
         },
       },
     },
   });
 
-  return profile;
+  if (!profile) return null;
+
+  return {
+    ...profile,
+    user: {
+      id: profile.user.id,
+      name: profile.user.name,
+      email: profile.user.email,
+    },
+    communities: profile.user.memberships.map((m: any) => ({
+      id: m.community.id,
+      name: m.community.name,
+      city: m.community.city,
+      country: m.community.country,
+      role: m.role,
+      joinedAt: m.joinedAt || new Date(),
+    })),
+  };
 };
 
 export const updateUserProfile = async (

@@ -89,6 +89,22 @@ export default function SettingsPage() {
 
       <div className="space-y-6">
         <Card className="p-6">
+          <h2 className="text-xl font-semibold mb-4">Perfil de Usuario</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Gestiona tu información personal y preferencias de perfil
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button onClick={() => router.push('/profile/me')} variant="outline">
+              👤 Ver mi Perfil
+            </Button>
+            <Button onClick={() => router.push('/profile/me/edit')} variant="outline">
+              ✏️ Editar Perfil
+            </Button>
+          </div>
+        </Card>
+
+        <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">Comunidad por defecto</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Selecciona la comunidad que se mostrará automáticamente al iniciar sesión
