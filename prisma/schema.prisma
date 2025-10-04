@@ -184,7 +184,6 @@ enum ListingStatus {
 enum EventType {
   ANNOUNCEMENT
   EVENT
-  NEWS
 }
 
 model EventAttendee {

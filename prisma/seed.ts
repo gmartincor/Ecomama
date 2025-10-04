@@ -507,7 +507,7 @@ async function main() {
     data: {
       communityId: community1.id,
       authorId: user1.id,
-      type: EventType.NEWS,
+      type: EventType.ANNOUNCEMENT,
       title: 'Excelente cosecha de tomates',
       description: 'Este mes hemos tenido una cosecha excepcional de tomates de variedades locales. ¡Gracias a todos por el esfuerzo en el cuidado del huerto!',
       isPinned: false,
@@ -657,7 +657,7 @@ async function main() {
   console.log('- 9 users created (1 superadmin, 3 admins, 5 regular users)');
   console.log('- 3 communities created (Valencia, Barcelona, Sevilla)');
   console.log('- 9 memberships created (6 approved, 1 pending)');
-  console.log('- 6 events created (2 pinned announcements, 3 events, 1 news)');
+  console.log('- 6 events created (2 pinned announcements, 4 events)');
   console.log('- 9 listings created (6 offers, 3 demands)');
   console.log('\n🔑 Login credentials (all users):');
   console.log('Password: password123');

@@ -14,7 +14,7 @@ export const GET = createGetHandler(async ({ session, params, searchParams }) =>
   }
 
   const filters = parseFilters<EventFilters>(searchParams!, {
-    type: { type: 'enum', enumValues: ['ANNOUNCEMENT', 'EVENT', 'NEWS'] as const },
+    type: { type: 'enum', enumValues: ['ANNOUNCEMENT', 'EVENT'] as const },
     isPinned: { type: 'boolean' },
     authorId: { type: 'string' },
   });

@@ -12,19 +12,13 @@ export const EVENT_TYPE_OPTIONS: EventTypeOption[] = [
     value: "ANNOUNCEMENT",
     label: "Anuncio",
     icon: "📢",
-    description: "Comunicados importantes de la comunidad",
+    description: "Comunicados, noticias y novedades de la comunidad",
   },
   {
     value: "EVENT",
     label: "Evento",
     icon: "📅",
     description: "Reuniones, talleres, actividades con fecha",
-  },
-  {
-    value: "NEWS",
-    label: "Noticia",
-    icon: "📰",
-    description: "Noticias y novedades de la comunidad",
   },
 ];
 
@@ -40,7 +34,7 @@ export const EventTypeSelector = ({ value, onChange, error }: EventTypeSelectorP
       <label className="block text-sm font-medium text-muted-foreground mb-2">
         Tipo de publicación
       </label>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {EVENT_TYPE_OPTIONS.map((option) => (
           <button
             key={option.value}

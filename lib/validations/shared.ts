@@ -9,7 +9,7 @@ export const memberStatusEnum = z.enum(["PENDING", "APPROVED", "REJECTED", "REMO
 export const communityStatusEnum = z.enum(["ACTIVE", "INACTIVE"]);
 export const listingTypeEnum = z.enum(["OFFER", "DEMAND"]);
 export const listingStatusEnum = z.enum(["ACTIVE", "INACTIVE", "EXPIRED"]);
-export const eventTypeEnum = z.enum(["ANNOUNCEMENT", "EVENT", "NEWS"]);
+export const eventTypeEnum = z.enum(["ANNOUNCEMENT", "EVENT"]);
 
 export const timestampSchema = z.string().datetime();
 
