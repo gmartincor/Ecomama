@@ -32,7 +32,7 @@ export const EventCard = ({
 }: EventCardProps) => {
   const typeOption = EVENT_TYPE_OPTIONS.find((opt) => opt.value === event.type);
   const hasEventDate = event.type === "EVENT" && !!event.eventDate;
-  const canRegister = event.type === "EVENT" && !isAdmin;
+  const canRegister = event.type === "EVENT";
   
   const formattedDate = event.eventDate
     ? new Date(event.eventDate).toLocaleDateString("es-ES", {
@@ -97,68 +97,66 @@ export const EventCard = ({
           </div>
         </div>
 
-        {(isAdmin || canRegister) && (
-          <div className="flex sm:flex-col gap-2 justify-end sm:justify-start flex-shrink-0">
-            {isAdmin && (
-              <>
-                {onTogglePin && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onTogglePin(event.id, !event.isPinned)}
-                    className="text-xs sm:text-sm"
-                  >
-                    {event.isPinned ? "Desfijar" : "Fijar"}
-                  </Button>
-                )}
-                {onEdit && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => onEdit(event.id)}
-                    className="text-xs sm:text-sm"
-                  >
-                    Editar
-                  </Button>
-                )}
-                {onDelete && (
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => onDelete(event.id)}
-                    className="text-xs sm:text-sm"
-                  >
-                    Eliminar
-                  </Button>
-                )}
-              </>
-            )}
+        <div className="flex sm:flex-col gap-2 justify-end sm:justify-start flex-shrink-0">
+          {isAdmin && (
+            <>
+              {onTogglePin && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onTogglePin(event.id, !event.isPinned)}
+                  className="text-xs sm:text-sm"
+                >
+                  {event.isPinned ? "Desfijar" : "Fijar"}
+                </Button>
+              )}
+              {onEdit && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => onEdit(event.id)}
+                  className="text-xs sm:text-sm"
+                >
+                  Editar
+                </Button>
+              )}
+              {onDelete && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => onDelete(event.id)}
+                  className="text-xs sm:text-sm"
+                >
+                  Eliminar
+                </Button>
+              )}
+            </>
+          )}
 
-            {canRegister && !isRegistered && onRegister && (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => onRegister(event.id)}
-                disabled={isRegistering}
-                className="text-xs sm:text-sm"
-              >
-                {isRegistering ? "Inscribiendo..." : "🎫 Inscribirse"}
-              </Button>
-            )}
+          {canRegister && !isRegistered && onRegister && (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => onRegister(event.id)}
+              disabled={isRegistering}
+              className="text-xs sm:text-sm"
+            >
+              {isRegistering ? "Inscribiendo..." : "🎫 Inscribirse"}
+            </Button>
+          )}
 
-            {canRegister && isRegistered && onCancelRegistration && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onCancelRegistration(event.id)}
-                disabled={isRegistering}
-                className="text-xs sm:text-sm"
-              >
-                {isRegistering ? "Cancelando..." : "Cancelar Inscripción"}
-              </Button>
-            )}
-          </div>
-        )}
+          {canRegister && isRegistered && onCancelRegistration && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onCancelRegistration(event.id)}
+              disabled={isRegistering}
+              className="text-xs sm:text-sm"
+            >
+              {isRegistering ? "Cancelando..." : "✓ Inscrito"}
+            </Button>
+          )}
+        </div>
       </div>
     </Card>
   );

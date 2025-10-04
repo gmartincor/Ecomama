@@ -38,12 +38,21 @@ export const createRouteHandler = <T = any>(config: RouteConfig<T>) => {
       context.searchParams = url.searchParams;
 
       if (['POST', 'PUT', 'PATCH'].includes(request.method)) {
-        const body = await request.json();
+        const contentType = request.headers.get('content-type');
+        const hasBody = contentType?.includes('application/json');
         
-        if (config.bodySchema) {
-          context.body = config.bodySchema.parse(body);
-        } else {
-          context.body = body;
+        if (hasBody) {
+          try {
+            const body = await request.json();
+            
+            if (config.bodySchema) {
+              context.body = config.bodySchema.parse(body);
+            } else {
+              context.body = body;
+            }
+          } catch {
+            context.body = undefined;
+          }
         }
       }
 

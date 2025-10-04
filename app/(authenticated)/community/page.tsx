@@ -1,10 +1,12 @@
 'use client';
 
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useCommunityStore } from "@/lib/stores/useCommunityStore";
 import { useCommunityStats } from "@/features/dashboard/hooks/useDashboard";
 import { useCommunity } from "@/features/communities/hooks/useCommunities";
 import { useEvents } from "@/features/events/hooks/useEvents";
+import { useEventRegistration } from "@/features/events/hooks/useEventRegistration";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -28,9 +30,58 @@ export default function CommunityDashboardPage() {
   const communityId = activeCommunity?.id || "";
   const { community, isLoading: loadingCommunity, error: communityError } = useCommunity(communityId);
   const { stats, isLoading: loadingStats, error: statsError } = useCommunityStats(communityId);
-  const { events, isLoading: loadingEvents, error: eventsError, togglePinEvent, deleteEvent } = useEvents(communityId);
+  const { events, isLoading: loadingEvents, error: eventsError, togglePinEvent, deleteEvent, refetch: refetchEvents } = useEvents(communityId);
+  
+  const [registeredEventIds, setRegisteredEventIds] = useState<Set<string>>(new Set());
+  const [attendeesCounts, setAttendeesCounts] = useState<Map<string, number>>(new Map());
+  const [loadingRegistrations, setLoadingRegistrations] = useState(true);
+
+  const { isRegistering, register, cancel } = useEventRegistration(() => {
+    fetchUserRegistrations();
+    refetchEvents();
+  });
 
   const isAdmin = community?.adminId === user?.id;
+
+  const fetchUserRegistrations = useCallback(async () => {
+    if (!user?.id || events.length === 0) {
+      setLoadingRegistrations(false);
+      return;
+    }
+
+    try {
+      const registrationsPromises = events.map(async (event) => {
+        const [isRegistered, count] = await Promise.all([
+          fetch(`/api/events/${event.id}/registration-status`).then(r => r.ok ? r.json().then(d => d.isRegistered) : false),
+          fetch(`/api/events/${event.id}/attendees-count`).then(r => r.ok ? r.json().then(d => d.count) : 0),
+        ]);
+        return { eventId: event.id, isRegistered, count };
+      });
+
+      const results = await Promise.all(registrationsPromises);
+      
+      const newRegisteredIds = new Set<string>();
+      const newCounts = new Map<string, number>();
+      
+      results.forEach(({ eventId, isRegistered, count }) => {
+        if (isRegistered) newRegisteredIds.add(eventId);
+        newCounts.set(eventId, count);
+      });
+
+      setRegisteredEventIds(newRegisteredIds);
+      setAttendeesCounts(newCounts);
+    } finally {
+      setLoadingRegistrations(false);
+    }
+  }, [user?.id, events]);
+
+  useEffect(() => {
+    if (events.length > 0 && user?.id) {
+      fetchUserRegistrations();
+    } else {
+      setLoadingRegistrations(false);
+    }
+  }, [fetchUserRegistrations, events.length, user?.id]);
 
   if (!activeCommunity) {
     return (
@@ -86,6 +137,24 @@ export default function CommunityDashboardPage() {
     }
   };
 
+  const handleRegister = async (eventId: string) => {
+    try {
+      await register(eventId);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Error al inscribirse");
+    }
+  };
+
+  const handleCancelRegistration = async (eventId: string) => {
+    if (window.confirm("¿Estás seguro de que quieres cancelar tu inscripción?")) {
+      try {
+        await cancel(eventId);
+      } catch (error) {
+        alert(error instanceof Error ? error.message : "Error al cancelar inscripción");
+      }
+    }
+  };
+
   return (
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       <DashboardHeader community={community} />
@@ -128,11 +197,16 @@ export default function CommunityDashboardPage() {
         ) : (
           <EventFeed
             events={events}
-            isLoading={loadingEvents}
+            isLoading={loadingEvents || loadingRegistrations}
             isAdmin={isAdmin}
             onEdit={handleEditEvent}
             onDelete={handleDeleteEvent}
             onTogglePin={handleTogglePin}
+            onRegister={handleRegister}
+            onCancelRegistration={handleCancelRegistration}
+            registeredEventIds={registeredEventIds}
+            isRegistering={isRegistering}
+            attendeesCounts={attendeesCounts}
             emptyMessage="No hay publicaciones aún"
             emptyActionLabel={isAdmin ? "Crear Primera Publicación" : undefined}
             onEmptyAction={isAdmin ? () => router.push("/admin/community/events/new") : undefined}
