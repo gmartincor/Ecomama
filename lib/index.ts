@@ -1,4 +1,5 @@
 export * from './api';
+export * from './hooks';
 export * from './repositories';
 export * from './validations';
 export * from './types/domain';

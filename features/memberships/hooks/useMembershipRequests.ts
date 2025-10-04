@@ -1,75 +1,42 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
+import { useFetch } from "@/lib/hooks";
 import type { MemberWithUser, MemberWithCommunity } from "../types";
 
+const getRequestsErrorMessage = (status: number): string => {
+  if (status === 403) return "No tienes permiso para ver las solicitudes";
+  if (status === 404) return "No se encontraron solicitudes";
+  return `Error al cargar las solicitudes (${status})`;
+};
+
 export const useMembershipRequests = () => {
-  const [requests, setRequests] = useState<MemberWithCommunity[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchRequests = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch("/api/users/me/requests");
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch requests");
-      }
-
-      const data = await response.json();
-      setRequests(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchRequests();
-  }, [fetchRequests]);
+  const { data: requests, isLoading, error, refetch } = useFetch<MemberWithCommunity[]>({
+    endpoint: "/api/users/me/requests",
+    getErrorMessage: getRequestsErrorMessage,
+  });
 
   return {
-    requests,
+    requests: requests || [],
     isLoading,
     error,
-    refetch: fetchRequests,
+    refetch,
   };
 };
 
 export const useAdminRequests = (communityId: string) => {
-  const [requests, setRequests] = useState<MemberWithUser[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { data: requests, isLoading, error, refetch } = useFetch<MemberWithUser[]>({
+    endpoint: communityId ? `/api/communities/${communityId}/requests` : "",
+    autoFetch: !!communityId,
+    getErrorMessage: getRequestsErrorMessage,
+  });
 
-  const fetchRequests = useCallback(async () => {
-    if (!communityId) return;
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(`/api/communities/${communityId}/requests`);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch requests");
-      }
-
-      const data = await response.json();
-      setRequests(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [communityId]);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const respondToRequest = useCallback(
     async (requestId: string, status: "APPROVED" | "REJECTED", responseMessage?: string) => {
       try {
+        setActionError(null);
         const response = await fetch(
           `/api/communities/${communityId}/requests/${requestId}`,
           {
@@ -80,27 +47,27 @@ export const useAdminRequests = (communityId: string) => {
         );
 
         if (!response.ok) {
-          throw new Error("Failed to respond to request");
+          const errorMsg = response.status === 403
+            ? "No tienes permiso para responder a esta solicitud"
+            : "Error al responder a la solicitud";
+          throw new Error(errorMsg);
         }
 
-        await fetchRequests();
+        await refetch();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+        const errorMessage = err instanceof Error ? err.message : "Error al responder a la solicitud";
+        setActionError(errorMessage);
         throw err;
       }
     },
-    [communityId, fetchRequests]
+    [communityId, refetch]
   );
 
-  useEffect(() => {
-    fetchRequests();
-  }, [fetchRequests]);
-
   return {
-    requests,
+    requests: requests || [],
     isLoading,
-    error,
-    refetch: fetchRequests,
+    error: error || actionError,
+    refetch,
     respondToRequest,
   };
 };

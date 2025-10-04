@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useFetch } from '@/lib/hooks';
 import { ProfileDetailView } from '@/features/profiles/components/ProfileDetailView';
 import { PageLoading } from '@/components/common/PageLoading';
 import { PageError } from '@/components/common/PageError';
@@ -14,36 +15,14 @@ import type { ProfileWithUser } from '@/features/profiles/types';
 
 export default function MyProfilePage() {
   const router = useRouter();
-  const [profile, setProfile] = useState<ProfileWithUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
 
+  const { data: profile, isLoading, error, refetch } = useFetch<ProfileWithUser>({
+    endpoint: '/api/users/me/profile',
+    getErrorMessage: () => 'Error al cargar el perfil',
+  });
+
   const { events, isLoading: eventsLoading, error: eventsError } = useUserEvents();
-
-  const fetchProfile = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const response = await fetch('/api/users/me/profile');
-      
-      if (!response.ok) {
-        throw new Error('Error al cargar el perfil');
-      }
-
-      const data = await response.json();
-      setProfile(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProfile();
-  }, []);
 
   const handleEdit = () => {
     router.push('/profile/me/edit');
@@ -61,7 +40,7 @@ export default function MyProfilePage() {
     return (
       <PageError
         message={error || 'No se pudo cargar el perfil'}
-        onRetry={fetchProfile}
+        onRetry={refetch}
         onBack={handleBack}
       />
     );

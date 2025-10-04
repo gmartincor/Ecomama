@@ -5,18 +5,16 @@ import { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { CommunityInitializer } from "./CommunityInitializer";
 import { AuthenticatedLayout } from "@/components/layout/AuthenticatedLayout";
+import { ROUTE_CONFIG, isRouteMatch } from "@/lib/auth/route-config";
 
 interface ProvidersProps {
   children: ReactNode;
 }
 
-const PUBLIC_ROUTES = ["/", "/login", "/register", "/communities/map"];
-const STANDALONE_ROUTES = ["/superadmin"];
-
 export function Providers({ children }: ProvidersProps) {
   const pathname = usePathname();
-  const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
-  const isStandaloneRoute = STANDALONE_ROUTES.some(route => pathname.startsWith(route));
+  const isPublicRoute = isRouteMatch(pathname, ROUTE_CONFIG.public);
+  const isStandaloneRoute = isRouteMatch(pathname, ROUTE_CONFIG.superadmin);
 
   return (
     <SessionProvider>
