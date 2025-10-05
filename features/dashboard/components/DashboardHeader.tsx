@@ -23,7 +23,7 @@ export const DashboardHeader = ({ community }: DashboardHeaderProps) => {
           <Button
             variant="outline"
             onClick={() => router.push("/communities/map")}
-            className="w-full sm:w-auto text-sm whitespace-nowrap"
+            className="w-full sm:w-auto text-sm whitespace-nowrap bg-white hover:bg-gray-50"
           >
             🌍 Explorar Comunidades
           </Button>
