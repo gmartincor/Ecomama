@@ -12,8 +12,10 @@ type Community = {
 type CommunityStore = {
   activeCommunity: Community | null;
   userCommunities: Community[];
+  isInitialized: boolean;
   setActiveCommunity: (community: Community | null) => void;
   setUserCommunities: (communities: Community[]) => void;
+  setInitialized: (initialized: boolean) => void;
   clearCommunityState: () => void;
 };
 
@@ -22,6 +24,7 @@ export const useCommunityStore = create<CommunityStore>()(
     (set) => ({
       activeCommunity: null,
       userCommunities: [],
+      isInitialized: false,
 
       setActiveCommunity: (community) =>
         set({ activeCommunity: community }),
@@ -29,8 +32,11 @@ export const useCommunityStore = create<CommunityStore>()(
       setUserCommunities: (communities) =>
         set({ userCommunities: communities }),
 
+      setInitialized: (initialized) =>
+        set({ isInitialized: initialized }),
+
       clearCommunityState: () =>
-        set({ activeCommunity: null, userCommunities: [] }),
+        set({ activeCommunity: null, userCommunities: [], isInitialized: false }),
     }),
     {
       name: "community-storage",

@@ -19,20 +19,22 @@ const DASHBOARD_TABS: TabConfig[] = [
 
 export default function CommunityMembersPage() {
   const router = useRouter();
-  const { activeCommunity } = useCommunityStore();
+  const { activeCommunity, isInitialized } = useCommunityStore();
   const communityId = activeCommunity?.id || '';
   const { members, isLoading, error, refetch } = useCommunityMembers(communityId);
 
-  if (!activeCommunity) {
+  if (!isInitialized || !activeCommunity) {
     return (
       <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         <Card className="p-4 sm:p-6 text-center">
           <p className="text-sm sm:text-base text-muted-foreground mb-4">
-            No tienes una comunidad activa seleccionada
+            {!isInitialized ? "Cargando comunidades..." : "No tienes una comunidad activa seleccionada"}
           </p>
-          <Button onClick={() => router.push('/communities/map')} className="w-full sm:w-auto">
-            Explorar Comunidades
-          </Button>
+          {isInitialized && (
+            <Button onClick={() => router.push('/communities/map')} className="w-full sm:w-auto">
+              Explorar Comunidades
+            </Button>
+          )}
         </Card>
       </div>
     );

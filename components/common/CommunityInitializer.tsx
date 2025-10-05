@@ -16,7 +16,7 @@ type Community = {
 export const CommunityInitializer = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { setUserCommunities, setActiveCommunity, activeCommunity } = useCommunityStore();
+  const { setUserCommunities, setActiveCommunity, activeCommunity, setInitialized } = useCommunityStore();
 
   useEffect(() => {
     const initializeCommunities = async () => {
@@ -25,6 +25,7 @@ export const CommunityInitializer = () => {
       }
 
       if (session.user.role === "SUPERADMIN") {
+        setInitialized(true);
         return;
       }
 
@@ -33,6 +34,7 @@ export const CommunityInitializer = () => {
 
         if (!communitiesRes.ok) {
           console.error("Failed to fetch user communities");
+          setInitialized(true);
           return;
         }
 
@@ -40,6 +42,7 @@ export const CommunityInitializer = () => {
         setUserCommunities(communities);
 
         if (communities.length === 0) {
+          setInitialized(true);
           router.push("/communities/map");
           return;
         }
@@ -65,8 +68,11 @@ export const CommunityInitializer = () => {
             setActiveCommunity(communities[0]);
           }
         }
+        
+        setInitialized(true);
       } catch (error) {
         console.error("Failed to initialize communities", error);
+        setInitialized(true);
       }
     };
 

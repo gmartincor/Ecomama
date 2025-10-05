@@ -48,6 +48,18 @@ export const isUserMemberOfCommunity = async (
   return membershipRepository.isUserMember(userId, communityId);
 };
 
+export const hasUserAccessToCommunity = async (
+  userId: string,
+  communityId: string
+): Promise<boolean> => {
+  const { communityRepository } = await import('@/lib/repositories/community-repository');
+  const [isAdmin, isMember] = await Promise.all([
+    communityRepository.isUserAdmin(userId, communityId),
+    membershipRepository.isUserMember(userId, communityId),
+  ]);
+  return isAdmin || isMember;
+};
+
 export const getUserMembershipInCommunity = async (
   userId: string,
   communityId: string

@@ -11,7 +11,7 @@ import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 export default function DashboardPage() {
   const router = useRouter();
   const { user, isLoading, isSuperAdmin } = useAuth();
-  const { activeCommunity, userCommunities } = useCommunityStore();
+  const { activeCommunity, userCommunities, isInitialized } = useCommunityStore();
 
   useEffect(() => {
     if (!isLoading && isSuperAdmin) {
@@ -19,12 +19,12 @@ export default function DashboardPage() {
       return;
     }
 
-    if (!isLoading && activeCommunity) {
+    if (!isLoading && isInitialized && activeCommunity) {
       router.push("/community");
     }
-  }, [isLoading, isSuperAdmin, activeCommunity, router]);
+  }, [isLoading, isSuperAdmin, activeCommunity, isInitialized, router]);
 
-  if (isLoading) {
+  if (isLoading || !isInitialized) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <LoadingSpinner />

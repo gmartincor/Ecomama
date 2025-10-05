@@ -1,5 +1,5 @@
 import { getListings, createListing } from "@/features/listings/services/listingService";
-import { isUserMemberOfCommunity } from "@/features/memberships/services/membershipService";
+import { hasUserAccessToCommunity } from "@/features/memberships/services/membershipService";
 import { createListingSchema } from "@/lib/validations/listingValidation";
 import { createGetHandler, createPostHandler, parseFilters, extractRequiredParam } from "@/lib/api";
 import type { ListingFilters } from "@/features/listings/types";
@@ -13,8 +13,8 @@ const createListingWithCommunitySchema = createListingSchema.extend({
 export const GET = createGetHandler(async ({ session, searchParams }) => {
   const communityId = extractRequiredParam(searchParams!, 'communityId', 'El ID de comunidad es requerido');
 
-  const isMember = await isUserMemberOfCommunity(session!.user.id, communityId);
-  if (!isMember) {
+  const hasAccess = await hasUserAccessToCommunity(session!.user.id, communityId);
+  if (!hasAccess) {
     throw new ForbiddenError('Debes ser miembro para ver anuncios');
   }
 
@@ -32,8 +32,8 @@ export const POST = createPostHandler(
   async ({ session, body }) => {
     const { communityId, ...listingData } = body;
 
-    const isMember = await isUserMemberOfCommunity(session!.user.id, communityId);
-    if (!isMember) {
+    const hasAccess = await hasUserAccessToCommunity(session!.user.id, communityId);
+    if (!hasAccess) {
       throw new ForbiddenError('Debes ser miembro para crear anuncios');
     }
 

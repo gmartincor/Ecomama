@@ -1,5 +1,5 @@
 import { getEvents, createEvent } from "@/features/events/services/eventService";
-import { isUserMemberOfCommunity } from "@/features/memberships/services/membershipService";
+import { hasUserAccessToCommunity } from "@/features/memberships/services/membershipService";
 import { createEventSchema } from "@/lib/validations/eventValidation";
 import { createGetHandler, createPostHandler, parseFilters } from "@/lib/api";
 import { ForbiddenError } from "@/lib/utils/api-response";
@@ -8,8 +8,8 @@ import type { EventFilters } from "@/features/events/types";
 export const GET = createGetHandler(async ({ session, params, searchParams }) => {
   const communityId = params!.id;
 
-  const isMember = await isUserMemberOfCommunity(session!.user.id, communityId);
-  if (!isMember) {
+  const hasAccess = await hasUserAccessToCommunity(session!.user.id, communityId);
+  if (!hasAccess) {
     throw new ForbiddenError('Debes ser miembro para ver eventos');
   }
 
@@ -26,8 +26,8 @@ export const POST = createPostHandler(
   async ({ session, params, body }) => {
     const communityId = params!.id;
 
-    const isMember = await isUserMemberOfCommunity(session!.user.id, communityId);
-    if (!isMember) {
+    const hasAccess = await hasUserAccessToCommunity(session!.user.id, communityId);
+    if (!hasAccess) {
       throw new ForbiddenError('Debes ser miembro para crear eventos');
     }
 
