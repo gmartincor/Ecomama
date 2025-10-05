@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { fetchWithError } from "@/lib/utils/fetch-helpers";
 import type { CommunityStats } from "../types";
 
 export const useAdminStats = (communityId: string) => {
@@ -7,19 +8,20 @@ export const useAdminStats = (communityId: string) => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchStats = async () => {
-    if (!communityId) return;
+    if (!communityId) {
+      setStats(null);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`/api/admin/community/${communityId}/stats`);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch stats");
-      }
-
-      const data = await response.json();
+      const data = await fetchWithError<CommunityStats>(
+        `/api/admin/community/${communityId}/stats`
+      );
       setStats(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");

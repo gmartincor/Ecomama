@@ -28,18 +28,14 @@ export const CommunityInitializer = () => {
       }
 
       try {
-        const [communitiesRes, settingsRes] = await Promise.all([
-          fetch("/api/users/me/communities"),
-          fetch("/api/users/me/settings"),
-        ]);
+        const communitiesRes = await fetch("/api/users/me/communities");
 
-        if (!communitiesRes.ok || !settingsRes.ok) {
+        if (!communitiesRes.ok) {
+          console.error("Failed to fetch user communities");
           return;
         }
 
         const communities: Community[] = await communitiesRes.json();
-        const settings = await settingsRes.json();
-
         setUserCommunities(communities);
 
         if (communities.length === 0) {
@@ -47,13 +43,21 @@ export const CommunityInitializer = () => {
           return;
         }
 
-        if (!activeCommunity) {
-          const defaultCommunity = settings.defaultCommunity
-            ? communities.find((c: Community) => c.id === settings.defaultCommunity.id)
-            : communities[0];
+        if (!activeCommunity || !communities.find(c => c.id === activeCommunity.id)) {
+          try {
+            const settingsRes = await fetch("/api/users/me/settings");
+            const settings = settingsRes.ok ? await settingsRes.json() : null;
 
-          if (defaultCommunity) {
-            setActiveCommunity(defaultCommunity);
+            const defaultCommunity = settings?.defaultCommunity
+              ? communities.find((c: Community) => c.id === settings.defaultCommunity.id)
+              : communities[0];
+
+            if (defaultCommunity) {
+              setActiveCommunity(defaultCommunity);
+            }
+          } catch (error) {
+            console.error("Failed to fetch settings, using first community", error);
+            setActiveCommunity(communities[0]);
           }
         }
       } catch (error) {
@@ -62,7 +66,7 @@ export const CommunityInitializer = () => {
     };
 
     initializeCommunities();
-  }, [status, session, setUserCommunities, setActiveCommunity, activeCommunity, router]);
+  }, [status, session?.user?.id, session?.user?.role]);
 
   return null;
 };

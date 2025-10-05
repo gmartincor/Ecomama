@@ -28,6 +28,7 @@ export default function CommunityDashboardPage() {
   const { user } = useAuth();
   const { activeCommunity } = useCommunityStore();
   const communityId = activeCommunity?.id || "";
+  
   const { community, isLoading: loadingCommunity, error: communityError } = useCommunity(communityId);
   const { stats, isLoading: loadingStats, error: statsError } = useCommunityStats(communityId);
   const { events, isLoading: loadingEvents, error: eventsError, togglePinEvent, deleteEvent, refetch: refetchEvents } = useEvents(communityId);
@@ -98,14 +99,14 @@ export default function CommunityDashboardPage() {
     );
   }
 
-  if (loadingCommunity || loadingStats) {
-    return <PageLoading title="Cargando dashboard..." />;
+  if (loadingCommunity) {
+    return <PageLoading title="Cargando comunidad..." />;
   }
 
-  if (communityError || statsError) {
+  if (communityError) {
     return (
       <PageError
-        message={communityError || statsError || "Error al cargar el dashboard"}
+        message={communityError}
         onBack={() => router.push("/dashboard")}
       />
     );
@@ -113,6 +114,26 @@ export default function CommunityDashboardPage() {
 
   if (!community) {
     return <PageError message="Comunidad no encontrada" onBack={() => router.push("/dashboard")} />;
+  }
+
+  if (statsError && statsError.includes('miembro aprobado')) {
+    return (
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <Card className="p-4 sm:p-6 text-center">
+          <p className="text-sm sm:text-base text-red-600 mb-4">
+            No tienes acceso a esta comunidad. Tu solicitud de membresía puede estar pendiente.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-2 justify-center">
+            <Button onClick={() => router.push("/requests")} className="w-full sm:w-auto">
+              Ver Mis Solicitudes
+            </Button>
+            <Button onClick={() => router.push("/communities/map")} variant="outline" className="w-full sm:w-auto">
+              Explorar Comunidades
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
   }
 
   const handleEditEvent = (eventId: string) => {
@@ -159,7 +180,25 @@ export default function CommunityDashboardPage() {
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       <DashboardHeader community={community} />
 
-      {stats && (
+      {loadingStats ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8">
+          <Card className="p-4 animate-pulse">
+            <div className="h-20 bg-gray-200 rounded"></div>
+          </Card>
+          <Card className="p-4 animate-pulse">
+            <div className="h-20 bg-gray-200 rounded"></div>
+          </Card>
+          <Card className="p-4 animate-pulse">
+            <div className="h-20 bg-gray-200 rounded"></div>
+          </Card>
+        </div>
+      ) : statsError ? (
+        <div className="mb-6 sm:mb-8">
+          <Card className="p-4 text-center text-red-600">
+            <p className="text-sm">Error al cargar estadísticas: {statsError}</p>
+          </Card>
+        </div>
+      ) : stats ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8">
           <StatCard
             title="Miembros"
@@ -179,7 +218,7 @@ export default function CommunityDashboardPage() {
             icon="📅"
           />
         </div>
-      )}
+      ) : null}
 
       <TabNavigation tabs={DASHBOARD_TABS} />
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { fetchWithError } from "@/lib/utils/fetch-helpers";
 import type { CommunityStats } from "../types";
 
 export const useCommunityStats = (communityId: string) => {
@@ -20,13 +21,9 @@ export const useCommunityStats = (communityId: string) => {
     setError(null);
 
     try {
-      const response = await fetch(`/api/communities/${communityId}/stats`);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch stats");
-      }
-
-      const data = await response.json();
+      const data = await fetchWithError<CommunityStats>(
+        `/api/communities/${communityId}/stats`
+      );
       setStats(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
