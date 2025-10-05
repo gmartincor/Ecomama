@@ -33,7 +33,7 @@ export default function AdminDashboardPage() {
         <CommunityStats 
           stats={stats}
           onViewMembers={() => router.push(`/admin/community/${communityId}/members`)}
-          onViewPendingRequests={() => router.push(`/community/${communityId}/requests`)}
+          onViewPendingRequests={() => router.push(`/admin/community/${communityId}/requests`)}
           onViewOffers={() => router.push(`/listings?communityId=${communityId}&type=OFFER`)}
           onViewDemands={() => router.push(`/listings?communityId=${communityId}&type=DEMAND`)}
         />
