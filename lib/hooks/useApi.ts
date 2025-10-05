@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
@@ -41,6 +41,14 @@ export function useApi<TData, TBody = void>({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const transformRef = useRef(transformResponse);
+  const errorMessageRef = useRef(getErrorMessage);
+
+  useEffect(() => {
+    transformRef.current = transformResponse;
+    errorMessageRef.current = getErrorMessage;
+  });
+
   const execute = useCallback(
     async (body?: TBody) => {
       if (!endpoint) {
@@ -61,11 +69,11 @@ export function useApi<TData, TBody = void>({
         const response = await fetch(endpoint, options);
 
         if (!response.ok) {
-          throw new Error(getErrorMessage(response.status));
+          throw new Error(errorMessageRef.current(response.status));
         }
 
         const responseData = await response.json();
-        const finalData = transformResponse ? transformResponse(responseData) : responseData;
+        const finalData = transformRef.current ? transformRef.current(responseData) : responseData;
         setData(finalData);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error al cargar los datos");
@@ -73,7 +81,7 @@ export function useApi<TData, TBody = void>({
         setIsLoading(false);
       }
     },
-    [endpoint, method, transformResponse, getErrorMessage]
+    [endpoint, method]
   );
 
   const refetch = useCallback(() => execute(), [execute]);

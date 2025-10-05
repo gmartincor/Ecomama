@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { fetchWithError, fetchJSON } from "@/lib/utils/fetch-helpers";
 import type { AdminMember } from "../types";
 
 export const useAdminMembers = (communityId: string) => {
@@ -7,19 +8,20 @@ export const useAdminMembers = (communityId: string) => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchMembers = async () => {
-    if (!communityId) return;
+    if (!communityId) {
+      setMembers([]);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`/api/admin/community/${communityId}/members`);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch members");
-      }
-
-      const data = await response.json();
+      const data = await fetchWithError<AdminMember[]>(
+        `/api/admin/community/${communityId}/members`
+      );
       setMembers(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -29,15 +31,11 @@ export const useAdminMembers = (communityId: string) => {
   };
 
   const removeMember = async (userId: string) => {
-    const response = await fetch(`/api/admin/community/${communityId}/members/${userId}`, {
-      method: "DELETE",
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to remove member");
-    }
-
+    await fetchJSON(
+      `/api/admin/community/${communityId}/members/${userId}`,
+      undefined,
+      'DELETE'
+    );
     await fetchMembers();
   };
 

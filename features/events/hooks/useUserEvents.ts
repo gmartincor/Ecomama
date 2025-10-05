@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { fetchWithError } from "@/lib/utils/fetch-helpers";
 import type { UserEventWithDetails } from "../types";
 
 type UseUserEventsResult = {
@@ -20,13 +21,7 @@ export const useUserEvents = (): UseUserEventsResult => {
     setError(null);
 
     try {
-      const response = await fetch("/api/users/me/events");
-
-      if (!response.ok) {
-        throw new Error("Error al cargar tus eventos");
-      }
-
-      const data = await response.json();
+      const data = await fetchWithError<UserEventWithDetails[]>("/api/users/me/events");
       setEvents(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");

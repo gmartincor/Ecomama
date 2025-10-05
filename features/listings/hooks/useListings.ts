@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { fetchWithError, fetchJSON } from "@/lib/utils/fetch-helpers";
 import type { ListingWithAuthor, CreateListingData, UpdateListingData, ListingFilters } from "../types";
 
 type UseListingsResult = {
@@ -22,26 +23,24 @@ export const useListings = (
   const [error, setError] = useState<string | null>(null);
 
   const fetchListings = async () => {
-    if (!communityId) return;
+    if (!communityId) {
+      setListings([]);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
 
     try {
-      const params = new URLSearchParams({ communityId });
-      if (filters?.type) params.append("type", filters.type);
-      if (filters?.status) params.append("status", filters.status);
-      if (filters?.authorId) params.append("authorId", filters.authorId);
-      if (filters?.search) params.append("search", filters.search);
+      const params: Record<string, string | undefined> = { communityId };
+      if (filters?.type) params.type = filters.type;
+      if (filters?.status) params.status = filters.status;
+      if (filters?.authorId) params.authorId = filters.authorId;
+      if (filters?.search) params.search = filters.search;
 
-      const url = `/api/listings?${params.toString()}`;
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch listings");
-      }
-
-      const data = await response.json();
+      const data = await fetchWithError<ListingWithAuthor[]>('/api/listings', { params });
       setListings(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -51,45 +50,17 @@ export const useListings = (
   };
 
   const createListing = async (data: CreateListingData) => {
-    const response = await fetch("/api/listings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...data, communityId }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to create listing");
-    }
-
+    await fetchJSON('/api/listings', { ...data, communityId }, 'POST');
     await fetchListings();
   };
 
   const updateListing = async (listingId: string, data: UpdateListingData) => {
-    const response = await fetch(`/api/listings/${listingId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to update listing");
-    }
-
+    await fetchJSON(`/api/listings/${listingId}`, data, 'PUT');
     await fetchListings();
   };
 
   const deleteListing = async (listingId: string) => {
-    const response = await fetch(`/api/listings/${listingId}`, {
-      method: "DELETE",
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to delete listing");
-    }
-
+    await fetchJSON(`/api/listings/${listingId}`, undefined, 'DELETE');
     await fetchListings();
   };
 
