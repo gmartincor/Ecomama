@@ -1,6 +1,6 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import type { LatLngExpression } from "leaflet";
 import { useEffect } from "react";
 
@@ -14,6 +14,7 @@ type CommunityMapProps = {
     description?: string;
   }>;
   onMarkerClick?: (id: string) => void;
+  onViewDetails?: (id: string) => void;
   className?: string;
 };
 
@@ -24,6 +25,7 @@ export const CommunityMap = ({
   zoom = DEFAULT_ZOOM,
   markers = [],
   onMarkerClick,
+  onViewDetails,
   className = "h-96 w-full rounded-lg",
 }: CommunityMapProps) => {
   useEffect(() => {
@@ -45,13 +47,27 @@ export const CommunityMap = ({
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       {markers.map((marker) => (
-        <Marker key={marker.id} position={marker.position} eventHandlers={{
-          click: () => onMarkerClick?.(marker.id),
-        }}>
+        <Marker 
+          key={marker.id} 
+          position={marker.position} 
+          eventHandlers={{
+            click: () => onMarkerClick?.(marker.id),
+          }}
+        >
           <Popup>
-            <div className="text-sm">
-              <h3 className="font-semibold">{marker.name}</h3>
-              {marker.description && <p className="text-muted-foreground">{marker.description}</p>}
+            <div className="text-sm min-w-[200px]">
+              <h3 className="font-semibold text-base mb-1">{marker.name}</h3>
+              {marker.description && (
+                <p className="text-muted-foreground text-xs mb-3">{marker.description}</p>
+              )}
+              {onViewDetails && (
+                <button
+                  onClick={() => onViewDetails(marker.id)}
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  Solicitar Unirse
+                </button>
+              )}
             </div>
           </Popup>
         </Marker>

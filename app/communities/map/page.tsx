@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { Input } from "@/components/ui/Input";
 import { useCommunities } from "@/features/communities/hooks/useCommunities";
@@ -12,6 +13,7 @@ const CommunityMap = dynamic(
 );
 
 export default function CommunityMapPage() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const { communities, isLoading, error } = useCommunities({
     status: "ACTIVE",
@@ -26,6 +28,10 @@ export default function CommunityMapPage() {
   }));
 
   const center: [number, number] = markers.length > 0 ? markers[0].position : [40.4168, -3.7038];
+
+  const handleViewDetails = (communityId: string) => {
+    router.push(`/communities/${communityId}/request`);
+  };
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -53,6 +59,7 @@ export default function CommunityMapPage() {
             center={center}
             zoom={6}
             markers={markers}
+            onViewDetails={handleViewDetails}
             className="h-[600px] w-full rounded-lg"
           />
         </div>
