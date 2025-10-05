@@ -14,6 +14,7 @@ export const getUserCommunities = async (userId: string) => {
           name: true,
           city: true,
           country: true,
+          adminId: true,
         },
       },
     },

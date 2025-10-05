@@ -32,6 +32,18 @@ export function AdminNav({ communityId }: AdminNavProps) {
 
   return (
     <div className="flex flex-col space-y-4">
+      <Card className="p-4">
+        <Link href="/community">
+          <Button 
+            variant="outline" 
+            className="w-full justify-start space-x-3"
+          >
+            <span className="text-xl">←</span>
+            <span>Volver a la Comunidad</span>
+          </Button>
+        </Link>
+      </Card>
+
       {isSuperAdmin && (
         <Card className="p-4">
           <Link href="/superadmin/dashboard">
@@ -39,7 +51,7 @@ export function AdminNav({ communityId }: AdminNavProps) {
               variant="outline" 
               className="w-full justify-start space-x-3"
             >
-              <span className="text-xl">←</span>
+              <span className="text-xl">⚡</span>
               <span>Panel Superadmin</span>
             </Button>
           </Link>

@@ -6,6 +6,7 @@ type Community = {
   name: string;
   city: string;
   country: string;
+  adminId: string;
 };
 
 type CommunityStore = {

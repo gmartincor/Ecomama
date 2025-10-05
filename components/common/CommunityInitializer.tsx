@@ -10,6 +10,7 @@ type Community = {
   name: string;
   city: string;
   country: string;
+  adminId: string;
 };
 
 export const CommunityInitializer = () => {
@@ -43,7 +44,11 @@ export const CommunityInitializer = () => {
           return;
         }
 
-        if (!activeCommunity || !communities.find(c => c.id === activeCommunity.id)) {
+        const needsUpdate = !activeCommunity || 
+                           !activeCommunity.adminId || 
+                           !communities.find(c => c.id === activeCommunity.id);
+
+        if (needsUpdate) {
           try {
             const settingsRes = await fetch("/api/users/me/settings");
             const settings = settingsRes.ok ? await settingsRes.json() : null;
