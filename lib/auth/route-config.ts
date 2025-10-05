@@ -1,14 +1,14 @@
 export const ROUTE_CONFIG = {
-  public: ["/", "/login", "/register", "/communities/map"],
+  public: ["/", "/login", "/register"],
   auth: ["/login", "/register"],
   superadmin: ["/superadmin"],
   shared: ["/profile", "/admin"],
-  regularUser: ["/community", "/dashboard", "/settings", "/requests"],
+  regularUser: ["/community", "/dashboard", "/settings", "/requests", "/communities"],
 } as const;
 
 export const DEFAULT_REDIRECTS = {
   superadmin: "/superadmin/dashboard",
-  user: "/dashboard",
+  user: "/communities/map",
   unauthorized: "/login",
 } as const;
 

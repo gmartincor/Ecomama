@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth/config";
+import { checkProfileCompletion } from "@/lib/utils/profile-checker";
 import {
   ROUTE_CONFIG,
   DEFAULT_REDIRECTS,
@@ -17,6 +18,7 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute = ROUTE_CONFIG.auth.includes(pathname as typeof ROUTE_CONFIG.auth[number]);
   const isSuperadminRoute = isRouteMatch(pathname, ROUTE_CONFIG.superadmin);
   const isSharedRoute = isRouteMatch(pathname, ROUTE_CONFIG.shared);
+  const isProfileRoute = pathname.startsWith('/profile/me');
 
   if (!session && !isPublicRoute) {
     const url = new URL(DEFAULT_REDIRECTS.unauthorized, request.url);
@@ -30,6 +32,14 @@ export async function middleware(request: NextRequest) {
         ? DEFAULT_REDIRECTS.superadmin
         : DEFAULT_REDIRECTS.user;
     return NextResponse.redirect(new URL(redirectUrl, request.url));
+  }
+
+  if (session && session.user.role !== "SUPERADMIN" && !isProfileRoute && !isPublicRoute) {
+    const profileStatus = await checkProfileCompletion(session.user.id);
+    
+    if (!profileStatus.isComplete) {
+      return NextResponse.redirect(new URL('/profile/me/edit?firstTime=true', request.url));
+    }
   }
 
   if (isSuperadminRoute && shouldRedirectRegularUser(pathname, session?.user.role)) {

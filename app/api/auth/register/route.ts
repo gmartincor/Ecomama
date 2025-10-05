@@ -31,6 +31,11 @@ export async function POST(request: Request) {
         name,
         role: 'USER',
         status: 'ACTIVE',
+        profile: {
+          create: {
+            isPublic: true,
+          },
+        },
       },
       select: {
         id: true,

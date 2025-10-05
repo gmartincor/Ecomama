@@ -1,15 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { ProfileEditForm } from '@/features/profiles/components/ProfileEditForm';
 import { ProfileUpdateInput } from '@/features/profiles/types';
 import { PageLoading } from '@/components/common/PageLoading';
 import { PageError } from '@/components/common/PageError';
+import { Alert } from '@/components/ui/Alert';
 
 export default function EditProfilePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isFirstTime = searchParams.get('firstTime') === 'true';
+  
   const [profile, setProfile] = useState<ProfileUpdateInput | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,10 +45,14 @@ export default function EditProfilePage() {
   }, []);
 
   const handleSuccess = () => {
-    router.push('/settings');
+    router.push('/communities/map');
+    router.refresh();
   };
 
   const handleCancel = () => {
+    if (isFirstTime) {
+      return;
+    }
     router.back();
   };
 
@@ -53,24 +61,35 @@ export default function EditProfilePage() {
   }
 
   if (error || !profile) {
-    return <PageError message={error || 'Error al cargar el perfil'} onRetry={fetchProfile} onBack={handleCancel} />;
+    return <PageError message={error || 'Error al cargar el perfil'} onRetry={fetchProfile} onBack={!isFirstTime ? handleCancel : undefined} />;
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold">Editar Perfil</h1>
+          <h1 className="text-3xl font-bold">
+            {isFirstTime ? '¡Bienvenido! Completa tu perfil' : 'Editar Perfil'}
+          </h1>
           <p className="text-muted-foreground mt-2">
-            Actualiza tu información personal visible para otros miembros
+            {isFirstTime 
+              ? 'Completa tu información para que los administradores de las comunidades puedan conocerte mejor antes de aceptar tu solicitud'
+              : 'Actualiza tu información personal visible para otros miembros'
+            }
           </p>
         </div>
+
+        {isFirstTime && (
+          <Alert variant="info" className="mb-6">
+            Es importante que completes tu perfil antes de solicitar unirte a una comunidad. Los campos requeridos son: biografía, teléfono y ubicación.
+          </Alert>
+        )}
 
         <Card className="p-6">
           <ProfileEditForm 
             initialData={profile} 
             onSuccess={handleSuccess}
-            onCancel={handleCancel}
+            onCancel={!isFirstTime ? handleCancel : undefined}
           />
         </Card>
       </div>

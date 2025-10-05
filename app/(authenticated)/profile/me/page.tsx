@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFetch } from '@/lib/hooks';
 import { ProfileDetailView } from '@/features/profiles/components/ProfileDetailView';
+import { useProfileCompletion } from '@/features/profiles/hooks';
 import { PageLoading } from '@/components/common/PageLoading';
 import { PageError } from '@/components/common/PageError';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { Alert } from '@/components/ui/Alert';
 import { useUserEvents } from '@/features/events/hooks/useUserEvents';
 import { UserEventCard } from '@/features/events/components/UserEventCard';
 import { UserEventsCalendar } from '@/features/events/components/UserEventsCalendar';
@@ -22,6 +24,7 @@ export default function MyProfilePage() {
     getErrorMessage: () => 'Error al cargar el perfil',
   });
 
+  const { isComplete, completionPercentage } = useProfileCompletion(profile || null);
   const { events, isLoading: eventsLoading, error: eventsError } = useUserEvents();
 
   const handleEdit = () => {
@@ -55,6 +58,22 @@ export default function MyProfilePage() {
             Visualiza y edita tu información personal
           </p>
         </div>
+
+        {!isComplete && (
+          <Alert variant="warning">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold">Perfil incompleto ({completionPercentage}%)</p>
+                <p className="text-sm mt-1">
+                  Completa tu perfil para que los administradores puedan conocerte mejor antes de aceptar tu solicitud a una comunidad.
+                </p>
+              </div>
+              <Button onClick={handleEdit} size="sm" variant="primary">
+                Completar ahora
+              </Button>
+            </div>
+          </Alert>
+        )}
 
         <ProfileDetailView
           profile={profile}
