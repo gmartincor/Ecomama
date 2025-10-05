@@ -12,9 +12,10 @@ type CommunityMapProps = {
     position: LatLngExpression;
     name: string;
     description?: string;
+    isMember?: boolean;
   }>;
   onMarkerClick?: (id: string) => void;
-  onViewDetails?: (id: string) => void;
+  onMarkerAction?: (id: string) => void;
   className?: string;
 };
 
@@ -25,7 +26,7 @@ export const CommunityMap = ({
   zoom = DEFAULT_ZOOM,
   markers = [],
   onMarkerClick,
-  onViewDetails,
+  onMarkerAction,
   className = "h-96 w-full rounded-lg",
 }: CommunityMapProps) => {
   useEffect(() => {
@@ -60,12 +61,12 @@ export const CommunityMap = ({
               {marker.description && (
                 <p className="text-muted-foreground text-xs mb-3">{marker.description}</p>
               )}
-              {onViewDetails && (
+              {onMarkerAction && (
                 <button
-                  onClick={() => onViewDetails(marker.id)}
+                  onClick={() => onMarkerAction(marker.id)}
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  Solicitar Unirse
+                  {marker.isMember ? "Ver Comunidad" : "Solicitar Unirse"}
                 </button>
               )}
             </div>

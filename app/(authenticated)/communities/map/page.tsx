@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { Input } from "@/components/ui/Input";
 import { useCommunities } from "@/features/communities/hooks/useCommunities";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { useCommunityStore } from "@/lib/stores/useCommunityStore";
 
 const CommunityMap = dynamic(
   () => import("@/features/communities/components/CommunityMap").then((mod) => ({ default: mod.CommunityMap })),
@@ -19,18 +20,27 @@ export default function CommunityMapPage() {
     status: "ACTIVE",
     search: searchTerm,
   });
+  const { userCommunities } = useCommunityStore();
+
+  const userCommunityIds = new Set(userCommunities.map((c) => c.id));
 
   const markers = communities.map((community) => ({
     id: community.id,
     position: [community.latitude, community.longitude] as [number, number],
     name: community.name,
     description: `${community.city}, ${community.country}`,
+    isMember: userCommunityIds.has(community.id),
   }));
 
   const center: [number, number] = markers.length > 0 ? markers[0].position : [40.4168, -3.7038];
 
-  const handleViewDetails = (communityId: string) => {
-    router.push(`/communities/${communityId}/request`);
+  const handleMarkerAction = (communityId: string) => {
+    const isMember = userCommunityIds.has(communityId);
+    if (isMember) {
+      router.push("/community");
+    } else {
+      router.push(`/communities/${communityId}/request`);
+    }
   };
 
   return (
@@ -59,7 +69,7 @@ export default function CommunityMapPage() {
             center={center}
             zoom={6}
             markers={markers}
-            onViewDetails={handleViewDetails}
+            onMarkerAction={handleMarkerAction}
             className="h-[600px] w-full rounded-lg"
           />
         </div>
