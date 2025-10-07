@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useCommunityStore } from "@/lib/stores/useCommunityStore";
 
 type Community = {
@@ -15,7 +14,6 @@ type Community = {
 
 export const CommunityInitializer = () => {
   const { data: session, status } = useSession();
-  const router = useRouter();
   const { setUserCommunities, setActiveCommunity, activeCommunity, setInitialized } = useCommunityStore();
 
   useEffect(() => {
@@ -43,7 +41,6 @@ export const CommunityInitializer = () => {
         const communitiesRes = await fetch("/api/users/me/communities");
 
         if (!communitiesRes.ok) {
-          console.error("Failed to fetch user communities");
           setInitialized(true);
           return;
         }
@@ -51,17 +48,11 @@ export const CommunityInitializer = () => {
         const communities: Community[] = await communitiesRes.json();
         setUserCommunities(communities);
 
-        if (communities.length === 0) {
-          setInitialized(true);
-          router.push("/communities/map");
-          return;
-        }
-
         const needsUpdate = !activeCommunity || 
                            !activeCommunity.adminId || 
                            !communities.find(c => c.id === activeCommunity.id);
 
-        if (needsUpdate) {
+        if (needsUpdate && communities.length > 0) {
           try {
             const settingsRes = await fetch("/api/users/me/settings");
             const settings = settingsRes.ok ? await settingsRes.json() : null;
@@ -73,21 +64,19 @@ export const CommunityInitializer = () => {
             if (defaultCommunity) {
               setActiveCommunity(defaultCommunity);
             }
-          } catch (error) {
-            console.error("Failed to fetch settings, using first community", error);
+          } catch {
             setActiveCommunity(communities[0]);
           }
         }
         
         setInitialized(true);
-      } catch (error) {
-        console.error("Failed to initialize communities", error);
+      } catch {
         setInitialized(true);
       }
     };
 
     initializeCommunities();
-  }, [status, session?.user?.id, session?.user?.role]);
+  }, [status, session?.user?.id, session?.user?.role, setUserCommunities, setActiveCommunity, activeCommunity, setInitialized]);
 
   return null;
 };

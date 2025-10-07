@@ -19,6 +19,7 @@ export async function middleware(request: NextRequest) {
   const isSuperadminRoute = isRouteMatch(pathname, ROUTE_CONFIG.superadmin);
   const isSharedRoute = isRouteMatch(pathname, ROUTE_CONFIG.shared);
   const isProfileRoute = pathname.startsWith('/profile/me');
+  const isDashboardRoute = pathname === '/dashboard';
 
   if (!session && !isPublicRoute) {
     const url = new URL(DEFAULT_REDIRECTS.unauthorized, request.url);
@@ -27,14 +28,10 @@ export async function middleware(request: NextRequest) {
   }
 
   if (session && isAuthRoute) {
-    const redirectUrl =
-      session.user.role === "SUPERADMIN"
-        ? DEFAULT_REDIRECTS.superadmin
-        : DEFAULT_REDIRECTS.user;
-    return NextResponse.redirect(new URL(redirectUrl, request.url));
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  if (session && session.user.role !== "SUPERADMIN" && !isProfileRoute && !isPublicRoute) {
+  if (session && session.user.role !== "SUPERADMIN" && !isProfileRoute && !isPublicRoute && !isDashboardRoute) {
     const profileStatus = await checkProfileCompletion(session.user.id);
     
     if (!profileStatus.isComplete) {
@@ -43,7 +40,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isSuperadminRoute && shouldRedirectRegularUser(pathname, session?.user.role)) {
-    return NextResponse.redirect(new URL(DEFAULT_REDIRECTS.user, request.url));
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   if (isSharedRoute) {

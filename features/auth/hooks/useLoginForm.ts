@@ -68,9 +68,12 @@ export function useLoginForm(): UseLoginFormReturn {
       }
 
       if (result?.ok) {
-        const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-        router.push(callbackUrl);
-        router.refresh();
+        const callbackUrl = searchParams.get('callbackUrl');
+        if (callbackUrl) {
+          router.push(callbackUrl);
+        } else {
+          window.location.href = '/dashboard';
+        }
       }
     } catch (error) {
       setServerError('Error de conexión. Intenta nuevamente.');
