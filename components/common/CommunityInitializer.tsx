@@ -20,7 +20,17 @@ export const CommunityInitializer = () => {
 
   useEffect(() => {
     const initializeCommunities = async () => {
-      if (status !== "authenticated" || !session?.user) {
+      if (status === "loading") {
+        return;
+      }
+
+      if (status === "unauthenticated") {
+        setInitialized(true);
+        return;
+      }
+
+      if (!session?.user) {
+        setInitialized(true);
         return;
       }
 
