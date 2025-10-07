@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
+import { InstallPWAButton } from '@/features/pwa';
 
 export const LandingNav = () => {
   return (
@@ -16,12 +17,13 @@ export const LandingNav = () => {
           </Link>
 
           <div className="flex items-center gap-3">
+            <InstallPWAButton />
             <Link href="/login">
               <Button variant="ghost" size="sm">
                 Iniciar sesión
               </Button>
             </Link>
-            <Link href="/register">
+            <Link href="/register" className="hidden sm:block">
               <Button variant="primary" size="sm">
                 Registrarse
               </Button>
