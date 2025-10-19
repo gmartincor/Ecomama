@@ -1,5 +1,0 @@
-# pnpm Workspace Configuration
-# This enables pnpm workspace features for the monorepo
-
-packages:
-  - 'frontend'

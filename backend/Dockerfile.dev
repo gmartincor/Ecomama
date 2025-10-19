@@ -1,15 +1,31 @@
-FROM gradle:8.5-jdk21-alpine
+FROM eclipse-temurin:21-jdk-alpine
 
 WORKDIR /app
 
-COPY gradle gradle/
-COPY gradlew gradlew.bat settings.gradle ./
-COPY build.gradle ./
+RUN apk add --no-cache --update \
+    wget \
+    curl \
+    && rm -rf /var/cache/apk/*
 
-RUN gradle dependencies --no-daemon --quiet || true
+RUN addgroup -S spring && \
+    adduser -S spring -G spring && \
+    chown -R spring:spring /app
 
-COPY src ./src
+COPY --chown=spring:spring gradle gradle/
+COPY --chown=spring:spring gradlew gradlew.bat settings.gradle build.gradle ./
+
+RUN chmod +x gradlew && \
+    ./gradlew dependencies --no-daemon || true
+
+USER spring:spring
+
+ENV SPRING_OUTPUT_ANSI_ENABLED=ALWAYS \
+    SPRING_DEVTOOLS_RESTART_ENABLED=true \
+    JAVA_OPTS="-Xmx512m -Xms256m"
 
 EXPOSE 8080 5005
 
-CMD ["./gradlew", "bootRun", "--no-daemon"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+
+CMD ["./gradlew", "bootRun", "--no-daemon", "--continuous"]

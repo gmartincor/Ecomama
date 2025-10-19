@@ -20,7 +20,8 @@ services:
       POSTGRES_DB: ${DATABASE_NAME:-ecomama_dev}
       POSTGRES_USER: ${DATABASE_USER:-ecomama_user}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-ecomama_password}
-      POSTGRES_INITDB_ARGS: "-E UTF8"
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=en_US.utf8"
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "${DATABASE_PORT:-5432}:5432"
     volumes:
@@ -30,6 +31,27 @@ services:
       - ecomama-network
     healthcheck: *healthcheck-postgres
     restart: unless-stopped
+    shm_size: 256mb
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_buffers=256MB"
+      - "-c"
+      - "max_connections=100"
+      - "-c"
+      - "work_mem=16MB"
+      - "-c"
+      - "maintenance_work_mem=64MB"
+      - "-c"
+      - "effective_cache_size=512MB"
+      - "-c"
+      - "checkpoint_completion_target=0.9"
+      - "-c"
+      - "wal_buffers=16MB"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "effective_io_concurrency=200"
 
   redis:
     image: redis:7-alpine

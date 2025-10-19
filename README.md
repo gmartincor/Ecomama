@@ -40,92 +40,40 @@ Ecomama is more than just a marketplace—it's a cultural movement dedicated to 
 ## 🚀 Quick Start
 
 ```bash
-make dev              # Start development (Docker)
-make help             # See all commands
-./verify-docker.sh    # Validate setup
+make dev
 ```
 
-**Access**: [Frontend](http://localhost:3000) • [API](http://localhost:8080/api/v1) • [Docs](http://localhost:8080/swagger-ui.html)
+**Access**: http://localhost:3000
 
 ## Development
 
-### Full Stack (Docker)
 ```bash
 make dev              # Start all services
-make dev-logs         # View logs
-make dev-down         # Stop
+make db               # Database only
+make test             # Run tests
+make clean            # Cleanup
 ```
 
-### Database Only
-```bash
-make db               # Start postgres + redis
-cd backend && ./gradlew bootRun
-cd frontend && pnpm dev
-```
-
-### Testing
-```bash
-make test             # All tests
-make test-backend     # Backend only
-make test-frontend    # Frontend only
-```
-
-## Project Structure
+## Structure
 
 ```
 ecomama/
 ├── backend/          # Spring Boot API
 ├── frontend/         # Next.js app
 ├── infrastructure/   # Docker, Nginx
-├── docs/             # Documentation
-└── .github/          # CI/CD
+├── scripts/          # Build scripts
+└── docs/             # Documentation
 ```
 
-## Documentation
-
-**[Docker Guide](./docs/DOCKER.md)** - Complete Docker setup  
-**[Architecture](./docs/ARCHITECTURE.md)** - System design  
-**[Quick Reference](./docs/DOCKER_QUICK_REF.md)** - Command cheatsheet
-
-**Development**: [Copilot Instructions](./copilot-instructions.md) • [Implementation Plan](./IMPLEMENTATION_PLAN.md)
-
-## Commands
+## Production Build
 
 ```bash
-make help             # Show all commands
-make dev              # Development
-make db               # Database only
-make test             # Run tests
-make clean            # Cleanup
+make build-all        # Build images
+./scripts/build.sh frontend
+./scripts/build.sh backend
 ```
 
-See `make help` for complete list.
-
-## 🎨 Code Quality & Design Patterns
-
-The project follows industry best practices and proven design patterns:
-
-### Principles
-- **SOLID** - Single responsibility, Open/closed, Liskov substitution, Interface segregation, Dependency inversion
-- **DRY** - Don't Repeat Yourself
-- **KISS** - Keep It Simple, Stupid
-- **YAGNI** - You Aren't Gonna Need It
-
-### Architecture Patterns
-- **Clean Architecture** - Domain-driven design with clear layer separation
-- **Repository Pattern** - Data access abstraction
-- **Service Layer** - Business logic encapsulation
-- **DTO Pattern** - Data transfer objects for API contracts
-- **Factory Pattern** - Object creation abstraction
-- **Strategy Pattern** - Interchangeable algorithms
-- **Observer Pattern** - Event-driven communication
-
-### Development Practices
-- **Test-Driven Development (TDD)** - Tests before implementation
-- **Continuous Integration/Deployment** - Automated testing and deployment
-- **Code Reviews** - Peer review process
-- **Semantic Versioning** - Clear version management
-- **Conventional Commits** - Standardized commit messages
+Deploy frontend and backend independently with environment variables.
 
 ---
 

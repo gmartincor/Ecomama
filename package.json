@@ -3,29 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "description": "A multi-user platform connecting farmers and consumers for direct purchase of organic products",
-  "scripts": {
-    "dev": "pnpm --filter frontend dev",
-    "build": "pnpm --filter frontend build",
-    "start": "pnpm --filter frontend start",
-    "lint": "pnpm --filter frontend lint",
-    "test": "pnpm --filter frontend test",
-    
-    "docker:dev": "docker compose --env-file .env.dev -f docker-compose.dev.yml up",
-    "docker:dev:build": "docker compose --env-file .env.dev -f docker-compose.dev.yml up --build",
-    "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
-    "docker:dev:logs": "docker compose -f docker-compose.dev.yml logs -f",
-    
-    "docker:prod": "docker compose --env-file .env.prod -f docker-compose.prod.yml up -d",
-    "docker:prod:build": "docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build",
-    "docker:prod:down": "docker compose -f docker-compose.prod.yml down",
-    "docker:prod:logs": "docker compose -f docker-compose.prod.yml logs -f",
-    
-    "docker:db": "docker compose --env-file .env.dev -f docker-compose.base.yml up -d",
-    "docker:db:down": "docker compose -f docker-compose.base.yml down",
-    
-    "docker:clean": "docker compose -f docker-compose.dev.yml down -v && docker compose -f docker-compose.prod.yml down -v && docker compose -f docker-compose.base.yml down -v && docker system prune -f",
-    "docker:clean:all": "docker compose -f docker-compose.dev.yml down -v && docker compose -f docker-compose.prod.yml down -v && docker compose -f docker-compose.base.yml down -v && docker system prune -a -f --volumes"
-  },
   "keywords": [
     "marketplace",
     "organic",
@@ -36,7 +13,7 @@
   "author": "Ecomama Team",
   "license": "UNLICENSED",
   "engines": {
-    "node": ">=18.0.0",
+    "node": ">=20.0.0",
     "pnpm": ">=8.0.0"
   }
 }
