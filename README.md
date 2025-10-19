@@ -27,7 +27,7 @@ Ecomama is more than just a marketplace—it's a cultural movement dedicated to 
 
 ### Backend
 - **Language**: Java 21
-- **Framework**: Spring Boot 3.2+
+- **Framework**: Spring Boot 3.5+
 - **Database**: PostgreSQL with PostGIS
 - **Cache**: Redis
 - **Architecture**: Clean Architecture + Modular Design
@@ -39,162 +39,94 @@ Ecomama is more than just a marketplace—it's a cultural movement dedicated to 
 
 ## 🚀 Quick Start
 
-### Prerequisites
-
-- Java 21+
-- Node.js 20+
-- pnpm 8+
-- Docker & Docker Compose
-- Git
-
-### Setup
-
 ```bash
-# Clone the repository
-git clone https://github.com/your-org/ecomama.git
-cd ecomama
-
-# Run setup script
-chmod +x setup.sh
-./setup.sh
-
-# Start frontend (in one terminal)
-cd frontend
-pnpm dev
-
-# Start backend (in another terminal)
-cd backend
-./gradlew bootRun
+make dev              # Start development (Docker)
+make help             # See all commands
+./verify-docker.sh    # Validate setup
 ```
 
-### Access Points
+**Access**: [Frontend](http://localhost:3000) • [API](http://localhost:8080/api/v1) • [Docs](http://localhost:8080/swagger-ui.html)
 
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:8080
-- **API Documentation**: http://localhost:8080/swagger-ui.html
-- **Database**: localhost:5432
-- **Redis**: localhost:6379
+## Development
 
-## 📖 Documentation
+### Full Stack (Docker)
+```bash
+make dev              # Start all services
+make dev-logs         # View logs
+make dev-down         # Stop
+```
 
-- [Implementation Plan](./IMPLEMENTATION_PLAN.md) - Phased development roadmap
-- [Architecture](./docs/ARCHITECTURE.md) - System architecture documentation
-- [Copilot Instructions](./copilot-instructions.md) - Development guidelines
+### Database Only
+```bash
+make db               # Start postgres + redis
+cd backend && ./gradlew bootRun
+cd frontend && pnpm dev
+```
 
-## 🏗️ Project Structure
+### Testing
+```bash
+make test             # All tests
+make test-backend     # Backend only
+make test-frontend    # Frontend only
+```
+
+## Project Structure
 
 ```
 ecomama/
-├── frontend/          # Next.js application
-├── backend/           # Spring Boot application
-├── infrastructure/    # Docker, Nginx configs
-├── .github/           # GitHub Actions workflows
-└── docs/              # Documentation
+├── backend/          # Spring Boot API
+├── frontend/         # Next.js app
+├── infrastructure/   # Docker, Nginx
+├── docs/             # Documentation
+└── .github/          # CI/CD
 ```
 
-## 🧪 Testing
+## Documentation
+
+**[Docker Guide](./docs/DOCKER.md)** - Complete Docker setup  
+**[Architecture](./docs/ARCHITECTURE.md)** - System design  
+**[Quick Reference](./docs/DOCKER_QUICK_REF.md)** - Command cheatsheet
+
+**Development**: [Copilot Instructions](./copilot-instructions.md) • [Implementation Plan](./IMPLEMENTATION_PLAN.md)
+
+## Commands
 
 ```bash
-# Frontend tests
-cd frontend
-pnpm test              # Unit tests
-pnpm test:e2e          # E2E tests
-
-# Backend tests
-cd backend
-./gradlew test         # Unit & integration tests
+make help             # Show all commands
+make dev              # Development
+make db               # Database only
+make test             # Run tests
+make clean            # Cleanup
 ```
 
-## 🐳 Docker Deployment
+See `make help` for complete list.
 
-```bash
-# Start all services
-docker-compose -f infrastructure/docker-compose.yml up -d
+## 🎨 Code Quality & Design Patterns
 
-# View logs
-docker-compose -f infrastructure/docker-compose.yml logs -f
+The project follows industry best practices and proven design patterns:
 
-# Stop all services
-docker-compose -f infrastructure/docker-compose.yml down
-```
-
-## 🤝 Development Workflow
-
-1. Create a feature branch: `git checkout -b feature/my-feature`
-2. Make changes following [Copilot Instructions](./copilot-instructions.md)
-3. Write tests (TDD approach)
-4. Commit using conventional commits: `feat: add new feature`
-5. Push and create a Pull Request
-6. Wait for CI/CD checks to pass
-7. Request code review
-
-## 📋 Available Scripts
-
-### Root
-- `pnpm dev` - Start frontend in development mode
-- `pnpm build` - Build frontend for production
-- `pnpm docker:up` - Start all Docker services
-- `pnpm docker:down` - Stop all Docker services
-
-### Frontend
-- `pnpm dev` - Start development server
-- `pnpm build` - Build for production
-- `pnpm test` - Run tests
-- `pnpm lint` - Lint code
-- `pnpm format` - Format code
-
-### Backend
-- `./gradlew bootRun` - Start development server
-- `./gradlew build` - Build application
-- `./gradlew test` - Run tests
-- `./gradlew clean` - Clean build artifacts
-
-## 🔒 Security
-
-- JWT-based authentication
-- HTTPS only in production
-- Input validation on all endpoints
-- SQL injection prevention
-- XSS protection
-- CORS configuration
-- Rate limiting
-
-## 📊 Monitoring & Logging
-
-- Health check endpoints
-- Structured JSON logging
-- Prometheus metrics
-- Error tracking with Sentry (production)
-
-## 🌍 Internationalization
-
-The platform supports multiple languages:
-- English (default)
-- Spanish
-
-## 🎨 Code Quality
-
-The project follows:
-- **SOLID** principles
+### Principles
+- **SOLID** - Single responsibility, Open/closed, Liskov substitution, Interface segregation, Dependency inversion
 - **DRY** - Don't Repeat Yourself
 - **KISS** - Keep It Simple, Stupid
 - **YAGNI** - You Aren't Gonna Need It
-- Clean Architecture
-- Test-Driven Development (TDD)
 
-## 📝 License
+### Architecture Patterns
+- **Clean Architecture** - Domain-driven design with clear layer separation
+- **Repository Pattern** - Data access abstraction
+- **Service Layer** - Business logic encapsulation
+- **DTO Pattern** - Data transfer objects for API contracts
+- **Factory Pattern** - Object creation abstraction
+- **Strategy Pattern** - Interchangeable algorithms
+- **Observer Pattern** - Event-driven communication
 
-[To be determined]
-
-## 👥 Team
-
-Ecomama Team - Building sustainable food communities
-
-## 🙏 Acknowledgments
-
-- OpenStreetMap & Nominatim for geolocation services
-- All open-source contributors
+### Development Practices
+- **Test-Driven Development (TDD)** - Tests before implementation
+- **Continuous Integration/Deployment** - Automated testing and deployment
+- **Code Reviews** - Peer review process
+- **Semantic Versioning** - Clear version management
+- **Conventional Commits** - Standardized commit messages
 
 ---
 
-**Made with 🌱 for a sustainable future**
+**Built with 🌱 for sustainable food communities**

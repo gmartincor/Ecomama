@@ -1,39 +1,34 @@
-# Multi-stage build for Spring Boot
-FROM gradle:8.5-jdk21-alpine AS build
+FROM gradle:8.5-jdk21-alpine AS builder
 
 WORKDIR /app
 
-# Copy Gradle files
-COPY build.gradle settings.gradle ./
-COPY gradle ./gradle
+COPY gradle gradle/
+COPY gradlew gradlew.bat settings.gradle ./
+COPY build.gradle ./
 
-# Download dependencies
-RUN gradle dependencies --no-daemon
+RUN gradle dependencies --no-daemon --quiet || true
 
-# Copy source code
 COPY src ./src
 
-# Build application
-RUN gradle build -x test --no-daemon
+RUN gradle build -x test --no-daemon --quiet && \
+    java -Djarmode=layertools -jar build/libs/*.jar extract
 
-# Production stage
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:21-jre-alpine AS production
 
 WORKDIR /app
 
-# Create non-root user
 RUN addgroup -S spring && adduser -S spring -G spring
+
+COPY --from=builder --chown=spring:spring /app/dependencies/ ./
+COPY --from=builder --chown=spring:spring /app/spring-boot-loader/ ./
+COPY --from=builder --chown=spring:spring /app/snapshot-dependencies/ ./
+COPY --from=builder --chown=spring:spring /app/application/ ./
+
 USER spring:spring
 
-# Copy jar from build stage
-COPY --from=build /app/build/libs/*.jar app.jar
-
-# Expose port
 EXPOSE 8080
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
 
-# Run application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]

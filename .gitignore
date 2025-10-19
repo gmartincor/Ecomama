@@ -2,6 +2,23 @@
 # ECOMAMA - Global .gitignore
 # ===========================
 
+
+# ============================================
+# PROJECT MANAGEMENT & INTERNAL DOCS
+# ============================================
+
+# Internal planning documents (keep in local only)
+IMPLEMENTATION_PLAN.md
+PHASE_0_COMPLETE.md
+PROJECT_SETUP_SUMMARY.md
+/docs/planning/
+/docs/internal/
+*.draft.md
+*.wip.md
+*-DRAFT.md
+*-WIP.md
+
+
 # ============================================
 # BACKEND (Java/Spring Boot/Maven/Gradle)
 # ============================================
@@ -158,6 +175,14 @@ docker/data/
 .env.production
 .env.*.local
 *.env
+
+!.env.dev
+!.env.prod
+!.env.example
+!.env.local.example
+!.env.prod.example
+!backend/.env.example
+!frontend/.env.local.example
 
 # Secrets
 secrets/
@@ -369,11 +394,12 @@ local.yml
 # KEEP THESE
 # ============================================
 
-# Keep empty directories
 !.gitkeep
 
-# Keep example env files
+!.env.dev
+!.env.prod
 !.env.example
 !.env.local.example
+!.env.prod.example
 !backend/.env.example
 !frontend/.env.local.example

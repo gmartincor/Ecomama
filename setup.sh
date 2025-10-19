@@ -1,89 +1,125 @@
 #!/bin/bash
 
-# =========================================
-# Ecomama Development Environment Setup
-# =========================================
-
 set -e
 
-echo "🌱 Setting up Ecomama development environment..."
-
-# Colors for output
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 RED='\033[0;31m'
-NC='\033[0m' # No Color
+YELLOW='\033[1;33m'
+NC='\033[0m'
 
-# Check prerequisites
+MODE="${1:-docker}"
+
+echo ""
+echo "╔════════════════════════════════════════════════════════════╗"
+echo "║          🌱 Ecomama Development Setup                      ║"
+echo "╚════════════════════════════════════════════════════════════╝"
+echo ""
+
+check_command() {
+    if ! command -v "$1" >/dev/null 2>&1; then
+        echo -e "${RED}✗ $1 is required but not installed${NC}"
+        return 1
+    fi
+    echo -e "${GREEN}✓ $1 found${NC}"
+    return 0
+}
+
 echo -e "${BLUE}Checking prerequisites...${NC}"
 
-command -v java >/dev/null 2>&1 || { echo -e "${RED}Java 21 is required but not installed. Aborting.${NC}" >&2; exit 1; }
-command -v node >/dev/null 2>&1 || { echo -e "${RED}Node.js is required but not installed. Aborting.${NC}" >&2; exit 1; }
-command -v pnpm >/dev/null 2>&1 || { echo -e "${RED}pnpm is required but not installed. Aborting.${NC}" >&2; exit 1; }
-command -v docker >/dev/null 2>&1 || { echo -e "${RED}Docker is required but not installed. Aborting.${NC}" >&2; exit 1; }
+check_command docker || exit 1
 
-echo -e "${GREEN}✓ All prerequisites met${NC}"
+if ! docker compose version >/dev/null 2>&1; then
+    echo -e "${RED}✗ Docker Compose V2 is required${NC}"
+    exit 1
+fi
+echo -e "${GREEN}✓ Docker Compose V2 found${NC}"
 
-# Create environment files
-echo -e "${BLUE}Creating environment files...${NC}"
-
-if [ ! -f .env.local ]; then
-    cp .env.example .env.local
-    echo -e "${GREEN}✓ Created .env.local${NC}"
-else
-    echo -e "${GREEN}✓ .env.local already exists${NC}"
+if [ "$MODE" = "local" ]; then
+    check_command java || exit 1
+    check_command node || exit 1
+    check_command pnpm || exit 1
 fi
 
-if [ ! -f frontend/.env.local ]; then
-    cp frontend/.env.local.example frontend/.env.local
-    echo -e "${GREEN}✓ Created frontend/.env.local${NC}"
-else
-    echo -e "${GREEN}✓ frontend/.env.local already exists${NC}"
+echo ""
+echo -e "${BLUE}Validating environment files...${NC}"
+
+if [ ! -f .env.dev ]; then
+    echo -e "${YELLOW}Creating .env.dev from .env.example...${NC}"
+    cp .env.example .env.dev
+    echo -e "${GREEN}✓ Created .env.dev${NC}"
 fi
 
-# Install frontend dependencies
-echo -e "${BLUE}Installing frontend dependencies...${NC}"
-cd frontend
-pnpm install
-echo -e "${GREEN}✓ Frontend dependencies installed${NC}"
-cd ..
+chmod +x backend/gradlew 2>/dev/null || true
 
-# Make gradlew executable
-echo -e "${BLUE}Setting up backend...${NC}"
-chmod +x backend/gradlew
-echo -e "${GREEN}✓ Backend setup complete${NC}"
-
-# Start Docker services
-echo -e "${BLUE}Starting Docker services (PostgreSQL, Redis)...${NC}"
-docker-compose -f infrastructure/docker-compose.yml up -d postgres redis
-echo -e "${GREEN}✓ Docker services started${NC}"
-
-# Wait for services to be ready
-echo -e "${BLUE}Waiting for services to be ready...${NC}"
-sleep 10
-
-# Run database migrations (when implemented)
-# echo -e "${BLUE}Running database migrations...${NC}"
-# cd backend
-# ./gradlew flywayMigrate
-# cd ..
-# echo -e "${GREEN}✓ Database migrations complete${NC}"
-
-echo -e "${GREEN}=====================================${NC}"
-echo -e "${GREEN}✓ Setup complete!${NC}"
-echo -e "${GREEN}=====================================${NC}"
 echo ""
-echo -e "${BLUE}To start development:${NC}"
-echo "  Frontend: cd frontend && pnpm dev"
-echo "  Backend:  cd backend && ./gradlew bootRun"
-echo ""
-echo -e "${BLUE}To stop services:${NC}"
-echo "  docker-compose -f infrastructure/docker-compose.yml down"
-echo ""
-echo -e "${BLUE}Access points:${NC}"
-echo "  Frontend:     http://localhost:3000"
-echo "  Backend API:  http://localhost:8080"
-echo "  Swagger UI:   http://localhost:8080/swagger-ui.html"
-echo "  PostgreSQL:   localhost:5432"
-echo "  Redis:        localhost:6379"
+
+if [ "$MODE" = "docker" ]; then
+    echo -e "${BLUE}Starting full Docker environment...${NC}"
+    echo ""
+    docker compose --env-file .env.dev -f docker-compose.dev.yml up -d --build
+    
+    echo ""
+    echo -e "${GREEN}✅ All services started successfully!${NC}"
+    echo ""
+    echo "╔════════════════════════════════════════════════════════════╗"
+    echo "║                    Access Points                           ║"
+    echo "╠════════════════════════════════════════════════════════════╣"
+    echo "║  Frontend:      http://localhost:3000                      ║"
+    echo "║  Backend API:   http://localhost:8080/api/v1               ║"
+    echo "║  Swagger UI:    http://localhost:8080/swagger-ui.html      ║"
+    echo "║  PostgreSQL:    localhost:5432                             ║"
+    echo "║  Redis:         localhost:6379                             ║"
+    echo "╚════════════════════════════════════════════════════════════╝"
+    echo ""
+    echo -e "${BLUE}Useful commands:${NC}"
+    echo "  View logs:    make dev-logs"
+    echo "  Stop:         make dev-down"
+    echo "  Restart:      make dev-restart"
+    echo "  DB connect:   make db-connect"
+    echo ""
+else
+    echo -e "${BLUE}Setting up local development with Docker DB...${NC}"
+    echo ""
+    
+    if [ ! -d "frontend/node_modules" ]; then
+        echo -e "${BLUE}Installing frontend dependencies...${NC}"
+        cd frontend && pnpm install && cd ..
+        echo -e "${GREEN}✓ Frontend dependencies installed${NC}"
+    else
+        echo -e "${GREEN}✓ Frontend dependencies already installed${NC}"
+    fi
+    
+    echo -e "${BLUE}Starting database services...${NC}"
+    docker compose --env-file .env.dev -f docker-compose.base.yml up -d
+    echo -e "${GREEN}✓ Database services started${NC}"
+    
+    echo ""
+    echo -e "${GREEN}✅ Local development setup complete!${NC}"
+    echo ""
+    echo "╔════════════════════════════════════════════════════════════╗"
+    echo "║              Start Development Services                    ║"
+    echo "╠════════════════════════════════════════════════════════════╣"
+    echo "║  Terminal 1:  cd frontend && pnpm dev                      ║"
+    echo "║  Terminal 2:  cd backend && ./gradlew bootRun              ║"
+    echo "╚════════════════════════════════════════════════════════════╝"
+    echo ""
+    echo "╔════════════════════════════════════════════════════════════╗"
+    echo "║                    Access Points                           ║"
+    echo "╠════════════════════════════════════════════════════════════╣"
+    echo "║  Frontend:      http://localhost:3000                      ║"
+    echo "║  Backend API:   http://localhost:8080/api/v1               ║"
+    echo "║  Swagger UI:    http://localhost:8080/swagger-ui.html      ║"
+    echo "║  PostgreSQL:    localhost:5432                             ║"
+    echo "║  Redis:         localhost:6379                             ║"
+    echo "╚════════════════════════════════════════════════════════════╝"
+    echo ""
+    echo -e "${BLUE}Useful commands:${NC}"
+    echo "  DB logs:      make db-logs"
+    echo "  DB connect:   make db-connect"
+    echo "  Stop DB:      make db-down"
+    echo ""
+fi
+
+echo -e "${YELLOW}Tip: Use 'make help' to see all available commands${NC}"
 echo ""

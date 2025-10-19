@@ -1,0 +1,55 @@
+x-healthcheck-postgres: &healthcheck-postgres
+  test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-ecomama_user} -d $${POSTGRES_DB:-ecomama_dev}"]
+  interval: 10s
+  timeout: 5s
+  retries: 5
+  start_period: 10s
+
+x-healthcheck-redis: &healthcheck-redis
+  test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+  interval: 10s
+  timeout: 5s
+  retries: 5
+  start_period: 10s
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: ecomama-postgres
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-ecomama_dev}
+      POSTGRES_USER: ${DATABASE_USER:-ecomama_user}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-ecomama_password}
+      POSTGRES_INITDB_ARGS: "-E UTF8"
+    ports:
+      - "${DATABASE_PORT:-5432}:5432"
+    volumes:
+      - ecomama_postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    networks:
+      - ecomama-network
+    healthcheck: *healthcheck-postgres
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: ecomama-redis
+    command: redis-server ${REDIS_PASSWORD:+--requirepass $REDIS_PASSWORD}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - ecomama_redis_data:/data
+    networks:
+      - ecomama-network
+    healthcheck: *healthcheck-redis
+    restart: unless-stopped
+
+networks:
+  ecomama-network:
+    driver: bridge
+
+volumes:
+  ecomama_postgres_data:
+    driver: local
+  ecomama_redis_data:
+    driver: local

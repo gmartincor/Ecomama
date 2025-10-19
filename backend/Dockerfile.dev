@@ -1,0 +1,15 @@
+FROM gradle:8.5-jdk21-alpine
+
+WORKDIR /app
+
+COPY gradle gradle/
+COPY gradlew gradlew.bat settings.gradle ./
+COPY build.gradle ./
+
+RUN gradle dependencies --no-daemon --quiet || true
+
+COPY src ./src
+
+EXPOSE 8080 5005
+
+CMD ["./gradlew", "bootRun", "--no-daemon"]
