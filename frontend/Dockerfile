@@ -1,7 +1,6 @@
 FROM node:20-alpine AS base
 
 RUN apk add --no-cache libc6-compat dumb-init && \
-    rm -rf /var/cache/apk/* && \
     corepack enable && \
     corepack prepare pnpm@latest --activate
 
@@ -12,14 +11,19 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile
+    pnpm install --frozen-lockfile --prod
 
 FROM base AS builder
 
 WORKDIR /app
 
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_WS_URL
+
 ENV NEXT_TELEMETRY_DISABLED=1 \
-    NODE_ENV=production
+    NODE_ENV=production \
+    NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} \
+    NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL}
 
 COPY --from=deps /app/node_modules node_modules
 COPY . .
@@ -38,8 +42,7 @@ ENV NODE_ENV=production \
 
 RUN addgroup -g 1001 -S nodejs && \
     adduser -u 1001 -S nextjs -G nodejs && \
-    mkdir -p .next && \
-    chown -R nextjs:nodejs /app
+    chown nextjs:nodejs /app
 
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./

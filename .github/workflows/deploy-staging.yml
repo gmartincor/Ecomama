@@ -1,0 +1,36 @@
+name: Staging
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+concurrency:
+  group: staging
+  cancel-in-progress: true
+
+jobs:
+  test:
+    uses: ./.github/workflows/integration.yml
+
+  build:
+    needs: test
+    uses: ./.github/workflows/build.yml
+    with:
+      environment: staging
+      version_tag: stg-${{ github.sha }}
+    secrets:
+      api_url: ${{ secrets.STAGING_API_URL }}
+      ws_url: ${{ secrets.STAGING_WS_URL }}
+
+  deploy:
+    needs: build
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: staging
+      version_tag: stg-${{ github.sha }}
+      domain: ${{ vars.DOMAIN }}
+    secrets:
+      server_ip: ${{ secrets.SERVER_IP }}
+      ssh_key: ${{ secrets.SSH_PRIVATE_KEY }}
+      env_file: ${{ secrets.STAGING_ENV }}

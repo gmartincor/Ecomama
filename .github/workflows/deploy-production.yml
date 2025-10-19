@@ -1,0 +1,52 @@
+name: Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  test:
+    uses: ./.github/workflows/integration.yml
+
+  build:
+    needs: test
+    uses: ./.github/workflows/build.yml
+    with:
+      environment: production
+      version_tag: prod-${{ github.sha }}
+    secrets:
+      api_url: ${{ secrets.PRODUCTION_API_URL }}
+      ws_url: ${{ secrets.PRODUCTION_WS_URL }}
+
+  deploy:
+    needs: build
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: production
+      version_tag: prod-${{ github.sha }}
+      domain: ${{ vars.DOMAIN }}
+    secrets:
+      server_ip: ${{ secrets.SERVER_IP }}
+      ssh_key: ${{ secrets.SSH_PRIVATE_KEY }}
+      env_file: ${{ secrets.PRODUCTION_ENV }}
+
+  release:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ github.run_number }}
+          name: v${{ github.run_number }}
+          body: |
+            **Commit:** ${{ github.sha }}
+            **Author:** ${{ github.actor }}
+          draft: false

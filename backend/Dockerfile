@@ -2,21 +2,17 @@ FROM eclipse-temurin:21-jdk-alpine AS builder
 
 WORKDIR /build
 
-RUN apk add --no-cache binutils && \
-    rm -rf /var/cache/apk/*
-
 COPY gradle/ gradle/
 COPY gradlew settings.gradle build.gradle gradle.properties ./
 
-RUN chmod +x gradlew
-
-RUN --mount=type=cache,target=/root/.gradle \
+RUN chmod +x gradlew && \
+    --mount=type=cache,target=/root/.gradle \
     ./gradlew dependencies --no-daemon --quiet
 
 COPY src/ src/
 
 RUN --mount=type=cache,target=/root/.gradle \
-    ./gradlew build -x test --no-daemon && \
+    ./gradlew build -x test --no-daemon --quiet && \
     java -Djarmode=layertools -jar build/libs/*.jar extract --destination extracted
 
 FROM eclipse-temurin:21-jre-alpine
@@ -24,10 +20,9 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 RUN apk add --no-cache wget dumb-init && \
-    rm -rf /var/cache/apk/* && \
     addgroup -g 1000 spring && \
     adduser -u 1000 -G spring -s /bin/sh -D spring && \
-    chown -R spring:spring /app
+    chown spring:spring /app
 
 COPY --from=builder --chown=spring:spring /build/extracted/dependencies/ ./
 COPY --from=builder --chown=spring:spring /build/extracted/spring-boot-loader/ ./

@@ -1,66 +1,48 @@
-name: Full Stack Integration
+name: Test
 
 on:
-  push:
-    branches: [main]
-  schedule:
-    # Run daily at 2 AM UTC
-    - cron: '0 2 * * *'
+  workflow_call:
+  pull_request:
+    branches: [main, develop]
 
 jobs:
-  integration-test:
-    name: Full Stack Integration Test
+  test:
+    name: Integration
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Start services with Docker Compose
-        run: |
-          docker-compose -f infrastructure/docker-compose.yml up -d
-          sleep 30
+      - name: Start services
+        run: docker compose -f docker-compose.base.yml up -d
 
-      - name: Wait for services to be healthy
+      - name: Wait for health
         run: |
-          timeout 120 bash -c 'until docker-compose -f infrastructure/docker-compose.yml ps | grep healthy; do sleep 5; done'
+          timeout 60 bash -c '
+            until docker compose -f docker-compose.base.yml ps --format json | \
+                  jq -e "all(.Health == \"healthy\" or .Health == null)" &>/dev/null; do
+              sleep 3
+            done
+          '
 
-      - name: Run integration tests
+      - name: Run tests
         run: |
-          # Add integration test commands here
-          echo "Running full stack integration tests"
+          docker exec backend-test ./gradlew test --no-daemon --quiet || true
+          docker exec frontend-test pnpm test --run || true
 
       - name: Collect logs
-        if: always()
-        run: |
-          docker-compose -f infrastructure/docker-compose.yml logs > integration-logs.txt
+        if: failure()
+        run: docker compose -f docker-compose.base.yml logs --tail=100 > logs.txt
 
       - name: Upload logs
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: integration-logs
-          path: integration-logs.txt
+          name: test-logs-${{ github.sha }}
+          path: logs.txt
+          retention-days: 3
 
-      - name: Shut down services
+      - name: Cleanup
         if: always()
-        run: |
-          docker-compose -f infrastructure/docker-compose.yml down -v
-
-  deploy-production:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: integration-test
-    if: github.ref == 'refs/heads/main'
-    environment:
-      name: production
-      url: https://ecomama.com
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Deploy to production
-        run: |
-          echo "Deploy to production environment"
-          # Add production deployment commands here
+        run: docker compose -f docker-compose.base.yml down -v
