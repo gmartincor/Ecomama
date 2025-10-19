@@ -1,0 +1,29 @@
+{
+  "name": "ecomama",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A multi-user platform connecting farmers and consumers for direct purchase of organic products",
+  "scripts": {
+    "dev": "pnpm --filter frontend dev",
+    "build": "pnpm --filter frontend build",
+    "start": "pnpm --filter frontend start",
+    "lint": "pnpm --filter frontend lint",
+    "test": "pnpm --filter frontend test",
+    "docker:up": "docker-compose -f infrastructure/docker-compose.yml up -d",
+    "docker:down": "docker-compose -f infrastructure/docker-compose.yml down",
+    "docker:logs": "docker-compose -f infrastructure/docker-compose.yml logs -f"
+  },
+  "keywords": [
+    "marketplace",
+    "organic",
+    "farmers",
+    "ecommerce",
+    "community"
+  ],
+  "author": "Ecomama Team",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

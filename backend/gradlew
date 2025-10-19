@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Gradle wrapper script for Unix-based systems
+# This file should be executable
+
+set -e
+
+# Determine the Java command to use
+if [ -n "$JAVA_HOME" ]; then
+    JAVACMD="$JAVA_HOME/bin/java"
+else
+    JAVACMD="java"
+fi
+
+# Determine the project base directory
+cd "$(dirname "$0")"
+BASE_DIR="$(pwd)"
+
+# Download Gradle wrapper if not present
+if [ ! -f "$BASE_DIR/gradle/wrapper/gradle-wrapper.jar" ]; then
+    echo "Downloading Gradle Wrapper..."
+    mkdir -p "$BASE_DIR/gradle/wrapper"
+    curl -L -o "$BASE_DIR/gradle/wrapper/gradle-wrapper.jar" \
+        "https://raw.githubusercontent.com/gradle/gradle/master/gradle/wrapper/gradle-wrapper.jar"
+fi
+
+# Execute Gradle
+exec "$JAVACMD" \
+    -Dorg.gradle.appname="gradlew" \
+    -classpath "$BASE_DIR/gradle/wrapper/gradle-wrapper.jar" \
+    org.gradle.wrapper.GradleWrapperMain \
+    "$@"
