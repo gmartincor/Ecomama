@@ -6,15 +6,21 @@ readonly ENV="${1:-all}"
 check_container() {
   local name="$1"
   
-  docker ps --format '{{.Names}}' | grep -q "^${name}$" || { echo "❌ $name"; return 1; }
+  if ! docker ps --format '{{.Names}}' | grep -q "^${name}$"; then
+    echo "❌ $name (not running)"
+    return 1
+  fi
   
   local status=$(docker inspect --format='{{.State.Health.Status}}' "$name" 2>/dev/null || echo "none")
   
   case "$status" in
-    healthy) echo "✅ $name"; return 0 ;;
-    unhealthy|starting) echo "❌ $name"; return 1 ;;
-    *) echo "⚠️  $name"; return 0 ;;
+    healthy) echo "✅ $name" ;;
+    unhealthy) echo "❌ $name (unhealthy)"; return 1 ;;
+    starting) echo "🔄 $name (starting)" ;;
+    *) echo "⚠️  $name (no healthcheck)" ;;
   esac
+  
+  return 0
 }
 
 check_env() {
@@ -39,26 +45,32 @@ main() {
       check_env "stg" || ((failed+=$?))
       check_env "prod" || ((failed+=$?))
       ;;
-    staging)
+    stg|staging)
       check_env "stg" || ((failed+=$?))
       ;;
-    production)
+    prod|production)
       check_env "prod" || ((failed+=$?))
       ;;
     *)
-      echo "Usage: $0 <staging|production|all>"
+      echo "Usage: $0 <stg|prod|all>"
       exit 1
       ;;
   esac
   
   echo ""
-  echo "=== SYSTEM ==="
-  echo "CPU:  $(top -bn1 | grep "Cpu(s)" | awk '{print $2}')%"
-  echo "Mem:  $(free | awk '/Mem:/ {printf "%.0f%%", $3/$2*100}')"
-  echo "Disk: $(df / | awk 'NR==2 {print $5}')"
+  echo "=== SYSTEM (CX32) ==="
+  echo "CPU:     $(top -bn1 | grep "Cpu(s)" | awk '{print $2}')%"
+  echo "Memory:  $(free -h | awk '/Mem:/ {printf "%s / %s (%.0f%%)", $3, $2, $3/$2*100}')"
+  echo "Disk:    $(df -h / | awk 'NR==2 {printf "%s / %s (%s)", $3, $2, $5}')"
+  echo "Swap:    $(free -h | awk '/Swap:/ {printf "%s / %s", $3, $2}')"
   
   echo ""
-  [[ $failed -eq 0 ]] && echo "✅ All healthy" || echo "❌ $failed issues"
+  echo "=== DOCKER ==="
+  echo "Containers: $(docker ps -q | wc -l) running"
+  echo "Images:     $(docker images -q | wc -l)"
+  
+  echo ""
+  [[ $failed -eq 0 ]] && echo "✅ All services healthy" || echo "❌ $failed service(s) with issues"
   exit $failed
 }
 

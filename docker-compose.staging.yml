@@ -1,2 +1,2 @@
 include:
-  - path: docker-compose.production.yml
+  - docker-compose.production.yml

@@ -89,17 +89,21 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
     
-    // Test configuration
-    maxHeapSize = '1G'
+    maxHeapSize = '768m'
+    maxParallelForks = 2
     
     testLogging {
         events "passed", "skipped", "failed"
-        exceptionFormat "full"
+        exceptionFormat "short"
         showStandardStreams = false
     }
 }
 
-// Code quality
+tasks.named('bootJar') {
+    archiveFileName = 'app.jar'
+    launchScript()
+}
+
 tasks.register('checkCodeQuality') {
     dependsOn test
     doLast {

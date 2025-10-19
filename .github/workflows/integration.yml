@@ -9,7 +9,7 @@ jobs:
   test:
     name: Integration
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 12
 
     steps:
       - uses: actions/checkout@v4
@@ -22,14 +22,15 @@ jobs:
           timeout 60 bash -c '
             until docker compose -f docker-compose.base.yml ps --format json | \
                   jq -e "all(.Health == \"healthy\" or .Health == null)" &>/dev/null; do
-              sleep 3
+              sleep 2
             done
           '
 
-      - name: Run tests
-        run: |
-          docker exec backend-test ./gradlew test --no-daemon --quiet || true
-          docker exec frontend-test pnpm test --run || true
+      - name: Run backend tests
+        run: docker exec -e GRADLE_OPTS="-Dorg.gradle.daemon=false" backend-test ./gradlew test -q || true
+
+      - name: Run frontend tests
+        run: docker exec frontend-test pnpm test --run || true
 
       - name: Collect logs
         if: failure()

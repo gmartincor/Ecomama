@@ -2,16 +2,19 @@
   "name": "ecomama",
   "version": "0.1.0",
   "private": true,
-  "description": "A multi-user platform connecting farmers and consumers for direct purchase of organic products",
+  "description": "Multi-user platform connecting organic farmers directly with conscious consumers",
   "keywords": [
     "marketplace",
     "organic",
     "farmers",
-    "ecommerce",
-    "community"
+    "sustainable"
   ],
   "author": "Ecomama Team",
   "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gmartincor/Ecomama"
+  },
   "engines": {
     "node": ">=20.0.0",
     "pnpm": ">=8.0.0"

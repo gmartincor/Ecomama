@@ -34,3 +34,12 @@ jobs:
       server_ip: ${{ secrets.SERVER_IP }}
       ssh_key: ${{ secrets.SSH_PRIVATE_KEY }}
       env_file: ${{ secrets.STAGING_ENV }}
+
+  notify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - run: |
+          echo "✅ Staging deployed successfully"
+          echo "URL: https://staging.${{ vars.DOMAIN }}"

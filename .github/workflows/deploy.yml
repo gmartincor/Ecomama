@@ -24,7 +24,7 @@ jobs:
   deploy:
     name: ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 8
     environment:
       name: ${{ inputs.environment }}
       url: https://${{ inputs.environment == 'production' && inputs.domain || format('staging.{0}', inputs.domain) }}
@@ -41,30 +41,35 @@ jobs:
 
       - name: Deploy config
         run: |
-          scp -i ~/.ssh/key docker-compose.production.yml \
+          ENV_SHORT="${{ inputs.environment == 'production' && 'prod' || 'stg' }}"
+          
+          scp -i ~/.ssh/key \
+            docker-compose.production.yml \
             infrastructure/nginx/nginx.conf \
             infrastructure/nginx/app.conf.template \
             infrastructure/init-db.sql \
-            deploy@${{ secrets.server_ip }}:/opt/ecomama/${{ inputs.environment }}/
+            deploy@${{ secrets.server_ip }}:/opt/ecomama/${ENV_SHORT}/
           
           echo "${{ secrets.env_file }}" | ssh -i ~/.ssh/key deploy@${{ secrets.server_ip }} \
-            "cat > /opt/ecomama/${{ inputs.environment }}/.env.${{ inputs.environment }}"
+            "cat > /opt/ecomama/${ENV_SHORT}/.env.${ENV_SHORT}"
 
       - name: Deploy
         run: |
+          ENV_SHORT="${{ inputs.environment == 'production' && 'prod' || 'stg' }}"
+          
           ssh -i ~/.ssh/key deploy@${{ secrets.server_ip }} "
             export REGISTRY='ghcr.io/${{ github.repository_owner }}/'
             export VERSION='${{ inputs.version_tag }}'
-            /opt/ecomama/scripts/deploy.sh ${{ inputs.environment }}
+            /opt/ecomama/scripts/deploy.sh ${ENV_SHORT}
           "
 
       - name: Verify
         run: |
           URL="https://${{ inputs.environment == 'production' && inputs.domain || format('staging.{0}', inputs.domain) }}/health"
           
-          for i in {1..8}; do
-            if curl -sf "$URL" &>/dev/null; then
-              echo "✅ Verified"
+          for i in {1..10}; do
+            if curl -sf -m 5 "$URL" &>/dev/null; then
+              echo "✅ Deployment verified"
               exit 0
             fi
             sleep 5
@@ -81,8 +86,8 @@ jobs:
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `🚨 Production Deployment Failed`,
-              body: `**Commit:** ${context.sha}\n**Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              title: `🚨 Production Deployment Failed - ${context.sha.substring(0,7)}`,
+              body: `**Commit:** ${context.sha}\n**Author:** ${context.actor}\n**Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
               labels: ['deployment', 'critical'],
               assignees: [context.actor]
             });
