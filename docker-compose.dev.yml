@@ -8,7 +8,7 @@ x-backend-env: &backend-env
   SPRING_DATASOURCE_PASSWORD: ${DATABASE_PASSWORD:-ecomama_password}
   SPRING_DATA_REDIS_HOST: redis
   SPRING_DATA_REDIS_PORT: 6379
-  JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.native=false"
 
 x-frontend-env: &frontend-env
   NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080/api/v1}
@@ -16,17 +16,17 @@ x-frontend-env: &frontend-env
 
 x-healthcheck-backend: &healthcheck-backend
   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
-  interval: 15s
-  timeout: 5s
-  retries: 5
-  start_period: 60s
+  interval: 20s
+  timeout: 10s
+  retries: 10
+  start_period: 120s
 
 x-healthcheck-frontend: &healthcheck-frontend
   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
-  interval: 15s
-  timeout: 5s
-  retries: 5
-  start_period: 30s
+  interval: 20s
+  timeout: 10s
+  retries: 8
+  start_period: 60s
 
 services:
   backend:
@@ -51,7 +51,8 @@ services:
       - ./backend/src:/app/src:cached
       - ./backend/build.gradle:/app/build.gradle:ro
       - ./backend/settings.gradle:/app/settings.gradle:ro
-      - gradle_cache:/home/spring/.gradle
+      - ./backend/gradle.properties:/app/gradle.properties:ro
+      - gradle_cache:/home/spring/.gradle:delegated
     healthcheck: *healthcheck-backend
     restart: unless-stopped
 
@@ -87,6 +88,10 @@ services:
 
 volumes:
   gradle_cache:
+    driver: local
   frontend_node_modules:
+    driver: local
   frontend_next:
+    driver: local
   pnpm_store:
+    driver: local

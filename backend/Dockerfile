@@ -6,17 +6,18 @@ RUN apk add --no-cache binutils bash && \
     rm -rf /var/cache/apk/*
 
 COPY gradle/ gradle/
-COPY gradlew settings.gradle build.gradle ./
+COPY gradlew settings.gradle build.gradle gradle.properties ./
+
+RUN chmod +x gradlew && \
+    ./gradlew --version
 
 RUN --mount=type=cache,target=/root/.gradle \
-    chmod +x gradlew && \
-    ./gradlew --version && \
-    ./gradlew dependencies --no-daemon || true
+    ./gradlew dependencies --no-daemon --no-build-cache --quiet
 
 COPY src/ ./src/
 
 RUN --mount=type=cache,target=/root/.gradle \
-    ./gradlew build -x test --no-daemon && \
+    ./gradlew build -x test --no-daemon --parallel && \
     java -Djarmode=layertools -jar build/libs/*.jar extract
 
 FROM eclipse-temurin:21-jre-alpine

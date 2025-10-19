@@ -10,24 +10,26 @@ RUN apk add --no-cache --update \
 
 RUN addgroup -S spring && \
     adduser -S spring -G spring && \
-    chown -R spring:spring /app
+    mkdir -p /home/spring/.gradle && \
+    chown -R spring:spring /app /home/spring
 
 COPY --chown=spring:spring gradle/ gradle/
-COPY --chown=spring:spring gradlew settings.gradle build.gradle ./
+COPY --chown=spring:spring gradlew settings.gradle build.gradle gradle.properties ./
 
-RUN chmod +x gradlew && \
-    ./gradlew --version && \
-    ./gradlew dependencies --no-daemon || true
+RUN chmod +x gradlew
 
 USER spring:spring
 
+RUN --mount=type=cache,target=/home/spring/.gradle,uid=1000,gid=1000 \
+    ./gradlew dependencies --no-daemon --quiet || true
+
 ENV SPRING_OUTPUT_ANSI_ENABLED=ALWAYS \
     SPRING_DEVTOOLS_RESTART_ENABLED=true \
-    JAVA_OPTS="-Xmx512m -Xms256m"
+    GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx512m -Dorg.gradle.daemon=false"
 
 EXPOSE 8080 5005
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=10 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
 
-CMD ["./gradlew", "bootRun", "--no-daemon", "--continuous"]
+CMD ["sh", "-c", "./gradlew bootRun --no-daemon --console=plain"]

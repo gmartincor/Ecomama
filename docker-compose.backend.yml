@@ -1,7 +1,51 @@
-include:
-  - docker-compose.base.yml
+x-postgres-healthcheck: &postgres-healthcheck
+  test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-ecomama_user} -d $${POSTGRES_DB:-ecomama_prod}"]
+  interval: 10s
+  timeout: 3s
+  retries: 5
+  start_period: 10s
+
+x-redis-healthcheck: &redis-healthcheck
+  test: ["CMD", "redis-cli", "ping"]
+  interval: 10s
+  timeout: 3s
+  retries: 5
+  start_period: 5s
 
 services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: ecomama-postgres-backend
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-ecomama_prod}
+      POSTGRES_USER: ${DATABASE_USER:-ecomama_user}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-ecomama_password}
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=en_US.utf8"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "${DATABASE_PORT:-5432}:5432"
+    volumes:
+      - backend_postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    networks:
+      - ecomama-network
+    healthcheck: *postgres-healthcheck
+    restart: unless-stopped
+    shm_size: 256mb
+
+  redis:
+    image: redis:7-alpine
+    container_name: ecomama-redis-backend
+    command: redis-server ${REDIS_PASSWORD:+--requirepass $REDIS_PASSWORD}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - backend_redis_data:/data
+    networks:
+      - ecomama-network
+    healthcheck: *redis-healthcheck
+    restart: unless-stopped
+
   backend:
     build:
       context: ./backend
@@ -15,8 +59,8 @@ services:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-      SPRING_DATA_REDIS_HOST: ${SPRING_DATA_REDIS_HOST:-redis}
-      SPRING_DATA_REDIS_PORT: ${SPRING_DATA_REDIS_PORT:-6379}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_PASSWORD: ${SPRING_DATA_REDIS_PASSWORD:-}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
@@ -36,9 +80,18 @@ services:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
       interval: 20s
       timeout: 5s
-      retries: 3
-      start_period: 40s
+      retries: 5
+      start_period: 60s
     restart: unless-stopped
+
+networks:
+  ecomama-network:
+    driver: bridge
 
 volumes:
   backend_uploads:
+    driver: local
+  backend_postgres_data:
+    driver: local
+  backend_redis_data:
+    driver: local
