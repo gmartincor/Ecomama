@@ -5,16 +5,18 @@ WORKDIR /app
 RUN apk add --no-cache --update \
     wget \
     curl \
+    bash \
     && rm -rf /var/cache/apk/*
 
 RUN addgroup -S spring && \
     adduser -S spring -G spring && \
     chown -R spring:spring /app
 
-COPY --chown=spring:spring gradle gradle/
-COPY --chown=spring:spring gradlew gradlew.bat settings.gradle build.gradle ./
+COPY --chown=spring:spring gradle/ gradle/
+COPY --chown=spring:spring gradlew settings.gradle build.gradle ./
 
 RUN chmod +x gradlew && \
+    ./gradlew --version && \
     ./gradlew dependencies --no-daemon || true
 
 USER spring:spring

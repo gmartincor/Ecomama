@@ -1,20 +1,21 @@
 x-healthcheck-postgres: &healthcheck-postgres
   test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-ecomama_user} -d $${POSTGRES_DB:-ecomama_dev}"]
   interval: 10s
-  timeout: 5s
+  timeout: 3s
   retries: 5
   start_period: 10s
 
 x-healthcheck-redis: &healthcheck-redis
-  test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+  test: ["CMD", "redis-cli", "ping"]
   interval: 10s
-  timeout: 5s
+  timeout: 3s
   retries: 5
-  start_period: 10s
+  start_period: 5s
 
 services:
   postgres:
     image: postgis/postgis:16-3.4
+    platform: linux/arm64
     container_name: ecomama-postgres
     environment:
       POSTGRES_DB: ${DATABASE_NAME:-ecomama_dev}
@@ -55,6 +56,7 @@ services:
 
   redis:
     image: redis:7-alpine
+    platform: linux/arm64
     container_name: ecomama-redis
     command: redis-server ${REDIS_PASSWORD:+--requirepass $REDIS_PASSWORD}
     ports:

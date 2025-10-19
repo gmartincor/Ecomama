@@ -397,9 +397,7 @@ local.yml
 !.gitkeep
 
 !.env.dev
-!.env.prod
 !.env.example
-!.env.local.example
 !.env.prod.example
-!backend/.env.example
-!frontend/.env.local.example
+!.env.backend.example
+!.env.frontend.example

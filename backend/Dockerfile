@@ -2,17 +2,18 @@ FROM eclipse-temurin:21-jdk-alpine AS builder
 
 WORKDIR /build
 
-RUN apk add --no-cache binutils && \
+RUN apk add --no-cache binutils bash && \
     rm -rf /var/cache/apk/*
 
-COPY gradle gradle/
-COPY gradlew gradlew.bat settings.gradle build.gradle ./
+COPY gradle/ gradle/
+COPY gradlew settings.gradle build.gradle ./
 
 RUN --mount=type=cache,target=/root/.gradle \
     chmod +x gradlew && \
+    ./gradlew --version && \
     ./gradlew dependencies --no-daemon || true
 
-COPY src ./src
+COPY src/ ./src/
 
 RUN --mount=type=cache,target=/root/.gradle \
     ./gradlew build -x test --no-daemon && \

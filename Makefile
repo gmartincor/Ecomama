@@ -1,10 +1,12 @@
-.PHONY: help setup verify dev prod build test clean
+.PHONY: help setup verify dev prod build test clean deploy
 
 .DEFAULT_GOAL := help
 
 ENV ?= dev
 COMPOSE_DEV := docker compose -f docker-compose.dev.yml --env-file .env.dev
 COMPOSE_PROD := docker compose -f docker-compose.prod.yml --env-file .env.prod
+COMPOSE_BACKEND := docker compose -f docker-compose.backend.yml --env-file .env.backend
+COMPOSE_FRONTEND := docker compose -f docker-compose.frontend.yml --env-file .env.frontend
 DB_COMPOSE := docker compose -f docker-compose.base.yml --env-file .env.$(ENV)
 
 help:
@@ -12,11 +14,11 @@ help:
 	@echo "║                     ECOMAMA COMMANDS                       ║"
 	@echo "╚════════════════════════════════════════════════════════════╝"
 	@echo ""
-	@echo "� Setup"
+	@echo "🔧 Setup"
 	@echo "  make setup           Initial project setup"
 	@echo "  make verify          Verify configuration"
 	@echo ""
-	@echo "�🚀 Development"
+	@echo "🚀 Development"
 	@echo "  make dev             Start dev services"
 	@echo "  make dev-build       Rebuild dev and start"
 	@echo "  make dev-down        Stop dev services"
@@ -27,6 +29,12 @@ help:
 	@echo "  make prod-build      Build prod images"
 	@echo "  make prod-down       Stop prod services"
 	@echo "  make prod-logs       View prod logs"
+	@echo ""
+	@echo "🚢 Deployment (Separate)"
+	@echo "  make deploy-backend  Deploy backend only"
+	@echo "  make deploy-frontend Deploy frontend only"
+	@echo "  make stop-backend    Stop backend"
+	@echo "  make stop-frontend   Stop frontend"
 	@echo ""
 	@echo "🗄️  Database"
 	@echo "  make db              Start database"
@@ -52,26 +60,34 @@ help:
 	@echo ""
 
 setup:
-	@if [ ! -f .env.dev ]; then cp .env.example .env.dev; fi
-	@chmod +x backend/gradlew 2>/dev/null || true
+	@echo "🔧 Setting up Ecomama..."
+	@if [ ! -f .env.dev ]; then cp .env.example .env.dev && echo "✓ Created .env.dev"; fi
+	@chmod +x backend/gradlew 2>/dev/null || true && echo "✓ Made gradlew executable"
 	@echo "✅ Setup complete"
 
 verify:
-	@docker compose -f docker-compose.base.yml config > /dev/null
-	@docker compose -f docker-compose.dev.yml config > /dev/null
-	@docker compose -f docker-compose.prod.yml config > /dev/null
-	@echo "✅ Configuration valid"
+	@echo "🔍 Verifying Docker configurations..."
+	@docker compose -f docker-compose.base.yml config > /dev/null && echo "✓ base.yml valid"
+	@docker compose -f docker-compose.dev.yml config > /dev/null && echo "✓ dev.yml valid"
+	@docker compose -f docker-compose.prod.yml config > /dev/null && echo "✓ prod.yml valid"
+	@docker compose -f docker-compose.backend.yml config > /dev/null && echo "✓ backend.yml valid"
+	@docker compose -f docker-compose.frontend.yml config > /dev/null && echo "✓ frontend.yml valid"
+	@echo "✅ All configurations valid"
 
 dev:
+	@echo "🚀 Starting development environment..."
 	$(COMPOSE_DEV) up
 
 dev-build:
+	@echo "🏗️  Building and starting development environment..."
 	$(COMPOSE_DEV) up --build
 
 dev-down:
+	@echo "🛑 Stopping development environment..."
 	$(COMPOSE_DEV) down
 
 dev-logs:
+	@echo "📋 Showing development logs..."
 	$(COMPOSE_DEV) logs -f
 
 prod:
@@ -142,5 +158,25 @@ clean-all:
 	fi
 
 clean-images:
-	@docker images | grep '<none>' | awk '{print $$3}' | xargs -r docker rmi -f || true
-	@docker images | grep 'ecomama' | awk '{print $$3}' | sort -u | tail -n +3 | xargs -r docker rmi -f || true
+	@docker images | grep '<none>' | awk '{print $$3}' | xargs docker rmi -f 2>/dev/null || true
+	@docker images | grep 'ecomama' | awk '{print $$3}' | sort -u | tail -n +3 | xargs docker rmi -f 2>/dev/null || true
+
+deploy-backend:
+	@echo "🚢 Deploying backend..."
+	@if [ ! -f .env.backend ]; then echo "❌ .env.backend not found"; exit 1; fi
+	$(COMPOSE_BACKEND) up -d
+	@echo "✅ Backend deployed"
+
+deploy-frontend:
+	@echo "🚢 Deploying frontend..."
+	@if [ ! -f .env.frontend ]; then echo "❌ .env.frontend not found"; exit 1; fi
+	$(COMPOSE_FRONTEND) up -d
+	@echo "✅ Frontend deployed"
+
+stop-backend:
+	@echo "🛑 Stopping backend..."
+	$(COMPOSE_BACKEND) down
+
+stop-frontend:
+	@echo "🛑 Stopping frontend..."
+	$(COMPOSE_FRONTEND) down
