@@ -399,5 +399,3 @@ local.yml
 !.env.dev
 !.env.example
 !.env.prod.example
-!.env.backend.example
-!.env.frontend.example

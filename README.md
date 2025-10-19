@@ -39,7 +39,9 @@ Ecomama is more than just a marketplace—it's a cultural movement dedicated to 
 
 ## 🚀 Quick Start
 
+First time setup:
 ```bash
+make setup
 make dev
 ```
 
@@ -48,32 +50,39 @@ make dev
 ## Development
 
 ```bash
-make dev              # Start all services
-make db               # Database only
-make test             # Run tests
-make clean            # Cleanup
+make dev              # Start development environment
+make dev-build        # Rebuild and start
+make logs             # View logs
+make db-connect       # Connect to database
+make clean            # Stop and cleanup
 ```
 
-## Structure
+## Production
+
+```bash
+make prod-build       # Build all production images
+make prod             # Deploy all services with Nginx
+make prod-backend     # Deploy backend only
+make prod-frontend    # Deploy frontend only
+```
+
+## Project Structure
 
 ```
 ecomama/
-├── backend/          # Spring Boot API
-├── frontend/         # Next.js app
-├── infrastructure/   # Docker, Nginx
-├── scripts/          # Build scripts
-└── docs/             # Documentation
+├── backend/          # Spring Boot 3 + Java 21
+├── frontend/         # Next.js 14 + TypeScript
+├── infrastructure/   # Docker, Nginx, init scripts
+├── docs/             # Architecture & guides
+├── docker-compose.*.yml
+└── Makefile          # All commands
 ```
 
-## Production Build
+## Environment Configuration
 
-```bash
-make build-all        # Build images
-./scripts/build.sh frontend
-./scripts/build.sh backend
-```
-
-Deploy frontend and backend independently with environment variables.
+- `.env.example` - Template with all variables
+- `.env.dev` - Development (auto-created by setup)
+- `.env.prod` - Production (configure before deployment)
 
 ---
 

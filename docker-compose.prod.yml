@@ -1,10 +1,10 @@
 include:
   - docker-compose.base.yml
 
-x-backend-env: &backend-env
-  SPRING_PROFILES_ACTIVE: prod
-  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DATABASE_NAME:-ecomama_prod}
-  SPRING_DATASOURCE_USERNAME: ${DATABASE_USER}
+x-backend-env-prod: &backend-env-prod
+  SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+  SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://postgres:5432/${DATABASE_NAME:-ecomama_prod}}
+  SPRING_DATASOURCE_USERNAME: ${DATABASE_USER:-ecomama_user}
   SPRING_DATASOURCE_PASSWORD: ${DATABASE_PASSWORD}
   SPRING_DATA_REDIS_HOST: redis
   SPRING_DATA_REDIS_PORT: 6379
@@ -12,26 +12,26 @@ x-backend-env: &backend-env
   JWT_SECRET: ${JWT_SECRET}
   JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
   CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
-  STRIPE_API_KEY: ${STRIPE_API_KEY}
-  STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
-  MAIL_HOST: ${MAIL_HOST}
-  MAIL_PORT: ${MAIL_PORT}
-  MAIL_USERNAME: ${MAIL_USERNAME}
-  MAIL_PASSWORD: ${MAIL_PASSWORD}
+  STRIPE_API_KEY: ${STRIPE_API_KEY:-}
+  STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+  MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+  MAIL_PORT: ${MAIL_PORT:-587}
+  MAIL_USERNAME: ${MAIL_USERNAME:-}
+  MAIL_PASSWORD: ${MAIL_PASSWORD:-}
 
-x-frontend-env: &frontend-env
+x-frontend-env-prod: &frontend-env-prod
   NODE_ENV: production
-  NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-  NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL}
+  NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080/api/v1}
+  NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL:-ws://localhost:8080/ws}
 
-x-backend-healthcheck: &backend-healthcheck
+x-healthcheck-backend: &healthcheck-backend
   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
   interval: 20s
   timeout: 5s
   retries: 3
   start_period: 40s
 
-x-frontend-healthcheck: &frontend-healthcheck
+x-healthcheck-frontend: &healthcheck-frontend
   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
   interval: 20s
   timeout: 5s
@@ -40,14 +40,13 @@ x-frontend-healthcheck: &frontend-healthcheck
 
 services:
   backend:
+    profiles: ["backend", "all"]
     build:
       context: ./backend
       dockerfile: Dockerfile
-      platforms:
-        - linux/arm64
     image: ${REGISTRY:-}ecomama-backend:${VERSION:-latest}
     container_name: ecomama-backend-prod
-    environment: *backend-env
+    environment: *backend-env-prod
     ports:
       - "${BACKEND_PORT:-8080}:8080"
     depends_on:
@@ -58,35 +57,34 @@ services:
     networks:
       - ecomama-network
     volumes:
-      - ecomama_backend_uploads:/app/uploads
-    healthcheck: *backend-healthcheck
+      - backend_uploads:/app/uploads
+    healthcheck: *healthcheck-backend
     restart: unless-stopped
 
   frontend:
+    profiles: ["frontend", "all"]
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      platforms:
-        - linux/arm64
     image: ${REGISTRY:-}ecomama-frontend:${VERSION:-latest}
     container_name: ecomama-frontend-prod
-    environment: *frontend-env
+    environment: *frontend-env-prod
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     depends_on:
       backend:
         condition: service_healthy
+        required: false
     networks:
       - ecomama-network
-    healthcheck: *frontend-healthcheck
+    healthcheck: *healthcheck-frontend
     restart: unless-stopped
 
   nginx:
+    profiles: ["all"]
     build:
       context: ./infrastructure/nginx
       dockerfile: Dockerfile
-      platforms:
-        - linux/arm64
     image: ${REGISTRY:-}ecomama-nginx:${VERSION:-latest}
     container_name: ecomama-nginx-prod
     ports:
@@ -94,8 +92,8 @@ services:
       - "${NGINX_HTTPS_PORT:-443}:443"
     volumes:
       - ./infrastructure/nginx/ssl:/etc/nginx/ssl:ro
-      - ecomama_nginx_cache:/var/cache/nginx
-      - ecomama_nginx_logs:/var/log/nginx
+      - nginx_cache:/var/cache/nginx
+      - nginx_logs:/var/log/nginx
     depends_on:
       frontend:
         condition: service_healthy
@@ -112,9 +110,9 @@ services:
     restart: unless-stopped
 
 volumes:
-  ecomama_backend_uploads:
+  backend_uploads:
     driver: local
-  ecomama_nginx_cache:
+  nginx_cache:
     driver: local
-  ecomama_nginx_logs:
+  nginx_logs:
     driver: local
