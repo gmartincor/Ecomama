@@ -112,7 +112,7 @@ This document outlines the phased approach to building the Ecomama platform, a m
 ### Deliverables
 
 #### 1.1 Backend - Auth Module
-- [ ] Design User entity with roles (FARMER, CONSUMER, ADMIN)
+- [ ] Design User entity with roles (USER, ADMIN, SUPERADMIN)
 - [ ] Implement user registration use case (TDD)
 - [ ] Implement login/logout with JWT
 - [ ] Create password reset flow
