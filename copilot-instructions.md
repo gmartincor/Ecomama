@@ -13,7 +13,7 @@ Ecomama is a multi-user platform connecting farmers and consumers for direct pur
 - **Presentation Layer**: UI components and API controllers
 
 ### Modular Design
-- Organize code into self-contained modules (marketplace, events, forums, chat, payments)
+- Organize code into self-contained modules (marketplace, events, forums, chat, payments, admin)
 - Each module follows clean architecture principles
 - Minimize coupling between modules
 
@@ -128,7 +128,8 @@ frontend/
 │   │   ├── events/
 │   │   ├── forums/
 │   │   ├── chat/
-│   │   └── payments/
+│   │   ├── payments/
+│   │   └── admin/
 │   ├── lib/              # Utilities, hooks, types
 │   ├── services/         # API clients
 │   └── styles/           # Global styles
@@ -148,6 +149,7 @@ backend/
 │   ├── forums/           # Forums module
 │   ├── chat/             # Chat module
 │   ├── payments/         # Payments module
+│   ├── admin/            # Admin module
 │   ├── auth/             # Authentication module
 │   └── shared/           # Shared kernel
 └── src/test/             # Tests mirror main structure
@@ -199,13 +201,14 @@ backend/
 
 ## Security
 - JWT-based authentication
-- Role-based access control (RBAC)
+- Role-based access control (RBAC) - Roles: FARMER, CONSUMER, ADMIN
 - Input validation on all endpoints
 - CORS configuration
 - SQL injection prevention
 - XSS protection
 - HTTPS only in production
 - Secure password hashing (BCrypt)
+- Admin endpoints protected with ADMIN role
 
 ## Performance
 - Database indexing on frequently queried fields

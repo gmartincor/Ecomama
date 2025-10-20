@@ -14,6 +14,7 @@ Ecomama is more than just a marketplace—it's a cultural movement dedicated to 
 - **📚 Educational Content** - Blogs, articles, and training materials
 - **💬 Real-time Chat** - Private messaging between users
 - **💳 Donations** - Stripe-powered donation platform
+- **🛡️ Admin Panel** - Comprehensive administration dashboard for platform management
 
 ## 🛠️ Technology Stack
 
