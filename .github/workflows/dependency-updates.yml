@@ -10,57 +10,76 @@ env:
   RETENTION_DAYS: 7
 
 jobs:
-  check:
-    name: ${{ matrix.service }}
+  backend:
+    name: Backend Dependencies
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-    strategy:
-      matrix:
-        service: [backend, frontend]
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.BASE_BRANCH }}
 
-      - if: matrix.service == 'backend'
-        uses: ./.github/actions/setup-backend
+      - uses: ./.github/actions/setup-backend
 
-      - if: matrix.service == 'frontend'
-        uses: ./.github/actions/setup-frontend
+      - uses: ./.github/actions/check-dependencies
+        id: check
+        with:
+          service: backend
+          working-directory: ./backend
 
-      - name: Check updates
-        working-directory: ./${{ matrix.service }}
-        run: |
-          if [ "${{ matrix.service }}" = "backend" ]; then
-            ./gradlew dependencyUpdates
-          else
-            pnpm outdated || true
-          fi
+      - if: steps.check.outputs.has-updates == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-dependency-report
+          path: backend/build/dependencyUpdates/
+          retention-days: ${{ env.RETENTION_DAYS }}
 
-      - if: matrix.service == 'frontend'
-        name: Update dependencies
-        working-directory: ./frontend
-        run: |
-          pnpm update --latest --interactive=false
-          pnpm dedupe
+      - if: steps.check.outputs.has-updates == 'true'
+        uses: ./.github/actions/create-issue
+        with:
+          title: 'chore(deps): backend dependency updates available'
+          body: |
+            Backend dependencies have updates available.
+            
+            Check the workflow artifacts for details.
+            
+            Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          labels: dependencies,backend
 
-      - if: matrix.service == 'frontend'
+  frontend:
+    name: Frontend Dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE_BRANCH }}
+
+      - uses: ./.github/actions/setup-frontend
+
+      - uses: ./.github/actions/check-dependencies
+        id: check
+        with:
+          service: frontend
+          working-directory: ./frontend
+
+      - if: steps.check.outputs.has-updates == 'true'
+        uses: ./.github/actions/update-dependencies
+        with:
+          service: frontend
+          working-directory: ./frontend
+
+      - if: steps.check.outputs.has-updates == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: chore(deps): update ${{ matrix.service }} dependencies
-          branch: deps/${{ matrix.service }}-updates
-          title: chore(deps): update ${{ matrix.service }} dependencies
+          commit-message: 'chore(deps): update frontend dependencies'
+          branch: deps/frontend-updates
+          title: 'chore(deps): update frontend dependencies'
           body: |
-            Automated dependency updates for ${{ matrix.service }}.
+            Automated frontend dependency updates.
             
-            Review and merge if all checks pass.
-          labels: dependencies
-
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.service }}-dependency-report
-          path: ${{ matrix.service }}/build/dependencyUpdates/
-          retention-days: ${{ env.RETENTION_DAYS }}
+            Review changes and merge if all checks pass.
+          labels: dependencies,frontend

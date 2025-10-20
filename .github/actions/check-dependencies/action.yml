@@ -1,0 +1,38 @@
+name: Check Dependencies
+description: Check for dependency updates
+
+inputs:
+  service:
+    description: Service name (backend or frontend)
+    required: true
+  working-directory:
+    description: Working directory
+    required: true
+
+outputs:
+  has-updates:
+    description: Whether updates are available
+    value: ${{ steps.check.outputs.has-updates }}
+
+runs:
+  using: composite
+  steps:
+    - id: check
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if [ "${{ inputs.service }}" = "backend" ]; then
+          ./gradlew dependencyUpdates --console=plain > updates.txt 2>&1 || true
+          if grep -q "dependencies have later" updates.txt; then
+            echo "has-updates=true" >> $GITHUB_OUTPUT
+          else
+            echo "has-updates=false" >> $GITHUB_OUTPUT
+          fi
+        else
+          pnpm outdated --format json > updates.json 2>&1 || true
+          if [ -s updates.json ]; then
+            echo "has-updates=true" >> $GITHUB_OUTPUT
+          else
+            echo "has-updates=false" >> $GITHUB_OUTPUT
+          fi
+        fi
