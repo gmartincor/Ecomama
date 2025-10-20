@@ -1,18 +1,13 @@
-package com.ecomama;
+package com.ecomama.shared.test;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-
-import com.ecomama.shared.test.TestContainersConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Transactional
 @Import(TestContainersConfiguration.class)
-class EcomamaApplicationTests {
-
-    @Test
-    void contextLoads() {
-    }
+public abstract class BaseIntegrationTest extends BaseTest {
 }
