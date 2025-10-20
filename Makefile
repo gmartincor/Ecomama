@@ -1,4 +1,4 @@
-.PHONY: help setup dev logs health test clean provision deploy-scripts check-staging check-production rollback
+.PHONY: help setup dev stop restart logs health test clean provision deploy-scripts check-staging check-production rollback
 
 .DEFAULT_GOAL := help
 
@@ -10,6 +10,8 @@ help:
 	@echo "Development:"
 	@echo "  setup              Initialize project"
 	@echo "  dev                Start development"
+	@echo "  stop               Stop containers"
+	@echo "  restart            Restart containers"
 	@echo "  logs               View logs"
 	@echo "  health             Check health"
 	@echo "  test               Run tests"
@@ -32,7 +34,16 @@ setup:
 	@echo "✅ Project ready"
 
 dev:
-	@docker compose -f docker-compose.dev.yml up
+	@docker compose -f docker-compose.dev.yml up -d
+	@echo "✅ Development started"
+	@echo "Frontend: http://localhost:3000"
+	@echo "Backend: http://localhost:8080"
+
+stop:
+	@docker compose -f docker-compose.dev.yml down
+	@echo "✅ Containers stopped"
+
+restart: stop dev
 
 logs:
 	@docker compose -f docker-compose.dev.yml logs -f
