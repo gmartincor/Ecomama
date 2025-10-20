@@ -33,5 +33,45 @@
     "forums": "Forums",
     "blog": "Blog",
     "chat": "Chat"
+  },
+  "pwa": {
+    "install": {
+      "title": "Install Ecomama",
+      "description": "Install our app for quick access and offline support",
+      "descriptionIOS": "Add to your home screen for a better experience",
+      "button": "Install",
+      "buttonIOS": "How to Install",
+      "dismiss": "Not now",
+      "iosInstructions": {
+        "title": "Install Ecomama on iOS",
+        "step1": "Tap the Share button in your Safari browser toolbar",
+        "step2": "Scroll down and tap \"Add to Home Screen\"",
+        "step3": "Tap \"Add\" in the top right corner",
+        "gotIt": "Got it!"
+      }
+    },
+    "update": {
+      "title": "Update Available",
+      "description": "A new version of Ecomama is available. Update now to get the latest features and improvements.",
+      "button": "Update Now"
+    },
+    "status": {
+      "offline": "You're offline",
+      "offlineDescription": "Some features may be limited until you reconnect.",
+      "online": "You're back online!"
+    },
+    "offline": {
+      "title": "You're Offline",
+      "description": "It looks like you've lost your internet connection. Please check your network and try again.",
+      "tryAgain": "Try Again",
+      "goHome": "Go Home",
+      "tips": {
+        "title": "While You're Offline",
+        "tip1": "Previously viewed pages may still be accessible",
+        "tip2": "Your app will automatically sync when you're back online",
+        "tip3": "Check your WiFi or mobile data connection"
+      },
+      "footer": "Ecomama - Connecting farmers and consumers"
+    }
   }
 }

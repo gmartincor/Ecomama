@@ -1,6 +1,8 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useServiceWorkerUpdate } from '@/lib/hooks/usePWA';
+import { PWA_CONFIG } from '@/lib/pwa-config';
 
 /**
  * PWA Update Notification Component
@@ -18,9 +20,10 @@ import { useServiceWorkerUpdate } from '@/lib/hooks/usePWA';
  * ```
  */
 export default function PWAUpdateNotification() {
+  const t = useTranslations('pwa.update');
   const { updateAvailable, updateServiceWorker } = useServiceWorkerUpdate();
 
-  if (!updateAvailable) {
+  if (!updateAvailable || !PWA_CONFIG.FEATURES.UPDATE_NOTIFICATION) {
     return null;
   }
 
@@ -44,21 +47,19 @@ export default function PWAUpdateNotification() {
           </svg>
         </div>
 
-        {/* Content */}
         <div className="flex-1">
           <h3 className="text-sm font-semibold text-blue-900">
-            Update Available
+            {t('title')}
           </h3>
           <p className="mt-1 text-xs text-blue-700">
-            A new version of Ecomama is available. Update now to get the latest features and improvements.
+            {t('description')}
           </p>
 
-          {/* Update Button */}
           <button
             onClick={updateServiceWorker}
             className="mt-3 rounded-md bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            Update Now
+            {t('button')}
           </button>
         </div>
       </div>

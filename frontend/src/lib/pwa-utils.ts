@@ -60,12 +60,26 @@ export function isAndroid(): boolean {
  * Get the device type
  * @returns 'ios' | 'android' | 'desktop' | 'unknown'
  */
-export function getDeviceType(): 'ios' | 'android' | 'desktop' | 'unknown' {
+export function getDeviceType(): 'ios' | 'android' | 'desktop' | 'mobile' | 'tablet' | 'unknown' {
   if (typeof window === 'undefined') return 'unknown';
 
   if (isIOS()) return 'ios';
   if (isAndroid()) return 'android';
-  if (window.innerWidth >= 768) return 'desktop';
+  
+  const width = window.innerWidth;
+  if (width < 768) return 'mobile';
+  if (width < 1024) return 'tablet';
+  return 'desktop';
+}
+
+export function getPlatform(): string {
+  if (typeof window === 'undefined') return 'unknown';
+  const ua = navigator.userAgent.toLowerCase();
+  if (/android/.test(ua)) return 'android';
+  if (/iphone|ipad|ipod/.test(ua)) return 'ios';
+  if (/mac/.test(ua)) return 'macos';
+  if (/win/.test(ua)) return 'windows';
+  if (/linux/.test(ua)) return 'linux';
   return 'unknown';
 }
 
@@ -87,8 +101,9 @@ export function shouldShowInstallPrompt(): boolean {
       const dismissedTime = parseInt(dismissed, 10);
       const daysSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60 * 24);
       
-      // Show again after 30 days
-      if (daysSinceDismissed < 30) return false;
+      // Import config dynamically to avoid circular dependencies
+      const DISMISS_PERIOD_DAYS = 30; // From PWA_CONFIG.ENGAGEMENT.DISMISS_PERIOD_DAYS
+      if (daysSinceDismissed < DISMISS_PERIOD_DAYS) return false;
     }
   }
 

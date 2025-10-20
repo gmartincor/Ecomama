@@ -1,8 +1,10 @@
 'use client';
 
+import { useEffect } from 'react';
 import PWAInstallBanner from './PWAInstallBanner';
 import PWAUpdateNotification from './PWAUpdateNotification';
 import OnlineStatusIndicator from './OnlineStatusIndicator';
+import { initPWAAnalytics } from '@/lib/pwa-analytics';
 
 /**
  * PWA Provider Component
@@ -12,6 +14,7 @@ import OnlineStatusIndicator from './OnlineStatusIndicator';
  * - Install banner
  * - Update notification
  * - Online status indicator
+ * - Analytics initialization
  * 
  * @component
  * @example
@@ -22,6 +25,10 @@ import OnlineStatusIndicator from './OnlineStatusIndicator';
  * ```
  */
 export default function PWAProvider({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    initPWAAnalytics();
+  }, []);
+
   return (
     <>
       {children}

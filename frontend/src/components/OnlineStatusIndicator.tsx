@@ -1,7 +1,9 @@
 'use client';
 
-import { useOnlineStatus } from '@/lib/hooks/usePWA';
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useOnlineStatus } from '@/lib/hooks/usePWA';
+import { PWA_CONFIG } from '@/lib/pwa-config';
 
 /**
  * Online Status Indicator Component
@@ -19,11 +21,14 @@ import { useEffect, useState } from 'react';
  * ```
  */
 export default function OnlineStatusIndicator() {
+  const t = useTranslations('pwa.status');
   const isOnline = useOnlineStatus();
   const [showNotification, setShowNotification] = useState(false);
   const [wasOffline, setWasOffline] = useState(false);
 
   useEffect(() => {
+    if (!PWA_CONFIG.FEATURES.OFFLINE_INDICATOR) return;
+
     // Show notification when status changes
     if (!isOnline) {
       setShowNotification(true);
@@ -32,11 +37,11 @@ export default function OnlineStatusIndicator() {
       // User came back online
       setShowNotification(true);
       
-      // Hide "back online" notification after 3 seconds
+      // Hide "back online" notification after configured timeout
       const timer = setTimeout(() => {
         setShowNotification(false);
         setWasOffline(false);
-      }, 3000);
+      }, PWA_CONFIG.OFFLINE.NOTIFICATION_TIMEOUT_MS);
 
       return () => clearTimeout(timer);
     }
@@ -94,12 +99,10 @@ export default function OnlineStatusIndicator() {
           )}
         </div>
 
-        {/* Message */}
         <p className={`text-sm font-medium ${isOnline ? 'text-green-800' : 'text-yellow-800'}`}>
-          {isOnline ? "You're back online!" : "You're offline"}
+          {isOnline ? t('online') : t('offline')}
         </p>
 
-        {/* Dismiss Button - Only show for offline state */}
         {!isOnline && (
           <button
             onClick={handleDismiss}
@@ -113,10 +116,9 @@ export default function OnlineStatusIndicator() {
         )}
       </div>
 
-      {/* Additional offline info */}
       {!isOnline && (
         <p className="mt-1 text-xs text-yellow-700">
-          Some features may be limited until you reconnect.
+          {t('offlineDescription')}
         </p>
       )}
     </div>

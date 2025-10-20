@@ -1,0 +1,64 @@
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#16a34a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#15803d;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="1280" height="720" fill="url(#bgGradient)"/>
+  
+  <!-- Content Container -->
+  <rect x="40" y="40" width="1200" height="640" fill="#ffffff" rx="8" opacity="0.95"/>
+  
+  <!-- Header -->
+  <text x="640" y="100" font-family="system-ui, -apple-system" font-size="48" font-weight="bold" 
+        text-anchor="middle" fill="#16a34a">Ecomama Marketplace</text>
+  
+  <!-- Map Placeholder -->
+  <rect x="80" y="140" width="580" height="500" fill="#e5e7eb" rx="4"/>
+  <text x="370" y="390" font-family="system-ui" font-size="24" text-anchor="middle" fill="#6b7280">
+    🗺️ Interactive Map View
+  </text>
+  
+  <!-- Product Cards -->
+  <g>
+    <rect x="700" y="140" width="260" height="150" fill="#f3f4f6" rx="8"/>
+    <text x="830" y="205" font-family="system-ui" font-size="18" text-anchor="middle" fill="#374151">
+      🥕 Organic Product
+    </text>
+    <text x="830" y="235" font-family="system-ui" font-size="14" text-anchor="middle" fill="#6b7280">
+      Fresh from farmers
+    </text>
+    
+    <rect x="980" y="140" width="260" height="150" fill="#f3f4f6" rx="8"/>
+    <text x="1110" y="205" font-family="system-ui" font-size="18" text-anchor="middle" fill="#374151">
+      🌽 Farm Products
+    </text>
+    <text x="1110" y="235" font-family="system-ui" font-size="14" text-anchor="middle" fill="#6b7280">
+      Direct from source
+    </text>
+    
+    <rect x="700" y="310" width="260" height="150" fill="#f3f4f6" rx="8"/>
+    <text x="830" y="375" font-family="system-ui" font-size="18" text-anchor="middle" fill="#374151">
+      🥬 Green Veggies
+    </text>
+    <text x="830" y="405" font-family="system-ui" font-size="14" text-anchor="middle" fill="#6b7280">
+      Sustainable farming
+    </text>
+    
+    <rect x="980" y="310" width="260" height="150" fill="#f3f4f6" rx="8"/>
+    <text x="1110" y="375" font-family="system-ui" font-size="18" text-anchor="middle" fill="#374151">
+      🍎 Fresh Fruits
+    </text>
+    <text x="1110" y="405" font-family="system-ui" font-size="14" text-anchor="middle" fill="#6b7280">
+      Organic selection
+    </text>
+  </g>
+  
+  <!-- Footer Note -->
+  <text x="640" y="690" font-family="system-ui" font-size="16" text-anchor="middle" 
+        fill="#6b7280" opacity="0.8">
+    Screenshot Placeholder - Replace with actual app screenshot
+  </text>
+</svg>

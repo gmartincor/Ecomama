@@ -13,7 +13,9 @@
     "test:coverage": "jest --coverage",
     "test:e2e": "playwright test",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\""
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "pwa:validate": "node scripts/validate-pwa.js",
+    "pwa:icons": "node scripts/generate-pwa-icons-node.js"
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",

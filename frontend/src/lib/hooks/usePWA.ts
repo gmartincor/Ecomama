@@ -2,10 +2,8 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { isPWAInstalled, shouldShowInstallPrompt, dismissInstallPrompt } from '@/lib/pwa-utils';
+import { trackPWAEvent } from '@/lib/pwa-analytics';
 
-/**
- * PWA Install Prompt Event
- */
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
@@ -32,24 +30,21 @@ export function usePWAInstall() {
   const [canInstall, setCanInstall] = useState(false);
 
   useEffect(() => {
-    // Check if already installed
     setIsInstalled(isPWAInstalled());
-
-    // Check if should show install prompt
     setCanInstall(shouldShowInstallPrompt());
 
-    // Listen for beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setCanInstall(true);
+      trackPWAEvent('pwa_install_prompt_shown');
     };
 
-    // Listen for app installed event
     const handleAppInstalled = () => {
       setIsInstalled(true);
       setCanInstall(false);
       setDeferredPrompt(null);
+      trackPWAEvent('pwa_installed');
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -65,26 +60,23 @@ export function usePWAInstall() {
    * Show install prompt to user
    */
   const promptInstall = useCallback(async () => {
-    if (!deferredPrompt) {
-      console.warn('Install prompt not available');
-      return;
-    }
+    if (!deferredPrompt) return;
 
     try {
       await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
 
       if (outcome === 'accepted') {
-        console.log('User accepted the install prompt');
+        trackPWAEvent('pwa_install_prompt_accepted');
       } else {
-        console.log('User dismissed the install prompt');
+        trackPWAEvent('pwa_install_prompt_dismissed');
         dismissInstallPrompt();
       }
 
       setDeferredPrompt(null);
       setCanInstall(false);
     } catch (error) {
-      console.error('Error showing install prompt:', error);
+      trackPWAEvent('pwa_install_prompt_dismissed');
     }
   }, [deferredPrompt]);
 
@@ -94,6 +86,7 @@ export function usePWAInstall() {
   const dismissPrompt = useCallback(() => {
     dismissInstallPrompt();
     setCanInstall(false);
+    trackPWAEvent('pwa_install_prompt_dismissed');
   }, []);
 
   return {
@@ -122,12 +115,17 @@ export function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
-    // Set initial state
     setIsOnline(navigator.onLine);
 
-    // Listen for online/offline events
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+    const handleOnline = () => {
+      setIsOnline(true);
+      trackPWAEvent('pwa_online_mode');
+    };
+    
+    const handleOffline = () => {
+      setIsOnline(false);
+      trackPWAEvent('pwa_offline_mode');
+    };
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
@@ -200,7 +198,6 @@ export function useServiceWorkerUpdate() {
     navigator.serviceWorker.ready.then((reg) => {
       setRegistration(reg);
 
-      // Check for updates
       reg.addEventListener('updatefound', () => {
         const newWorker = reg.installing;
         if (!newWorker) return;
@@ -208,13 +205,14 @@ export function useServiceWorkerUpdate() {
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
             setUpdateAvailable(true);
+            trackPWAEvent('pwa_update_available');
           }
         });
       });
     });
 
-    // Listen for controllerchange event
     navigator.serviceWorker.addEventListener('controllerchange', () => {
+      trackPWAEvent('pwa_update_installed');
       window.location.reload();
     });
   }, []);
@@ -223,9 +221,7 @@ export function useServiceWorkerUpdate() {
    * Update service worker and reload page
    */
   const updateServiceWorker = useCallback(() => {
-    if (!registration || !registration.waiting) {
-      return;
-    }
+    if (!registration?.waiting) return;
 
     registration.waiting.postMessage({ type: 'SKIP_WAITING' });
   }, [registration]);

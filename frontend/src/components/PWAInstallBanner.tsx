@@ -1,38 +1,42 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { usePWAInstall } from '@/lib/hooks/usePWA';
 import { isIOS, getDeviceType } from '@/lib/pwa-utils';
+import { PWA_CONFIG } from '@/lib/pwa-config';
 
-/**
- * PWA Install Banner Component
- * Shows a banner prompting users to install the PWA
- * 
- * Features:
- * - Auto-detects if PWA is installable
- * - Platform-specific instructions (iOS vs Android/Desktop)
- * - Dismissible with 30-day cooldown
- * - Responsive design
- * 
- * @component
- * @example
- * ```tsx
- * <PWAInstallBanner />
- * ```
- */
 export default function PWAInstallBanner() {
+  const t = useTranslations('pwa.install');
   const { canInstall, isInstalled, promptInstall, dismissPrompt } = usePWAInstall();
   const [showBanner, setShowBanner] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
+  const [interactions, setInteractions] = useState(0);
+  const [engagementMet, setEngagementMet] = useState(false);
   const deviceType = getDeviceType();
 
   useEffect(() => {
-    // Only show banner if:
-    // 1. PWA can be installed
-    // 2. PWA is not already installed
-    // 3. User hasn't dismissed it recently
-    setShowBanner(canInstall && !isInstalled);
+    if (!canInstall || isInstalled || !PWA_CONFIG.FEATURES.INSTALL_PROMPT) return;
+
+    const timer = setTimeout(() => setEngagementMet(true), PWA_CONFIG.ENGAGEMENT.DELAY_MS);
+    
+    const handleInteraction = () => setInteractions((prev) => prev + 1);
+
+    window.addEventListener('click', handleInteraction);
+    window.addEventListener('scroll', handleInteraction);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('scroll', handleInteraction);
+    };
   }, [canInstall, isInstalled]);
+
+  useEffect(() => {
+    if (canInstall && !isInstalled && engagementMet && interactions >= PWA_CONFIG.ENGAGEMENT.MIN_INTERACTIONS) {
+      setShowBanner(true);
+    }
+  }, [canInstall, isInstalled, engagementMet, interactions]);
 
   const handleInstall = () => {
     if (isIOS()) {
@@ -52,18 +56,15 @@ export default function PWAInstallBanner() {
     handleDismiss();
   };
 
-  if (!showBanner) {
-    return null;
-  }
+  if (!showBanner) return null;
 
-  // iOS Instructions Modal
   if (showIOSInstructions) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-        <div className="max-w-md rounded-lg bg-white p-6 shadow-xl">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 animate-fade-in">
+        <div className="max-w-md rounded-lg bg-white p-6 shadow-xl animate-slide-up">
           <div className="mb-4 flex items-start justify-between">
             <h3 className="text-lg font-semibold text-gray-900">
-              Install Ecomama on iOS
+              {t('iosInstructions.title')}
             </h3>
             <button
               onClick={handleCloseInstructions}
@@ -81,32 +82,19 @@ export default function PWAInstallBanner() {
               <span className="mr-3 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-green-100 text-xs font-semibold text-green-600">
                 1
               </span>
-              <span>
-                Tap the <strong>Share</strong> button{' '}
-                <svg className="inline h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                </svg>
-                {' '}in your Safari browser toolbar
-              </span>
+              <span>{t('iosInstructions.step1')}</span>
             </li>
             <li className="flex items-start">
               <span className="mr-3 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-green-100 text-xs font-semibold text-green-600">
                 2
               </span>
-              <span>
-                Scroll down and tap <strong>&quot;Add to Home Screen&quot;</strong>{' '}
-                <svg className="inline h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-              </span>
+              <span>{t('iosInstructions.step2')}</span>
             </li>
             <li className="flex items-start">
               <span className="mr-3 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-green-100 text-xs font-semibold text-green-600">
                 3
               </span>
-              <span>
-                Tap <strong>&quot;Add&quot;</strong> in the top right corner
-              </span>
+              <span>{t('iosInstructions.step3')}</span>
             </li>
           </ol>
 
@@ -114,16 +102,15 @@ export default function PWAInstallBanner() {
             onClick={handleCloseInstructions}
             className="mt-6 w-full rounded-lg bg-green-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-green-700"
           >
-            Got it!
+            {t('iosInstructions.gotIt')}
           </button>
         </div>
       </div>
     );
   }
 
-  // Install Banner
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white shadow-lg sm:bottom-4 sm:left-4 sm:right-auto sm:max-w-md sm:rounded-lg sm:border">
+    <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white shadow-lg sm:bottom-4 sm:left-4 sm:right-auto sm:max-w-md sm:rounded-lg sm:border animate-slide-up">
       <div className="p-4">
         <div className="flex items-start gap-4">
           {/* App Icon */}
@@ -138,13 +125,10 @@ export default function PWAInstallBanner() {
           {/* Content */}
           <div className="flex-1 min-w-0">
             <h3 className="text-sm font-semibold text-gray-900">
-              Install Ecomama
+              {t('title')}
             </h3>
             <p className="mt-1 text-xs text-gray-600">
-              {deviceType === 'ios' 
-                ? 'Add to your home screen for a better experience'
-                : 'Install our app for quick access and offline support'
-              }
+              {deviceType === 'ios' ? t('descriptionIOS') : t('description')}
             </p>
 
             {/* Action Buttons */}
@@ -153,13 +137,13 @@ export default function PWAInstallBanner() {
                 onClick={handleInstall}
                 className="rounded-md bg-green-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
               >
-                {deviceType === 'ios' ? 'How to Install' : 'Install'}
+                {deviceType === 'ios' ? t('buttonIOS') : t('button')}
               </button>
               <button
                 onClick={handleDismiss}
                 className="rounded-md px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
               >
-                Not now
+                {t('dismiss')}
               </button>
             </div>
           </div>

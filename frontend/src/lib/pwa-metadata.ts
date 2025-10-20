@@ -1,17 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 
-/**
- * PWA Metadata Configuration
- * Defines Progressive Web App metadata for app installation and behavior
- * 
- * @module pwa-metadata
- */
-
 const APP_NAME = 'Ecomama';
-const APP_DESCRIPTION =
-  'A multi-user platform connecting farmers and consumers for the direct purchase of organic products. More than a marketplace, a cultural movement.';
+const APP_DESCRIPTION = 'A multi-user platform connecting farmers and consumers for the direct purchase of organic products. More than a marketplace, a cultural movement.';
 const THEME_COLOR = '#16a34a';
-const BACKGROUND_COLOR = '#ffffff';
 
 /**
  * Viewport configuration for PWA
@@ -32,7 +23,7 @@ export const viewport: Viewport = {
  */
 export function getPWAMetadata(locale: string = 'en'): Metadata {
   const isSpanish = locale === 'es';
-  const manifestUrl = isSpanish ? '/manifest.es.json' : '/manifest.json';
+  const manifestUrl = isSpanish ? '/api/manifest.es' : '/api/manifest';
 
   return {
     applicationName: APP_NAME,
@@ -85,10 +76,4 @@ export function getPWAMetadata(locale: string = 'en'): Metadata {
   };
 }
 
-/**
- * PWA theme colors configuration
- */
-export const pwaColors = {
-  theme: THEME_COLOR,
-  background: BACKGROUND_COLOR,
-} as const;
+export const PWA_THEME_COLOR = THEME_COLOR;

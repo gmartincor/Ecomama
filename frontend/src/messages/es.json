@@ -33,5 +33,45 @@
     "forums": "Foros",
     "blog": "Blog",
     "chat": "Chat"
+  },
+  "pwa": {
+    "install": {
+      "title": "Instalar Ecomama",
+      "description": "Instala nuestra app para acceso rápido y soporte sin conexión",
+      "descriptionIOS": "Añade a tu pantalla de inicio para una mejor experiencia",
+      "button": "Instalar",
+      "buttonIOS": "Cómo Instalar",
+      "dismiss": "Ahora no",
+      "iosInstructions": {
+        "title": "Instalar Ecomama en iOS",
+        "step1": "Toca el botón Compartir en la barra de herramientas de Safari",
+        "step2": "Desplázate hacia abajo y toca \"Añadir a pantalla de inicio\"",
+        "step3": "Toca \"Añadir\" en la esquina superior derecha",
+        "gotIt": "¡Entendido!"
+      }
+    },
+    "update": {
+      "title": "Actualización Disponible",
+      "description": "Una nueva versión de Ecomama está disponible. Actualiza ahora para obtener las últimas funciones y mejoras.",
+      "button": "Actualizar Ahora"
+    },
+    "status": {
+      "offline": "Estás sin conexión",
+      "offlineDescription": "Algunas funciones pueden estar limitadas hasta que te reconectes.",
+      "online": "¡Estás de vuelta en línea!"
+    },
+    "offline": {
+      "title": "Estás Sin Conexión",
+      "description": "Parece que has perdido tu conexión a internet. Por favor verifica tu red e intenta de nuevo.",
+      "tryAgain": "Intentar de Nuevo",
+      "goHome": "Ir al Inicio",
+      "tips": {
+        "title": "Mientras Estás Sin Conexión",
+        "tip1": "Las páginas vistas previamente aún pueden estar accesibles",
+        "tip2": "Tu app se sincronizará automáticamente cuando vuelvas en línea",
+        "tip3": "Verifica tu conexión WiFi o datos móviles"
+      },
+      "footer": "Ecomama - Conectando agricultores y consumidores"
+    }
   }
 }
