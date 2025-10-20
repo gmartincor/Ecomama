@@ -9,10 +9,6 @@ concurrency:
   group: staging
   cancel-in-progress: true
 
-env:
-  ENVIRONMENT: staging
-  VERSION_PREFIX: stg
-
 jobs:
   integration:
     uses: ./.github/workflows/integration.yml
@@ -21,8 +17,8 @@ jobs:
     needs: integration
     uses: ./.github/workflows/build.yml
     with:
-      environment: ${{ env.ENVIRONMENT }}
-      version_tag: ${{ env.VERSION_PREFIX }}-${{ github.sha }}
+      environment: staging
+      version_tag: stg-${{ github.sha }}
     secrets:
       api_url: ${{ secrets.STAGING_API_URL }}
       ws_url: ${{ secrets.STAGING_WS_URL }}
@@ -31,8 +27,8 @@ jobs:
     needs: build
     uses: ./.github/workflows/deploy.yml
     with:
-      environment: ${{ env.ENVIRONMENT }}
-      version_tag: ${{ env.VERSION_PREFIX }}-${{ github.sha }}
+      environment: staging
+      version_tag: stg-${{ github.sha }}
       domain: ${{ vars.DOMAIN }}
     secrets:
       server_ip: ${{ secrets.SERVER_IP }}
