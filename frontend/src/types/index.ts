@@ -1,6 +1,3 @@
-/**
- * API Response Type
- */
 export interface ApiResponse<T = any> {
   success: boolean;
   data: T | null;
@@ -8,18 +5,12 @@ export interface ApiResponse<T = any> {
   timestamp: string;
 }
 
-/**
- * API Error Type
- */
 export interface ApiError {
   code: string;
   message: string;
   details?: Record<string, any>;
 }
 
-/**
- * User Type
- */
 export interface User {
   id: string;
   email: string;
@@ -31,18 +22,12 @@ export interface User {
   updatedAt: string;
 }
 
-/**
- * User Role Enum
- */
 export enum UserRole {
   FARMER = 'FARMER',
   CONSUMER = 'CONSUMER',
   ADMIN = 'ADMIN',
 }
 
-/**
- * Listing Type (Marketplace)
- */
 export interface Listing {
   id: string;
   userId: string;
@@ -57,26 +42,17 @@ export interface Listing {
   updatedAt: string;
 }
 
-/**
- * Listing Type Enum
- */
 export enum ListingType {
   OFFER = 'OFFER',
   DEMAND = 'DEMAND',
 }
 
-/**
- * Listing Status Enum
- */
 export enum ListingStatus {
   ACTIVE = 'ACTIVE',
   EXPIRED = 'EXPIRED',
   SOLD = 'SOLD',
 }
 
-/**
- * GeoLocation Type
- */
 export interface GeoLocation {
   latitude: number;
   longitude: number;
@@ -85,9 +61,6 @@ export interface GeoLocation {
   country?: string;
 }
 
-/**
- * Event Type
- */
 export interface Event {
   id: string;
   userId: string;
@@ -101,9 +74,6 @@ export interface Event {
   createdAt: string;
 }
 
-/**
- * Pagination Type
- */
 export interface Pagination {
   page: number;
   pageSize: number;
@@ -111,9 +81,6 @@ export interface Pagination {
   totalItems: number;
 }
 
-/**
- * Paginated Response Type
- */
 export interface PaginatedResponse<T> {
   items: T[];
   pagination: Pagination;

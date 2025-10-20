@@ -13,11 +13,6 @@ const config: Config = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-    '^@/components/(.*)$': '<rootDir>/src/components/$1',
-    '^@/features/(.*)$': '<rootDir>/src/features/$1',
-    '^@/lib/(.*)$': '<rootDir>/src/lib/$1',
-    '^@/services/(.*)$': '<rootDir>/src/services/$1',
-    '^@/types/(.*)$': '<rootDir>/src/types/$1',
   },
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',

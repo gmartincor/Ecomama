@@ -1,0 +1,37 @@
+{
+  "common": {
+    "appName": "Ecomama",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "home": {
+    "title": "Ecomama",
+    "subtitle": "Connecting Farmers and Consumers",
+    "description": "A multi-user platform for the direct purchase of organic products. More than a marketplace—it's a cultural movement for sustainable food communities.",
+    "marketplace": {
+      "title": "Marketplace",
+      "description": "Geolocation-based listings with map and list views"
+    },
+    "events": {
+      "title": "Events",
+      "description": "Community events with RSVP and discussions"
+    },
+    "community": {
+      "title": "Community",
+      "description": "Forums, groups, and real-time chat"
+    },
+    "status": {
+      "phase": "Project Status: Phase 0 - Foundation Setup Complete",
+      "next": "Next: Phase 1 - Authentication & User Management"
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "marketplace": "Marketplace",
+    "events": "Events",
+    "forums": "Forums",
+    "blog": "Blog",
+    "chat": "Chat"
+  }
+}
