@@ -1,0 +1,40 @@
+name: Health Check
+description: Verify application health after deployment
+
+inputs:
+  url:
+    description: Base URL to check
+    required: true
+  timeout:
+    description: Timeout in seconds
+    required: false
+    default: '60'
+  interval:
+    description: Interval between retries in seconds
+    required: false
+    default: '5'
+
+runs:
+  using: composite
+  steps:
+    - name: Wait for application
+      shell: bash
+      run: |
+        URL="${{ inputs.url }}/health"
+        TIMEOUT=${{ inputs.timeout }}
+        INTERVAL=${{ inputs.interval }}
+        MAX_ATTEMPTS=$((TIMEOUT / INTERVAL))
+        
+        echo "Checking health at $URL..."
+        
+        for i in $(seq 1 $MAX_ATTEMPTS); do
+          if curl -sf -m 10 "$URL" &>/dev/null; then
+            echo "✅ Application is healthy (attempt $i/$MAX_ATTEMPTS)"
+            exit 0
+          fi
+          echo "⏳ Waiting... (attempt $i/$MAX_ATTEMPTS)"
+          sleep $INTERVAL
+        done
+        
+        echo "❌ Health check failed after ${TIMEOUT}s"
+        exit 1

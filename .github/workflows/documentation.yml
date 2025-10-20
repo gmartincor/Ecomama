@@ -1,0 +1,48 @@
+name: Documentation
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'docs/**'
+      - '**.md'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'docs/**'
+      - '**.md'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: ${{ matrix.check }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        check: [markdown, links]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - if: matrix.check == 'markdown'
+        uses: pnpm/action-setup@v3
+        with:
+          version: '8'
+
+      - if: matrix.check == 'markdown'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: pnpm
+
+      - if: matrix.check == 'markdown'
+        run: |
+          pnpm add -g markdownlint-cli
+          markdownlint '**/*.md' --ignore node_modules --ignore frontend/node_modules --ignore backend/build
+
+      - if: matrix.check == 'links'
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: --verbose --no-progress '**/*.md' '**/*.html'
+          fail: true

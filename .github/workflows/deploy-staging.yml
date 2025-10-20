@@ -9,16 +9,20 @@ concurrency:
   group: staging
   cancel-in-progress: true
 
+env:
+  ENVIRONMENT: staging
+  VERSION_PREFIX: stg
+
 jobs:
-  test:
+  integration:
     uses: ./.github/workflows/integration.yml
 
   build:
-    needs: test
+    needs: integration
     uses: ./.github/workflows/build.yml
     with:
-      environment: staging
-      version_tag: stg-${{ github.sha }}
+      environment: ${{ env.ENVIRONMENT }}
+      version_tag: ${{ env.VERSION_PREFIX }}-${{ github.sha }}
     secrets:
       api_url: ${{ secrets.STAGING_API_URL }}
       ws_url: ${{ secrets.STAGING_WS_URL }}
@@ -27,19 +31,10 @@ jobs:
     needs: build
     uses: ./.github/workflows/deploy.yml
     with:
-      environment: staging
-      version_tag: stg-${{ github.sha }}
+      environment: ${{ env.ENVIRONMENT }}
+      version_tag: ${{ env.VERSION_PREFIX }}-${{ github.sha }}
       domain: ${{ vars.DOMAIN }}
     secrets:
       server_ip: ${{ secrets.SERVER_IP }}
       ssh_key: ${{ secrets.SSH_PRIVATE_KEY }}
       env_file: ${{ secrets.STAGING_ENV }}
-
-  notify:
-    needs: deploy
-    runs-on: ubuntu-latest
-    if: success()
-    steps:
-      - run: |
-          echo "✅ Staging deployed successfully"
-          echo "URL: https://staging.${{ vars.DOMAIN }}"

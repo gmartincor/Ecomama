@@ -1,0 +1,41 @@
+name: Monitor
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  health:
+    name: ${{ matrix.environment }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    strategy:
+      matrix:
+        environment: [staging, production]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/get-environment-url
+        id: env-url
+        with:
+          environment: ${{ matrix.environment }}
+          domain: ${{ vars.DOMAIN }}
+
+      - uses: ./.github/actions/health-check
+        with:
+          url: ${{ steps.env-url.outputs.url }}
+          timeout: '10'
+
+      - uses: ./.github/actions/create-issue
+        if: failure() && matrix.environment == 'production'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: 🚨 Production Health Check Failed
+          body: |
+            **Environment:** ${{ matrix.environment }}
+            **URL:** ${{ steps.env-url.outputs.url }}
+            **Time:** ${{ github.event.repository.updated_at }}
+            **Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          labels: monitoring,critical

@@ -1,0 +1,47 @@
+name: Start Services
+description: Start Docker Compose services and wait for health
+
+inputs:
+  services:
+    description: Space-separated list of services to start
+    required: false
+    default: 'postgres redis'
+  timeout:
+    description: Timeout in seconds for health checks
+    required: false
+    default: '30'
+
+runs:
+  using: composite
+  steps:
+    - name: Start services
+      shell: bash
+      run: docker compose -f docker-compose.base.yml up -d ${{ inputs.services }}
+
+    - name: Wait for health
+      shell: bash
+      run: |
+        SERVICES="${{ inputs.services }}"
+        TIMEOUT=${{ inputs.timeout }}
+        
+        for service in $SERVICES; do
+          echo "⏳ Waiting for $service..."
+          
+          case $service in
+            postgres)
+              timeout $TIMEOUT bash -c 'until docker compose -f docker-compose.base.yml exec -T postgres pg_isready -U ${DATABASE_USER:-ecomama_user} &>/dev/null; do sleep 2; done'
+              ;;
+            redis)
+              timeout $TIMEOUT bash -c 'until docker compose -f docker-compose.base.yml exec -T redis redis-cli ping 2>/dev/null | grep -q PONG; do sleep 2; done'
+              ;;
+            *)
+              timeout $TIMEOUT bash -c "until docker compose -f docker-compose.base.yml ps $service --format json | jq -e '.Health == \"healthy\" or .Health == null' &>/dev/null; do sleep 2; done"
+              ;;
+          esac
+          
+          echo "✅ $service is ready"
+        done
+
+    - name: Show service status
+      shell: bash
+      run: docker compose -f docker-compose.base.yml ps

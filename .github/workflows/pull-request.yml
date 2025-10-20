@@ -1,0 +1,51 @@
+name: Pull Request
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  PR_SIZE_THRESHOLD: 1000
+
+jobs:
+  validate:
+    if: github.event.pull_request.draft == false
+    name: Validate PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Validate
+        run: |
+          TITLE="${{ github.event.pull_request.title }}"
+          PATTERN="^(feat|fix|docs|style|refactor|perf|test|chore|ci|build)(\(.+\))?:.+"
+          
+          if ! echo "$TITLE" | grep -qE "$PATTERN"; then
+            echo "❌ PR title must follow conventional commits format"
+            echo ""
+            echo "Examples:"
+            echo "  feat: add user authentication"
+            echo "  fix(api): resolve CORS issue"
+            echo "  docs: update deployment guide"
+            exit 1
+          fi
+          
+          echo "✅ PR title is valid"
+          
+          TOTAL=$(( ${{ github.event.pull_request.additions }} + ${{ github.event.pull_request.deletions }} ))
+          
+          if [ $TOTAL -gt ${{ env.PR_SIZE_THRESHOLD }} ]; then
+            echo "⚠️ Large PR detected ($TOTAL changes)"
+            echo "Consider breaking this into smaller PRs for easier review"
+          else
+            echo "✅ PR size is reasonable ($TOTAL changes)"
+          fi
+
+  integration:
+    if: github.event.pull_request.draft == false
+    needs: validate
+    uses: ./.github/workflows/integration.yml

@@ -1,0 +1,66 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'
+  workflow_dispatch:
+
+env:
+  BASE_BRANCH: develop
+  RETENTION_DAYS: 7
+
+jobs:
+  check:
+    name: ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        service: [backend, frontend]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE_BRANCH }}
+
+      - if: matrix.service == 'backend'
+        uses: ./.github/actions/setup-backend
+
+      - if: matrix.service == 'frontend'
+        uses: ./.github/actions/setup-frontend
+
+      - name: Check updates
+        working-directory: ./${{ matrix.service }}
+        run: |
+          if [ "${{ matrix.service }}" = "backend" ]; then
+            ./gradlew dependencyUpdates
+          else
+            pnpm outdated || true
+          fi
+
+      - if: matrix.service == 'frontend'
+        name: Update dependencies
+        working-directory: ./frontend
+        run: |
+          pnpm update --latest --interactive=false
+          pnpm dedupe
+
+      - if: matrix.service == 'frontend'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: chore(deps): update ${{ matrix.service }} dependencies
+          branch: deps/${{ matrix.service }}-updates
+          title: chore(deps): update ${{ matrix.service }} dependencies
+          body: |
+            Automated dependency updates for ${{ matrix.service }}.
+            
+            Review and merge if all checks pass.
+          labels: dependencies
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.service }}-dependency-report
+          path: ${{ matrix.service }}/build/dependencyUpdates/
+          retention-days: ${{ env.RETENTION_DAYS }}

@@ -1,0 +1,27 @@
+name: Get Environment URL
+description: Calculate deployment URL based on environment and domain
+
+inputs:
+  environment:
+    description: Environment name (staging or production)
+    required: true
+  domain:
+    description: Base domain
+    required: true
+
+outputs:
+  url:
+    description: Full deployment URL
+    value: ${{ steps.url.outputs.value }}
+
+runs:
+  using: composite
+  steps:
+    - id: url
+      shell: bash
+      run: |
+        if [ "${{ inputs.environment }}" = "production" ]; then
+          echo "value=https://${{ inputs.domain }}" >> $GITHUB_OUTPUT
+        else
+          echo "value=https://staging.${{ inputs.domain }}" >> $GITHUB_OUTPUT
+        fi

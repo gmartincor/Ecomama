@@ -1,0 +1,29 @@
+name: Notify Deployment
+description: Send deployment notification
+
+inputs:
+  environment:
+    description: Deployment environment
+    required: true
+  status:
+    description: Deployment status (success or failure)
+    required: true
+  url:
+    description: Deployment URL
+    required: true
+  version:
+    description: Version deployed
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Send notification
+      shell: bash
+      run: |
+        STATUS_EMOJI="${{ inputs.status == 'success' && '✅' || '❌' }}"
+        
+        echo "${STATUS_EMOJI} ${{ inputs.environment }} deployment ${{ inputs.status }}"
+        echo "URL: ${{ inputs.url }}"
+        [ -n "${{ inputs.version }}" ] && echo "Version: ${{ inputs.version }}"

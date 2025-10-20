@@ -1,0 +1,78 @@
+name: Cleanup
+
+on:
+  schedule:
+    - cron: '0 4 * * 0'
+  workflow_dispatch:
+
+env:
+  RETENTION_DAYS: 7
+  MIN_VERSIONS_TO_KEEP: 5
+
+jobs:
+  cleanup-ci:
+    name: ${{ matrix.resource }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    strategy:
+      matrix:
+        resource: [artifacts, caches]
+
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const daysToKeep = Number(process.env.RETENTION_DAYS);
+            const timestamp = Date.now() - daysToKeep * 24 * 60 * 60 * 1000;
+            const resourceType = '${{ matrix.resource }}';
+            
+            const listMethod = resourceType === 'artifacts' 
+              ? 'listArtifactsForRepo' 
+              : 'getActionsCacheList';
+            
+            const deleteMethod = resourceType === 'artifacts'
+              ? 'deleteArtifact'
+              : 'deleteActionsCacheById';
+            
+            const idKey = resourceType === 'artifacts' ? 'artifact_id' : 'cache_id';
+            const dataKey = resourceType === 'artifacts' ? 'artifacts' : 'actions_caches';
+            
+            const { data } = await github.rest.actions[listMethod]({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+            
+            let deleted = 0;
+            for (const item of data[dataKey]) {
+              if (Date.parse(item.created_at) < timestamp) {
+                await github.rest.actions[deleteMethod]({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  [idKey]: item.id
+                });
+                deleted++;
+              }
+            }
+            
+            console.log(`Deleted ${deleted} old ${resourceType}`);
+
+  cleanup-images:
+    name: Images - ${{ matrix.package }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [backend, frontend]
+
+    steps:
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: ${{ matrix.package }}
+          package-type: container
+          min-versions-to-keep: ${{ env.MIN_VERSIONS_TO_KEEP }}
+          delete-only-untagged-versions: false

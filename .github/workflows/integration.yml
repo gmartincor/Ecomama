@@ -1,49 +1,173 @@
-name: Test
+name: Integration
 
 on:
   workflow_call:
-  pull_request:
-    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.caching=true
+  JAVA_VERSION: '21'
+  COVERAGE_THRESHOLD: 80
 
 jobs:
-  test:
-    name: Integration
+  quality:
+    name: Code Quality
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        check:
+          - { name: backend-lint, dir: backend, cmd: './gradlew checkstyleMain checkstyleTest' }
+          - { name: frontend-lint, dir: frontend, cmd: 'pnpm lint' }
+          - { name: frontend-types, dir: frontend, cmd: 'pnpm type-check' }
+          - { name: frontend-format, dir: frontend, cmd: 'pnpm format:check' }
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Start services
-        run: docker compose -f docker-compose.base.yml up -d
+      - if: contains(matrix.check.name, 'backend')
+        uses: ./.github/actions/setup-backend
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
 
-      - name: Wait for health
-        run: |
-          timeout 60 bash -c '
-            until docker compose -f docker-compose.base.yml ps --format json | \
-                  jq -e "all(.Health == \"healthy\" or .Health == null)" &>/dev/null; do
-              sleep 2
-            done
-          '
+      - if: contains(matrix.check.name, 'frontend')
+        uses: ./.github/actions/setup-frontend
 
-      - name: Run backend tests
-        run: docker exec -e GRADLE_OPTS="-Dorg.gradle.daemon=false" backend-test ./gradlew test -q || true
+      - name: Run ${{ matrix.check.name }}
+        working-directory: ./${{ matrix.check.dir }}
+        run: ${{ matrix.check.cmd }}
 
-      - name: Run frontend tests
-        run: docker exec frontend-test pnpm test --run || true
+  backend:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
 
-      - name: Collect logs
-        if: failure()
-        run: docker compose -f docker-compose.base.yml logs --tail=100 > logs.txt
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: Upload logs
-        if: failure()
+      - uses: ./.github/actions/setup-backend
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - uses: ./.github/actions/start-services
+
+      - name: Run tests
+        working-directory: ./backend
+        run: ./gradlew test jacocoTestReport --no-daemon --stacktrace
+
+      - name: Verify coverage
+        working-directory: ./backend
+        run: ./gradlew jacocoTestCoverageVerification
+
+      - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-logs-${{ github.sha }}
-          path: logs.txt
-          retention-days: 3
+          name: backend-test-results
+          path: backend/build/test-results/test/*.xml
+          retention-days: 7
 
-      - name: Cleanup
-        if: always()
-        run: docker compose -f docker-compose.base.yml down -v
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/build/reports/jacoco/test/
+          retention-days: 7
+
+      - if: github.event_name == 'pull_request' && always()
+        uses: madrapps/jacoco-report@v1.6.1
+        with:
+          paths: backend/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: ${{ env.COVERAGE_THRESHOLD }}
+          min-coverage-changed-files: ${{ env.COVERAGE_THRESHOLD }}
+
+      - uses: ./.github/actions/cleanup-services
+
+  frontend:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-frontend
+
+      - working-directory: ./frontend
+        run: pnpm test --run --coverage
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-results
+          path: frontend/coverage/
+          retention-days: 7
+
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [backend, frontend]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-frontend
+
+      - name: Install Playwright
+        working-directory: ./frontend
+        run: pnpm exec playwright install --with-deps chromium
+
+      - uses: ./.github/actions/start-services
+
+      - name: Wait for application
+        run: timeout 60 bash -c 'until curl -sf http://localhost:3000 &>/dev/null; do sleep 2; done'
+
+      - name: Run E2E tests
+        working-directory: ./frontend
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
+        run: pnpm test:e2e
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          retention-days: 7
+
+      - uses: ./.github/actions/cleanup-services
+
+  status:
+    name: Integration Status
+    runs-on: ubuntu-latest
+    needs: [quality, backend, frontend, e2e]
+    if: always()
+
+    steps:
+      - name: Check results
+        run: |
+          if [ "${{ needs.quality.result }}" != "success" ] || \
+             [ "${{ needs.backend.result }}" != "success" ] || \
+             [ "${{ needs.frontend.result }}" != "success" ] || \
+             [ "${{ needs.e2e.result }}" != "success" ]; then
+            echo "❌ Integration checks failed"
+            exit 1
+          fi
+          echo "✅ All integration checks passed"
+
+      - uses: ./.github/actions/create-issue
+        if: failure() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: 🚨 Integration Failed on Main - ${{ github.sha }}
+          body: |
+            **Commit:** ${{ github.sha }}
+            **Author:** ${{ github.actor }}
+            **Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          labels: bug,ci
+          assignees: ${{ github.actor }}

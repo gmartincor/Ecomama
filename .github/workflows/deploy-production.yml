@@ -9,16 +9,20 @@ concurrency:
   group: production
   cancel-in-progress: false
 
+env:
+  ENVIRONMENT: production
+  VERSION_PREFIX: prod
+
 jobs:
-  test:
+  integration:
     uses: ./.github/workflows/integration.yml
 
   build:
-    needs: test
+    needs: integration
     uses: ./.github/workflows/build.yml
     with:
-      environment: production
-      version_tag: prod-${{ github.sha }}
+      environment: ${{ env.ENVIRONMENT }}
+      version_tag: ${{ env.VERSION_PREFIX }}-${{ github.sha }}
     secrets:
       api_url: ${{ secrets.PRODUCTION_API_URL }}
       ws_url: ${{ secrets.PRODUCTION_WS_URL }}
@@ -27,8 +31,8 @@ jobs:
     needs: build
     uses: ./.github/workflows/deploy.yml
     with:
-      environment: production
-      version_tag: prod-${{ github.sha }}
+      environment: ${{ env.ENVIRONMENT }}
+      version_tag: ${{ env.VERSION_PREFIX }}-${{ github.sha }}
       domain: ${{ vars.DOMAIN }}
     secrets:
       server_ip: ${{ secrets.SERVER_IP }}
@@ -38,6 +42,7 @@ jobs:
   release:
     needs: deploy
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     permissions:
       contents: write
 
@@ -49,22 +54,12 @@ jobs:
           body: |
             **Production Deployment**
             
-            - **Commit:** ${{ github.sha }}
-            - **Author:** ${{ github.actor }}
-            - **Date:** ${{ github.event.head_commit.timestamp }}
-            - **Message:** ${{ github.event.head_commit.message }}
+            **Commit:** ${{ github.sha }}
+            **Author:** ${{ github.actor }}
+            **Date:** ${{ github.event.head_commit.timestamp }}
+            **Message:** ${{ github.event.head_commit.message }}
             
             **Images:**
-            - Backend: `ghcr.io/${{ github.repository_owner }}/backend:prod-${{ github.sha }}`
-            - Frontend: `ghcr.io/${{ github.repository_owner }}/frontend:prod-${{ github.sha }}`
+            - `ghcr.io/${{ github.repository_owner }}/backend:${{ env.VERSION_PREFIX }}-${{ github.sha }}`
+            - `ghcr.io/${{ github.repository_owner }}/frontend:${{ env.VERSION_PREFIX }}-${{ github.sha }}`
           draft: false
-
-  notify:
-    needs: release
-    runs-on: ubuntu-latest
-    if: success()
-    steps:
-      - run: |
-          echo "✅ Production deployed successfully"
-          echo "URL: https://${{ vars.DOMAIN }}"
-          echo "Release: v${{ github.run_number }}"

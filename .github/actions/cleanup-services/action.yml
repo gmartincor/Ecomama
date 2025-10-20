@@ -1,0 +1,22 @@
+name: Cleanup Services
+description: Stop and cleanup Docker Compose services
+
+runs:
+  using: composite
+  steps:
+    - if: always()
+      name: Service status
+      shell: bash
+      run: docker compose -f docker-compose.base.yml ps || true
+
+    - if: always()
+      name: Collect logs
+      shell: bash
+      run: docker compose -f docker-compose.base.yml logs --tail=50 || true
+
+    - if: always()
+      name: Stop services
+      shell: bash
+      run: |
+        docker compose -f docker-compose.base.yml down -v --remove-orphans
+        docker system prune -f --volumes

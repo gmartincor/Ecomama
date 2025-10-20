@@ -20,74 +20,76 @@ on:
       env_file:
         required: true
 
+env:
+  ENV_SHORT: ${{ inputs.environment == 'production' && 'prod' || 'stg' }}
+  DEPLOY_PATH: /opt/ecomama
+  REGISTRY: ghcr.io
+
 jobs:
   deploy:
     name: ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
     environment:
       name: ${{ inputs.environment }}
-      url: https://${{ inputs.environment == 'production' && inputs.domain || format('staging.{0}', inputs.domain) }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.ssh_key }}" > ~/.ssh/key
-          chmod 600 ~/.ssh/key
-          ssh-keyscan -H ${{ secrets.server_ip }} >> ~/.ssh/known_hosts
+      - uses: ./.github/actions/get-environment-url
+        id: env-url
+        with:
+          environment: ${{ inputs.environment }}
+          domain: ${{ inputs.domain }}
 
-      - name: Deploy config
+      - uses: ./.github/actions/setup-ssh
+        with:
+          ssh-key: ${{ secrets.ssh_key }}
+          server-ip: ${{ secrets.server_ip }}
+
+      - name: Transfer configuration
         run: |
-          ENV_SHORT="${{ inputs.environment == 'production' && 'prod' || 'stg' }}"
-          
-          scp -i ~/.ssh/key \
+          scp -r \
             docker-compose.production.yml \
             infrastructure/nginx/nginx.conf \
             infrastructure/nginx/app.conf.template \
             infrastructure/init-db.sql \
-            deploy@${{ secrets.server_ip }}:/opt/ecomama/${ENV_SHORT}/
+            deploy-server:${{ env.DEPLOY_PATH }}/${{ env.ENV_SHORT }}/
           
-          echo "${{ secrets.env_file }}" | ssh -i ~/.ssh/key deploy@${{ secrets.server_ip }} \
-            "cat > /opt/ecomama/${ENV_SHORT}/.env.${ENV_SHORT}"
+          echo "${{ secrets.env_file }}" | ssh deploy-server \
+            "cat > ${{ env.DEPLOY_PATH }}/${{ env.ENV_SHORT }}/.env.${{ env.ENV_SHORT }}"
 
-      - name: Deploy
+      - name: Execute deployment
         run: |
-          ENV_SHORT="${{ inputs.environment == 'production' && 'prod' || 'stg' }}"
-          
-          ssh -i ~/.ssh/key deploy@${{ secrets.server_ip }} "
-            export REGISTRY='ghcr.io/${{ github.repository_owner }}/'
+          ssh deploy-server "
+            export REGISTRY='${{ env.REGISTRY }}/${{ github.repository_owner }}/'
             export VERSION='${{ inputs.version_tag }}'
-            /opt/ecomama/scripts/deploy.sh ${ENV_SHORT}
+            ${{ env.DEPLOY_PATH }}/scripts/deploy.sh ${{ env.ENV_SHORT }}
           "
 
-      - name: Verify
-        run: |
-          URL="https://${{ inputs.environment == 'production' && inputs.domain || format('staging.{0}', inputs.domain) }}/health"
-          
-          for i in {1..10}; do
-            if curl -sf -m 5 "$URL" &>/dev/null; then
-              echo "✅ Deployment verified"
-              exit 0
-            fi
-            sleep 5
-          done
-          
-          echo "❌ Health check failed"
-          exit 1
-
-      - name: Create issue on failure
-        if: failure() && inputs.environment == 'production'
-        uses: actions/github-script@v7
+      - uses: ./.github/actions/health-check
         with:
-          script: |
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `🚨 Production Deployment Failed - ${context.sha.substring(0,7)}`,
-              body: `**Commit:** ${context.sha}\n**Author:** ${context.actor}\n**Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
-              labels: ['deployment', 'critical'],
-              assignees: [context.actor]
-            });
+          url: ${{ steps.env-url.outputs.url }}
+          timeout: '60'
+
+      - uses: ./.github/actions/notify-deployment
+        if: always()
+        with:
+          environment: ${{ inputs.environment }}
+          status: ${{ job.status }}
+          url: ${{ steps.env-url.outputs.url }}
+          version: ${{ inputs.version_tag }}
+
+      - uses: ./.github/actions/create-issue
+        if: failure() && inputs.environment == 'production'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: 🚨 Production Deployment Failed - ${{ github.sha }}
+          body: |
+            **Environment:** ${{ inputs.environment }}
+            **Version:** ${{ inputs.version_tag }}
+            **Commit:** ${{ github.sha }}
+            **Author:** ${{ github.actor }}
+            **Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          labels: deployment,critical
+          assignees: ${{ github.actor }}

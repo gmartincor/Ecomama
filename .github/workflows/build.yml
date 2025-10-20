@@ -70,3 +70,6 @@ jobs:
             ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_WS_URL={0}', secrets.ws_url) || '' }}
           provenance: false
           sbom: false
+
+    outputs:
+      image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.service }}:${{ inputs.version_tag }}

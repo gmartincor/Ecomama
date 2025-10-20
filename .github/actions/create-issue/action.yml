@@ -1,0 +1,42 @@
+name: Create Issue
+description: Create GitHub issue for failures or alerts
+
+inputs:
+  title:
+    description: Issue title
+    required: true
+  body:
+    description: Issue body
+    required: true
+  labels:
+    description: Comma-separated list of labels
+    required: false
+    default: ''
+  assignees:
+    description: Comma-separated list of assignees
+    required: false
+    default: ''
+  token:
+    description: GitHub token
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/github-script@v7
+      with:
+        github-token: ${{ inputs.token }}
+        script: |
+          const title = `${{ inputs.title }}`;
+          const body = `${{ inputs.body }}`;
+          const labels = '${{ inputs.labels }}'.split(',').filter(l => l.trim());
+          const assignees = '${{ inputs.assignees }}'.split(',').filter(a => a.trim());
+          
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title,
+            body,
+            labels,
+            assignees
+          });

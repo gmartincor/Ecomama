@@ -1,0 +1,26 @@
+name: Setup Backend
+description: Setup Java and Gradle for backend
+
+inputs:
+  java-version:
+    description: Java version to use
+    required: false
+    default: '21'
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ inputs.java-version }}
+        distribution: temurin
+        cache: gradle
+
+    - name: Setup Gradle
+      shell: bash
+      run: |
+        mkdir -p ~/.gradle
+        echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
+        echo "org.gradle.parallel=true" >> ~/.gradle/gradle.properties
+        echo "org.gradle.caching=true" >> ~/.gradle/gradle.properties

@@ -1,0 +1,78 @@
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to rollback
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      version_tag:
+        description: Version tag to rollback to
+        required: true
+        type: string
+
+concurrency:
+  group: rollback-${{ inputs.environment }}
+  cancel-in-progress: false
+
+env:
+  ENV_SHORT: ${{ inputs.environment == 'production' && 'prod' || 'stg' }}
+  DEPLOY_PATH: /opt/ecomama
+
+jobs:
+  rollback:
+    name: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: ${{ inputs.environment }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/get-environment-url
+        id: env-url
+        with:
+          environment: ${{ inputs.environment }}
+          domain: ${{ vars.DOMAIN }}
+
+      - uses: ./.github/actions/setup-ssh
+        with:
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          server-ip: ${{ secrets.SERVER_IP }}
+
+      - name: Execute rollback
+        run: |
+          ssh deploy-server "
+            ${{ env.DEPLOY_PATH }}/scripts/rollback.sh ${{ env.ENV_SHORT }} ${{ inputs.version_tag }}
+          "
+
+      - uses: ./.github/actions/health-check
+        with:
+          url: ${{ steps.env-url.outputs.url }}
+          timeout: '60'
+
+      - uses: ./.github/actions/notify-deployment
+        if: always()
+        with:
+          environment: ${{ inputs.environment }}
+          status: ${{ job.status }}
+          url: ${{ steps.env-url.outputs.url }}
+          version: ${{ inputs.version_tag }}
+
+      - uses: ./.github/actions/create-issue
+        if: failure()
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: 🚨 Rollback Failed - ${{ inputs.environment }}
+          body: |
+            **Environment:** ${{ inputs.environment }}
+            **Target Version:** ${{ inputs.version_tag }}
+            **Actor:** ${{ github.actor }}
+            **Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          labels: rollback,critical
+          assignees: ${{ github.actor }}

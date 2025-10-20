@@ -1,0 +1,99 @@
+name: Security
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    - cron: '0 3 * * 2'
+  workflow_dispatch:
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  codeql:
+    name: CodeQL - ${{ matrix.language }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [java, javascript]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-and-quality
+
+      - uses: github/codeql-action/autobuild@v3
+
+      - uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:${{ matrix.language }}
+
+  trivy:
+    name: Container Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      security-events: write
+    if: github.event_name != 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+
+      - uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+
+  dependencies:
+    name: Dependencies - ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [backend, frontend]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - if: matrix.service == 'backend'
+        uses: ./.github/actions/setup-backend
+
+      - if: matrix.service == 'frontend'
+        uses: ./.github/actions/setup-frontend
+
+      - name: Run scan
+        working-directory: ./${{ matrix.service }}
+        run: |
+          if [ "${{ matrix.service }}" = "backend" ]; then
+            ./gradlew dependencyCheckAnalyze
+          else
+            pnpm audit --audit-level=high
+          fi
+
+      - if: always() && matrix.service == 'backend'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: backend/build/reports/dependency-check-report.html
+          retention-days: 7

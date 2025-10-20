@@ -1,0 +1,31 @@
+name: Setup SSH
+description: Configure SSH connection to deployment server
+
+inputs:
+  ssh-key:
+    description: SSH private key
+    required: true
+  server-ip:
+    description: Server IP address
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Configure SSH
+      shell: bash
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ inputs.ssh-key }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan -H ${{ inputs.server-ip }} >> ~/.ssh/known_hosts
+        
+        cat >> ~/.ssh/config <<EOF
+        Host deploy-server
+          HostName ${{ inputs.server-ip }}
+          User deploy
+          IdentityFile ~/.ssh/deploy_key
+          StrictHostKeyChecking no
+          ServerAliveInterval 60
+          ServerAliveCountMax 3
+        EOF
