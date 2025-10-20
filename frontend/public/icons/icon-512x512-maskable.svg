@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  
+  <defs>
+    <linearGradient id="grad512M" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#16a34a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#15803d;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <circle cx="256" cy="256" r="256" fill="url(#grad512M)"/>
+  
+  <g transform="translate(179.2, 153.60000000000002)">
+    <path d="M 102.4 0 Q 204.8 0 204.8 122.88 Q 204.8 205.2096 102.4 245.76 Q 0 205.2096 0 122.88 Q 0 0 102.4 0 Z" 
+          fill="#ffffff" opacity="0.9"/>
+    <path d="M 102.4 40.5504 L 102.4 205.2096" 
+          stroke="#ffffff" stroke-width="8.192" opacity="0.7"/>
+  </g>
+  
+  <text x="50%" y="435.2" font-family="Arial, sans-serif" 
+        font-size="61.44" font-weight="bold" fill="#ffffff" 
+        text-anchor="middle" opacity="0.9">ECOMAMA</text>
+</svg>

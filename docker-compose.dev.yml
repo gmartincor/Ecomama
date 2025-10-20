@@ -13,6 +13,7 @@ x-backend-env: &backend-env
 x-frontend-env: &frontend-env
   NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080/api/v1}
   NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL:-ws://localhost:8080/ws}
+  NEXT_PUBLIC_ENABLE_PWA: ${NEXT_PUBLIC_ENABLE_PWA:-true}
 
 x-healthcheck-backend: &healthcheck-backend
   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
@@ -80,18 +81,12 @@ services:
       - ./frontend/tailwind.config.js:/app/tailwind.config.js:ro
       - ./frontend/tsconfig.json:/app/tsconfig.json:ro
       - ./frontend/postcss.config.js:/app/postcss.config.js:ro
-      - frontend_node_modules:/app/node_modules:delegated
       - frontend_next:/app/.next:delegated
-      - pnpm_store:/home/nextjs/.local/share/pnpm/store:delegated
     healthcheck: *healthcheck-frontend
     restart: unless-stopped
 
 volumes:
   gradle_cache:
     driver: local
-  frontend_node_modules:
-    driver: local
   frontend_next:
-    driver: local
-  pnpm_store:
     driver: local
