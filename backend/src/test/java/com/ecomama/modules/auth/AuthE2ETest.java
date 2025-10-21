@@ -1,24 +1,25 @@
 package com.ecomama.modules.auth;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
 import com.ecomama.modules.auth.domain.User;
 import com.ecomama.modules.auth.infrastructure.repository.UserRepository;
 import com.ecomama.modules.auth.presentation.dto.LoginRequest;
 import com.ecomama.modules.auth.presentation.dto.RegisterRequest;
 import com.ecomama.shared.test.BaseIntegrationTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("Auth E2E Integration Tests")
 class AuthE2ETest extends BaseIntegrationTest {
@@ -51,23 +52,20 @@ class AuthE2ETest extends BaseIntegrationTest {
                 "e2e@example.com",
                 "SecurePassword123!",
                 "E2E",
-                "Test"
+                "Test",
+                "en"
         );
         
-        String registerResponse = mockMvc.perform(post("/api/v1/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.accessToken").exists())
-                .andExpect(jsonPath("$.data.user.email").value("e2e@example.com"))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+                .andExpect(jsonPath("$.data.user.email").value("e2e@example.com"));
         
         User savedUser = userRepository.findByEmail("e2e@example.com").orElseThrow();
         assertThat(savedUser).isNotNull();
-        assertThat(savedUser.getEmail()).isEqualTo("e2e@example.com");
         
         savedUser.verifyEmail();
         userRepository.save(savedUser);
@@ -90,7 +88,8 @@ class AuthE2ETest extends BaseIntegrationTest {
                 "duplicate@example.com",
                 "SecurePassword123!",
                 "Test",
-                "User"
+                "User",
+                "en"
         );
         
         mockMvc.perform(post("/api/v1/auth/register")
@@ -112,7 +111,8 @@ class AuthE2ETest extends BaseIntegrationTest {
                 "unverified@example.com",
                 "SecurePassword123!",
                 "Test",
-                "User"
+                "User",
+                "en"
         );
         
         mockMvc.perform(post("/api/v1/auth/register")

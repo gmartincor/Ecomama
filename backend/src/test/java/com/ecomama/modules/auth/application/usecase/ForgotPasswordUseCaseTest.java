@@ -59,7 +59,7 @@ class ForgotPasswordUseCaseTest {
             forgotPasswordUseCase.execute(request);
 
             verify(userRepository).save(userCaptor.capture());
-            verify(emailService).sendPasswordResetEmail(eq(TEST_EMAIL), anyString(), anyString());
+            verify(emailService).sendPasswordResetEmail(eq(TEST_EMAIL), anyString(), anyString(), anyString());
         }
 
         @Test
@@ -73,7 +73,7 @@ class ForgotPasswordUseCaseTest {
             forgotPasswordUseCase.execute(request);
 
             verify(userRepository).save(any(User.class));
-            verify(emailService).sendPasswordResetEmail(anyString(), anyString(), anyString());
+            verify(emailService).sendPasswordResetEmail(anyString(), anyString(), anyString(), anyString());
         }
     }
 
@@ -93,7 +93,7 @@ class ForgotPasswordUseCaseTest {
                     .hasMessage("User not found");
 
             verify(userRepository, never()).save(any());
-            verify(emailService, never()).sendPasswordResetEmail(anyString(), anyString(), anyString());
+            verify(emailService, never()).sendPasswordResetEmail(anyString(), anyString(), anyString(), anyString());
         }
     }
 }

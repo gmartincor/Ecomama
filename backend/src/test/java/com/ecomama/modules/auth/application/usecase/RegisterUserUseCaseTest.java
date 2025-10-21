@@ -74,7 +74,8 @@ class RegisterUserUseCaseTest {
                 TEST_EMAIL,
                 TEST_PASSWORD,
                 TEST_FIRST_NAME,
-                TEST_LAST_NAME
+                TEST_LAST_NAME,
+                "en"
         );
     }
     
@@ -104,7 +105,7 @@ class RegisterUserUseCaseTest {
             verify(passwordService).validatePassword(validRequest.password());
             verify(passwordService).hashPassword(validRequest.password());
             verify(userRepository).save(userCaptor.capture());
-            verify(emailService).sendVerificationEmail(anyString(), anyString(), anyString());
+            verify(emailService).sendVerificationEmail(anyString(), anyString(), anyString(), anyString());
         }
         
         @Test
@@ -146,6 +147,7 @@ class RegisterUserUseCaseTest {
             verify(emailService).sendVerificationEmail(
                     eq(TEST_EMAIL),
                     eq(TEST_FIRST_NAME),
+                    anyString(),
                     anyString()
             );
         }
@@ -166,7 +168,7 @@ class RegisterUserUseCaseTest {
             
             verify(userRepository).existsByEmail(validRequest.email());
             verify(userRepository, never()).save(any());
-            verify(emailService, never()).sendVerificationEmail(anyString(), anyString(), anyString());
+            verify(emailService, never()).sendVerificationEmail(anyString(), anyString(), anyString(), anyString());
         }
         
         @Test

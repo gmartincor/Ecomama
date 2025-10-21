@@ -54,7 +54,8 @@ class AuthControllerTest extends BaseWebMvcTest {
                     "newuser@example.com",
                     "SecurePassword123!",
                     "John",
-                    "Doe"
+                    "Doe",
+                    "en"
             );
             
             ProfileResponse profileResponse = new ProfileResponse(
@@ -101,7 +102,8 @@ class AuthControllerTest extends BaseWebMvcTest {
                     "existing@example.com",
                     "SecurePassword123!",
                     "John",
-                    "Doe"
+                    "Doe",
+                    "en"
             );
             
             when(registerUserUseCase.execute(any(RegisterRequest.class)))
@@ -121,7 +123,8 @@ class AuthControllerTest extends BaseWebMvcTest {
                     "invalid-email",
                     "weak",
                     "",
-                    ""
+                    "",
+                    "en"
             );
             
             mockMvc.perform(post("/api/v1/auth/register")

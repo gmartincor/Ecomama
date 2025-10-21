@@ -21,6 +21,7 @@ public final class AuthFixture {
         private String password = "SecurePassword123!";
         private String firstName = "John";
         private String lastName = "Doe";
+        private String preferredLocale = "en";
         
         public RegisterRequestBuilder email(String email) {
             this.email = email;
@@ -42,8 +43,13 @@ public final class AuthFixture {
             return this;
         }
         
+        public RegisterRequestBuilder preferredLocale(String preferredLocale) {
+            this.preferredLocale = preferredLocale;
+            return this;
+        }
+        
         public RegisterRequest build() {
-            return new RegisterRequest(email, password, firstName, lastName);
+            return new RegisterRequest(email, password, firstName, lastName, preferredLocale);
         }
     }
     
