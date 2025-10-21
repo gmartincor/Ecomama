@@ -45,10 +45,8 @@ public class AuthController {
     
     @PostMapping("/verify-email")
     @Operation(summary = "Verify email address", description = "Verifies user email using token sent via email")
-    public ApiResponse<String> verifyEmail(
-            @RequestParam String email,
-            @Valid @RequestBody VerifyEmailRequest request) {
-        verifyEmailUseCase.execute(email, request);
+    public ApiResponse<String> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
+        verifyEmailUseCase.execute(request);
         return ApiResponse.success("Email verified successfully");
     }
     

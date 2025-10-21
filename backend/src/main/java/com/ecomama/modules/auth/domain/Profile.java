@@ -23,6 +23,9 @@ public class Profile implements ValueObject {
     private String avatarUrl;
     private String city;
     private String country;
+    
+    @Builder.Default
+    private String preferredLocale = "en";
 
     public String getFullName() {
         if (firstName == null && lastName == null) {

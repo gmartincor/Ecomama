@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { authService } from '@/services/auth.service';
 import type {
   User,
@@ -47,6 +47,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const params = useParams();
+  const locale = (params?.locale as string) || 'en';
 
   const saveTokens = (accessToken: string, refreshToken: string) => {
     localStorage.setItem(TOKEN_STORAGE_KEY, accessToken);
@@ -108,12 +110,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await authService.register(data);
+      const response = await authService.register({ ...data, preferredLocale: locale });
 
       if (response.success && response.data) {
         saveTokens(response.data.accessToken, response.data.refreshToken);
         setUser(response.data.user);
-        router.push('/auth/verify-email');
+        router.push(`/${locale}`);
       } else {
         setError(response.error?.message || 'Registration failed');
       }

@@ -12,5 +12,9 @@ public interface JpaUserRepository extends JpaRepository<User, UUID> {
     
     Optional<User> findByEmail(String email);
     
+    Optional<User> findByEmailVerificationToken(String token);
+    
+    Optional<User> findByPasswordResetToken(String token);
+    
     boolean existsByEmail(String email);
 }

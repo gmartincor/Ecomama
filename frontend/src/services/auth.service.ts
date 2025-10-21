@@ -31,8 +31,8 @@ export const authService = {
     return api.post<AuthResponse>('/auth/refresh-token', data);
   },
 
-  async verifyEmail(email: string, data: VerifyEmailRequest): Promise<ApiResponse<string>> {
-    return api.post<string>(`/auth/verify-email?email=${encodeURIComponent(email)}`, data);
+  async verifyEmail(data: VerifyEmailRequest): Promise<ApiResponse<string>> {
+    return api.post<string>('/auth/verify-email', data);
   },
 
   async forgotPassword(data: ForgotPasswordRequest): Promise<ApiResponse<string>> {

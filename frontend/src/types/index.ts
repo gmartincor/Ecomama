@@ -29,6 +29,7 @@ export interface Profile {
   avatarUrl?: string;
   city?: string;
   country?: string;
+  preferredLocale?: string;
 }
 
 export enum UserRole {
@@ -53,6 +54,7 @@ export interface RegisterRequest {
   password: string;
   firstName: string;
   lastName: string;
+  preferredLocale?: string;
 }
 
 export interface RefreshTokenRequest {

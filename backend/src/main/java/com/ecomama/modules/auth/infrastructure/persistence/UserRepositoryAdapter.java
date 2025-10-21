@@ -25,6 +25,16 @@ public class UserRepositoryAdapter implements UserRepository {
     }
     
     @Override
+    public Optional<User> findByEmailVerificationToken(String token) {
+        return jpaUserRepository.findByEmailVerificationToken(token);
+    }
+    
+    @Override
+    public Optional<User> findByPasswordResetToken(String token) {
+        return jpaUserRepository.findByPasswordResetToken(token);
+    }
+    
+    @Override
     public boolean existsByEmail(String email) {
         return jpaUserRepository.existsByEmail(email);
     }

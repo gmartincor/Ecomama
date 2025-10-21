@@ -1,7 +1,6 @@
 package com.ecomama.modules.auth.domain;
 
 import com.ecomama.shared.domain.AggregateRoot;
-import com.ecomama.shared.exception.ValidationException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,7 +57,8 @@ public class User extends AggregateRoot<UUID> {
             @AttributeOverride(name = "bio", column = @Column(name = "bio", columnDefinition = "TEXT")),
             @AttributeOverride(name = "avatarUrl", column = @Column(name = "avatar_url", length = 500)),
             @AttributeOverride(name = "city", column = @Column(name = "city", length = 100)),
-            @AttributeOverride(name = "country", column = @Column(name = "country", length = 100))
+            @AttributeOverride(name = "country", column = @Column(name = "country", length = 100)),
+            @AttributeOverride(name = "preferredLocale", column = @Column(name = "preferred_locale", length = 5))
     })
     private Profile profile;
 
@@ -69,9 +69,6 @@ public class User extends AggregateRoot<UUID> {
     private Instant lastLoginAt;
 
     public void verifyEmail() {
-        if (this.emailVerified) {
-            throw new ValidationException("Email is already verified");
-        }
         this.emailVerified = true;
         this.emailVerificationToken = null;
         this.emailVerificationTokenExpiry = null;

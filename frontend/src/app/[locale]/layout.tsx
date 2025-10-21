@@ -5,6 +5,7 @@ import { Inter, Poppins } from 'next/font/google';
 import { LOCALES, isValidLocale } from '@/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import PWAProvider from '@/components/PWAProvider';
+import EmailVerificationBanner from '@/components/auth/EmailVerificationBanner';
 import { AuthProvider } from '@/lib/auth-context';
 import { getPWAMetadata, viewport as pwaViewport } from '@/lib/pwa-metadata';
 import '@/styles/globals.css';
@@ -66,6 +67,7 @@ export default async function LocaleLayout({ children, params: { locale } }: Loc
           <AuthProvider>
             <PWAProvider>
               <div className="flex flex-col min-h-screen">
+                <EmailVerificationBanner />
                 <LanguageSwitcher />
                 {children}
               </div>

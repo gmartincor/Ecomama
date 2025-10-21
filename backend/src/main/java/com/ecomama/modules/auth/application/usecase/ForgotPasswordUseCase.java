@@ -33,7 +33,12 @@ public class ForgotPasswordUseCase {
         user.setPasswordResetToken(resetToken, tokenExpiry);
         userRepository.save(user);
         
-        emailService.sendPasswordResetEmail(user.getEmail(), user.getProfile().getFirstName(), resetToken);
+        emailService.sendPasswordResetEmail(
+                user.getEmail(), 
+                user.getProfile().getFirstName(), 
+                resetToken,
+                user.getProfile().getPreferredLocale()
+        );
         
         log.info("Password reset requested for user: {}", user.getId());
     }

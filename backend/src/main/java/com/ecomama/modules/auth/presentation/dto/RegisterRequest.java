@@ -19,6 +19,14 @@ public record RegisterRequest(
 
         @NotBlank(message = "Last name is required")
         @Size(max = 100, message = "Last name must not exceed 100 characters")
-        String lastName
+        String lastName,
+
+        @Size(max = 5, message = "Locale must not exceed 5 characters")
+        String preferredLocale
 ) {
+    public RegisterRequest {
+        if (preferredLocale == null || preferredLocale.isBlank()) {
+            preferredLocale = "en";
+        }
+    }
 }

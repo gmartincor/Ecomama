@@ -29,10 +29,10 @@ public class EmailServiceImpl implements EmailService {
 
     @Async
     @Override
-    public void sendVerificationEmail(String toEmail, String firstName, String token) {
+    public void sendVerificationEmail(String toEmail, String firstName, String token, String locale) {
         try {
             String subject = "Verify Your Email Address";
-            String htmlContent = buildVerificationEmailHtml(firstName, token);
+            String htmlContent = buildVerificationEmailHtml(firstName, token, locale);
             sendEmail(toEmail, subject, htmlContent);
             log.info("Verification email sent to: {}", toEmail);
         } catch (Exception e) {
@@ -42,10 +42,10 @@ public class EmailServiceImpl implements EmailService {
 
     @Async
     @Override
-    public void sendPasswordResetEmail(String toEmail, String firstName, String token) {
+    public void sendPasswordResetEmail(String toEmail, String firstName, String token, String locale) {
         try {
             String subject = "Reset Your Password";
-            String htmlContent = buildPasswordResetEmailHtml(firstName, token);
+            String htmlContent = buildPasswordResetEmailHtml(firstName, token, locale);
             sendEmail(toEmail, subject, htmlContent);
             log.info("Password reset email sent to: {}", toEmail);
         } catch (Exception e) {
@@ -55,10 +55,10 @@ public class EmailServiceImpl implements EmailService {
 
     @Async
     @Override
-    public void sendWelcomeEmail(String toEmail, String firstName) {
+    public void sendWelcomeEmail(String toEmail, String firstName, String locale) {
         try {
             String subject = "Welcome to " + appName;
-            String htmlContent = buildWelcomeEmailHtml(firstName);
+            String htmlContent = buildWelcomeEmailHtml(firstName, locale);
             sendEmail(toEmail, subject, htmlContent);
             log.info("Welcome email sent to: {}", toEmail);
         } catch (Exception e) {
@@ -78,8 +78,8 @@ public class EmailServiceImpl implements EmailService {
         mailSender.send(message);
     }
 
-    private String buildVerificationEmailHtml(String firstName, String token) {
-        String verificationUrl = appUrl + "/auth/verify-email?token=" + token;
+    private String buildVerificationEmailHtml(String firstName, String token, String locale) {
+        String verificationUrl = String.format("%s/%s/auth/verify-email?token=%s", appUrl, locale, token);
         return String.format("""
             <!DOCTYPE html>
             <html>
@@ -104,8 +104,8 @@ public class EmailServiceImpl implements EmailService {
             """, appName, firstName, appName, verificationUrl, verificationUrl, appName, appName);
     }
 
-    private String buildPasswordResetEmailHtml(String firstName, String token) {
-        String resetUrl = appUrl + "/auth/reset-password?token=" + token;
+    private String buildPasswordResetEmailHtml(String firstName, String token, String locale) {
+        String resetUrl = String.format("%s/%s/auth/reset-password?token=%s", appUrl, locale, token);
         return String.format("""
             <!DOCTYPE html>
             <html>
@@ -130,7 +130,8 @@ public class EmailServiceImpl implements EmailService {
             """, firstName, resetUrl, resetUrl, appName);
     }
 
-    private String buildWelcomeEmailHtml(String firstName) {
+    private String buildWelcomeEmailHtml(String firstName, String locale) {
+        String dashboardUrl = String.format("%s/%s", appUrl, locale);
         return String.format("""
             <!DOCTYPE html>
             <html>
@@ -156,6 +157,6 @@ public class EmailServiceImpl implements EmailService {
                 </div>
             </body>
             </html>
-            """, appName, firstName, appUrl, appName);
+            """, appName, firstName, dashboardUrl, appName);
     }
 }

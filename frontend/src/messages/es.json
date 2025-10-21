@@ -83,9 +83,13 @@
       "title": "Verifica tu Correo",
       "subtitle": "Por favor revisa tu bandeja de entrada y haz clic en el enlace de verificación",
       "verifying": "Verificando tu correo...",
-      "success": "¡Correo verificado con éxito! Redirigiendo...",
+      "success": "¡Correo verificado con éxito! Redirigiendo al inicio...",
       "error": "La verificación de correo falló. El enlace puede estar expirado o ser inválido",
-      "resend": "Reenviar correo de verificación"
+      "alreadyVerified": "¡Tu correo ya está verificado! Ya puedes usar todas las funciones.",
+      "expiredToken": "Este enlace de verificación ha expirado. Por favor regístrate de nuevo o solicita un nuevo correo de verificación.",
+      "invalidToken": "Este enlace de verificación es inválido. Por favor revisa tu correo para el enlace correcto.",
+      "emailNotVerified": "Por favor verifica tu correo para acceder a todas las funciones",
+      "resend": "Ir al inicio"
     },
     "changePassword": {
       "title": "Cambiar Contraseña",

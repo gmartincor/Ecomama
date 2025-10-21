@@ -48,6 +48,7 @@ public class RegisterUserUseCase {
         Profile profile = Profile.builder()
                 .firstName(request.firstName())
                 .lastName(request.lastName())
+                .preferredLocale(request.preferredLocale())
                 .build();
         
         User user = User.builder()
@@ -66,7 +67,8 @@ public class RegisterUserUseCase {
         emailService.sendVerificationEmail(
                 savedUser.getEmail(),
                 savedUser.getProfile().getFirstName(),
-                verificationToken
+                verificationToken,
+                savedUser.getProfile().getPreferredLocale()
         );
         
         String accessToken = jwtTokenProvider.generateAccessToken(savedUser.getId(), savedUser.getEmail(), savedUser.getRole().name());

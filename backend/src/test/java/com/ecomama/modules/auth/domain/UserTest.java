@@ -1,6 +1,5 @@
 package com.ecomama.modules.auth.domain;
 
-import com.ecomama.shared.exception.ValidationException;
 import com.ecomama.shared.test.fixture.UserFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -22,8 +21,8 @@ class UserTest {
     class EmailVerificationTests {
         
         @Test
-        @DisplayName("Should verify email successfully when not already verified")
-        void shouldVerifyEmailWhenNotVerified() {
+        @DisplayName("Should verify email successfully")
+        void shouldVerifyEmail() {
             User user = UserFixture.anUnverifiedUser().build();
             
             user.verifyEmail();
@@ -31,16 +30,6 @@ class UserTest {
             assertThat(user.isEmailVerified()).isTrue();
             assertThat(user.getEmailVerificationToken()).isNull();
             assertThat(user.getEmailVerificationTokenExpiry()).isNull();
-        }
-        
-        @Test
-        @DisplayName("Should throw exception when email is already verified")
-        void shouldThrowExceptionWhenAlreadyVerified() {
-            User user = UserFixture.aVerifiedUser().build();
-            
-            assertThatThrownBy(user::verifyEmail)
-                    .isInstanceOf(ValidationException.class)
-                    .hasMessage("Email is already verified");
         }
         
         @Test
