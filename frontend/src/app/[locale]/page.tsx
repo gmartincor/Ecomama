@@ -1,10 +1,13 @@
 import { useTranslations } from 'next-intl';
+import Navigation from '@/components/Navigation';
 
 export default function Home() {
   const t = useTranslations('home');
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
+    <>
+      <Navigation />
+      <main className="flex min-h-screen flex-col items-center justify-center p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between font-sans text-sm lg:flex">
         <div className="text-center">
           <h1 className="font-heading text-6xl font-bold text-primary-600 mb-4">
@@ -47,5 +50,6 @@ export default function Home() {
         </div>
       </div>
     </main>
+    </>
   );
 }

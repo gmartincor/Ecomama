@@ -32,7 +32,113 @@
     "events": "Events",
     "forums": "Forums",
     "blog": "Blog",
-    "chat": "Chat"
+    "chat": "Chat",
+    "login": "Login",
+    "register": "Register",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "auth": {
+    "login": {
+      "title": "Login to Ecomama",
+      "subtitle": "Welcome back! Please login to your account",
+      "email": "Email Address",
+      "password": "Password",
+      "submit": "Login",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Register here"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join Ecomama community today",
+      "email": "Email Address",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "submit": "Create Account",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Login here",
+      "termsAgree": "By registering, you agree to our Terms of Service and Privacy Policy"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "subtitle": "Enter your email to receive a password reset link",
+      "email": "Email Address",
+      "submit": "Send Reset Link",
+      "backToLogin": "Back to login",
+      "successMessage": "If an account exists with this email, you will receive a password reset link shortly"
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "subtitle": "Enter your new password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Reset Password",
+      "successMessage": "Password reset successful. You can now login with your new password"
+    },
+    "verifyEmail": {
+      "title": "Verify Your Email",
+      "subtitle": "Please check your inbox and click the verification link",
+      "verifying": "Verifying your email...",
+      "success": "Email verified successfully! Redirecting...",
+      "error": "Email verification failed. The link may be expired or invalid",
+      "resend": "Resend verification email"
+    },
+    "changePassword": {
+      "title": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Change Password",
+      "successMessage": "Password changed successfully"
+    },
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "emailExists": "Email already registered",
+      "emailNotVerified": "Please verify your email first",
+      "tokenExpired": "Token expired. Please request a new one",
+      "networkError": "Network error. Please try again",
+      "unknownError": "An error occurred. Please try again"
+    }
+  },
+  "profile": {
+    "title": "My Profile",
+    "edit": "Edit Profile",
+    "personalInfo": "Personal Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phoneNumber": "Phone Number",
+    "bio": "Bio",
+    "location": "Location",
+    "city": "City",
+    "country": "Country",
+    "joinDate": "Member Since",
+    "lastLogin": "Last Login",
+    "emailVerified": "Email Verified",
+    "emailNotVerified": "Email Not Verified",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "successMessage": "Profile updated successfully"
+  },
+  "settings": {
+    "title": "Account Settings",
+    "changePassword": {
+      "title": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "submit": "Change Password",
+      "success": "Password changed successfully. You will be logged out."
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "description": "Actions that affect your account"
+    },
+    "logout": "Log Out"
   },
   "pwa": {
     "install": {

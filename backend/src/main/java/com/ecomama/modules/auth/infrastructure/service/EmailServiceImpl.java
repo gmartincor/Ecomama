@@ -79,18 +79,18 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private String buildVerificationEmailHtml(String firstName, String token) {
-        String verificationUrl = appUrl + "/verify-email?token=" + token;
+        String verificationUrl = appUrl + "/auth/verify-email?token=" + token;
         return String.format("""
             <!DOCTYPE html>
             <html>
             <head><meta charset="UTF-8"></head>
             <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                 <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-                    <h2 style="color: #4CAF50;">Welcome to %s!</h2>
+                    <h2 style="color: #16a34a;">Welcome to %s!</h2>
                     <p>Hi %s,</p>
                     <p>Thank you for registering with %s. Please verify your email address by clicking the button below:</p>
                     <div style="text-align: center; margin: 30px 0;">
-                        <a href="%s" style="background-color: #4CAF50; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">Verify Email</a>
+                        <a href="%s" style="background-color: #16a34a; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">Verify Email</a>
                     </div>
                     <p>Or copy and paste this link into your browser:</p>
                     <p style="word-break: break-all; color: #666;">%s</p>
@@ -105,7 +105,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private String buildPasswordResetEmailHtml(String firstName, String token) {
-        String resetUrl = appUrl + "/reset-password?token=" + token;
+        String resetUrl = appUrl + "/auth/reset-password?token=" + token;
         return String.format("""
             <!DOCTYPE html>
             <html>

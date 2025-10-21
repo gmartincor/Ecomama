@@ -5,6 +5,7 @@ import { Inter, Poppins } from 'next/font/google';
 import { LOCALES, isValidLocale } from '@/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import PWAProvider from '@/components/PWAProvider';
+import { AuthProvider } from '@/lib/auth-context';
 import { getPWAMetadata, viewport as pwaViewport } from '@/lib/pwa-metadata';
 import '@/styles/globals.css';
 
@@ -62,10 +63,14 @@ export default async function LocaleLayout({ children, params: { locale } }: Loc
       </head>
       <body className="font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
-          <PWAProvider>
-            <LanguageSwitcher />
-            {children}
-          </PWAProvider>
+          <AuthProvider>
+            <PWAProvider>
+              <div className="flex flex-col min-h-screen">
+                <LanguageSwitcher />
+                {children}
+              </div>
+            </PWAProvider>
+          </AuthProvider>
         </NextIntlClientProvider>
       </body>
     </html>

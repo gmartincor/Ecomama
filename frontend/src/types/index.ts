@@ -14,18 +14,76 @@ export interface ApiError {
 export interface User {
   id: string;
   email: string;
+  role: string;
+  emailVerified: boolean;
+  profile: Profile;
+  createdAt: string;
+  lastLoginAt?: string;
+}
+
+export interface Profile {
   firstName: string;
   lastName: string;
-  role: UserRole;
-  profileImage?: string;
-  createdAt: string;
-  updatedAt: string;
+  phoneNumber?: string;
+  bio?: string;
+  avatarUrl?: string;
+  city?: string;
+  country?: string;
 }
 
 export enum UserRole {
-  FARMER = 'FARMER',
-  CONSUMER = 'CONSUMER',
+  USER = 'USER',
   ADMIN = 'ADMIN',
+  SUPERADMIN = 'SUPERADMIN',
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  user: User;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface RefreshTokenRequest {
+  refreshToken: string;
+}
+
+export interface VerifyEmailRequest {
+  token: string;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface UpdateProfileRequest {
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+  bio?: string;
+  city?: string;
+  country?: string;
 }
 
 export interface Listing {

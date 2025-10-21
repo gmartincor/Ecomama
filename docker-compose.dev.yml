@@ -8,6 +8,8 @@ x-backend-env: &backend-env
   SPRING_DATASOURCE_PASSWORD: ${DATABASE_PASSWORD:-ecomama_password}
   SPRING_DATA_REDIS_HOST: redis
   SPRING_DATA_REDIS_PORT: 6379
+  SPRING_MAIL_HOST: mailhog
+  SPRING_MAIL_PORT: 1025
   GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.native=false"
 
 x-frontend-env: &frontend-env
@@ -29,6 +31,13 @@ x-healthcheck-frontend: &healthcheck-frontend
   retries: 8
   start_period: 60s
 
+x-healthcheck-mailhog: &healthcheck-mailhog
+  test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8025"]
+  interval: 10s
+  timeout: 5s
+  retries: 3
+  start_period: 5s
+
 services:
   backend:
     build:
@@ -45,6 +54,8 @@ services:
       postgres:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      mailhog:
         condition: service_healthy
     networks:
       - ecomama-network
@@ -83,6 +94,17 @@ services:
       - ./frontend/postcss.config.js:/app/postcss.config.js:ro
       - frontend_next:/app/.next:delegated
     healthcheck: *healthcheck-frontend
+    restart: unless-stopped
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: ecomama-mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - ecomama-network
+    healthcheck: *healthcheck-mailhog
     restart: unless-stopped
 
 volumes:

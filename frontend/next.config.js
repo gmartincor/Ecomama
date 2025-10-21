@@ -1,6 +1,6 @@
 const createNextIntlPlugin = require('next-intl/plugin');
 const withPWA = require('@ducanh2912/next-pwa').default;
-const { runtimeCaching } = require('./src/lib/workbox.config.ts');
+const { runtimeCaching } = require('./src/lib/workbox.config.js');
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 

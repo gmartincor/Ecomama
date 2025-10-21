@@ -32,7 +32,113 @@
     "events": "Eventos",
     "forums": "Foros",
     "blog": "Blog",
-    "chat": "Chat"
+    "chat": "Chat",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "logout": "Cerrar Sesión"
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar Sesión en Ecomama",
+      "subtitle": "¡Bienvenido de nuevo! Por favor inicia sesión en tu cuenta",
+      "email": "Correo Electrónico",
+      "password": "Contraseña",
+      "submit": "Iniciar Sesión",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "noAccount": "¿No tienes una cuenta?",
+      "registerLink": "Regístrate aquí"
+    },
+    "register": {
+      "title": "Crear Cuenta",
+      "subtitle": "Únete a la comunidad Ecomama hoy",
+      "email": "Correo Electrónico",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar Contraseña",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "submit": "Crear Cuenta",
+      "haveAccount": "¿Ya tienes una cuenta?",
+      "loginLink": "Inicia sesión aquí",
+      "termsAgree": "Al registrarte, aceptas nuestros Términos de Servicio y Política de Privacidad"
+    },
+    "forgotPassword": {
+      "title": "Olvidé mi Contraseña",
+      "subtitle": "Ingresa tu correo para recibir un enlace de restablecimiento",
+      "email": "Correo Electrónico",
+      "submit": "Enviar Enlace",
+      "backToLogin": "Volver al inicio de sesión",
+      "successMessage": "Si existe una cuenta con este correo, recibirás un enlace de restablecimiento en breve"
+    },
+    "resetPassword": {
+      "title": "Restablecer Contraseña",
+      "subtitle": "Ingresa tu nueva contraseña",
+      "newPassword": "Nueva Contraseña",
+      "confirmPassword": "Confirmar Contraseña",
+      "submit": "Restablecer Contraseña",
+      "successMessage": "Contraseña restablecida con éxito. Ahora puedes iniciar sesión con tu nueva contraseña"
+    },
+    "verifyEmail": {
+      "title": "Verifica tu Correo",
+      "subtitle": "Por favor revisa tu bandeja de entrada y haz clic en el enlace de verificación",
+      "verifying": "Verificando tu correo...",
+      "success": "¡Correo verificado con éxito! Redirigiendo...",
+      "error": "La verificación de correo falló. El enlace puede estar expirado o ser inválido",
+      "resend": "Reenviar correo de verificación"
+    },
+    "changePassword": {
+      "title": "Cambiar Contraseña",
+      "currentPassword": "Contraseña Actual",
+      "newPassword": "Nueva Contraseña",
+      "confirmPassword": "Confirmar Contraseña",
+      "submit": "Cambiar Contraseña",
+      "successMessage": "Contraseña cambiada con éxito"
+    },
+    "errors": {
+      "invalidCredentials": "Correo o contraseña inválidos",
+      "emailExists": "El correo ya está registrado",
+      "emailNotVerified": "Por favor verifica tu correo primero",
+      "tokenExpired": "Token expirado. Por favor solicita uno nuevo",
+      "networkError": "Error de red. Por favor intenta de nuevo",
+      "unknownError": "Ocurrió un error. Por favor intenta de nuevo"
+    }
+  },
+  "profile": {
+    "title": "Mi Perfil",
+    "edit": "Editar Perfil",
+    "personalInfo": "Información Personal",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "email": "Correo",
+    "phoneNumber": "Teléfono",
+    "bio": "Biografía",
+    "location": "Ubicación",
+    "city": "Ciudad",
+    "country": "País",
+    "joinDate": "Miembro Desde",
+    "lastLogin": "Último Acceso",
+    "emailVerified": "Correo Verificado",
+    "emailNotVerified": "Correo No Verificado",
+    "save": "Guardar Cambios",
+    "cancel": "Cancelar",
+    "successMessage": "Perfil actualizado con éxito"
+  },
+  "settings": {
+    "title": "Configuración de la Cuenta",
+    "changePassword": {
+      "title": "Cambiar Contraseña",
+      "currentPassword": "Contraseña Actual",
+      "newPassword": "Nueva Contraseña",
+      "confirmPassword": "Confirmar Nueva Contraseña",
+      "submit": "Cambiar Contraseña",
+      "success": "Contraseña cambiada con éxito. Serás desconectado."
+    },
+    "dangerZone": {
+      "title": "Zona de Peligro",
+      "description": "Acciones que afectan tu cuenta"
+    },
+    "logout": "Cerrar Sesión"
   },
   "pwa": {
     "install": {
