@@ -8,7 +8,6 @@ import com.ecomama.modules.auth.presentation.dto.AuthResponse;
 import com.ecomama.modules.auth.presentation.dto.LoginRequest;
 import com.ecomama.modules.auth.presentation.mapper.UserMapper;
 import com.ecomama.shared.exception.UnauthorizedException;
-import com.ecomama.shared.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,10 +36,6 @@ public class LoginUserUseCase {
         
         if (!passwordService.matches(request.password(), user.getPasswordHash())) {
             throw new UnauthorizedException("Invalid email or password");
-        }
-        
-        if (!user.isEmailVerified()) {
-            throw new ValidationException("Please verify your email before logging in");
         }
         
         user.recordLogin();

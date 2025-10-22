@@ -8,7 +8,7 @@ import { useAuth } from '@/lib/auth-context';
 import { registerSchema, RegisterFormData } from '@/lib/validations/auth.schema';
 import { Button, Form } from '@/components/ui';
 import { AuthLayout } from '@/components/layout';
-import { FormInput, FormPasswordInput } from '@/components/forms';
+import { FormInput, FormPasswordInput, PasswordStrength } from '@/components/forms';
 import { AuthCard } from '@/components/auth';
 
 export default function RegisterPage() {
@@ -77,12 +77,15 @@ export default function RegisterPage() {
               disabled={isLoading}
             />
 
-            <FormPasswordInput
-              name="password"
-              label={t('password')}
-              autoComplete="new-password"
-              disabled={isLoading}
-            />
+            <div className="space-y-2">
+              <FormPasswordInput
+                name="password"
+                label={t('password')}
+                autoComplete="new-password"
+                disabled={isLoading}
+              />
+              <PasswordStrength password={form.watch('password')} />
+            </div>
 
             <FormPasswordInput
               name="confirmPassword"
