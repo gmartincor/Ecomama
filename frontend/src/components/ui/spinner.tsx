@@ -1,21 +1,20 @@
 import { cn } from '@/lib/utils';
 
-interface LoadingProps {
+interface SpinnerProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
-  fullScreen?: boolean;
 }
 
-export default function Loading({ size = 'md', className, fullScreen = false }: LoadingProps) {
-  const sizeClasses = {
-    sm: 'h-4 w-4',
-    md: 'h-8 w-8',
-    lg: 'h-12 w-12',
-  };
+const sizeClasses = {
+  sm: 'h-4 w-4',
+  md: 'h-8 w-8',
+  lg: 'h-12 w-12',
+};
 
-  const spinner = (
+export function Spinner({ size = 'md', className }: SpinnerProps) {
+  return (
     <svg
-      className={cn('animate-spin text-primary-600', sizeClasses[size], className)}
+      className={cn('animate-spin text-current', sizeClasses[size], className)}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -35,14 +34,20 @@ export default function Loading({ size = 'md', className, fullScreen = false }: 
       />
     </svg>
   );
+}
 
+interface LoadingProps extends SpinnerProps {
+  fullScreen?: boolean;
+}
+
+export function Loading({ fullScreen = false, ...props }: LoadingProps) {
   if (fullScreen) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        {spinner}
+        <Spinner {...props} />
       </div>
     );
   }
 
-  return spinner;
+  return <Spinner {...props} />;
 }

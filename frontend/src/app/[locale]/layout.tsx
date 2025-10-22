@@ -8,6 +8,7 @@ import PWAProvider from '@/components/PWAProvider';
 import EmailVerificationBanner from '@/components/auth/EmailVerificationBanner';
 import { AuthProvider } from '@/lib/auth-context';
 import { getPWAMetadata, viewport as pwaViewport } from '@/lib/pwa-metadata';
+import { Toaster } from '@/components/ui/toaster';
 import '@/styles/globals.css';
 
 const inter = Inter({
@@ -71,6 +72,7 @@ export default async function LocaleLayout({ children, params: { locale } }: Loc
                 <LanguageSwitcher />
                 {children}
               </div>
+              <Toaster />
             </PWAProvider>
           </AuthProvider>
         </NextIntlClientProvider>

@@ -1,134 +1,155 @@
 'use client';
 
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/lib/auth-context';
 import { changePasswordSchema, ChangePasswordFormData } from '@/lib/validations/auth.schema';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
-import FormError from '@/components/ui/FormError';
-import PasswordStrength from '@/components/ui/PasswordStrength';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { AlertCircle, LogOut } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function SettingsPage() {
   const t = useTranslations('settings');
-  const { changePassword, logout } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const { changePassword, logout, isLoading } = useAuth();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-    reset,
-  } = useForm<ChangePasswordFormData>({
+  const form = useForm<ChangePasswordFormData>({
     resolver: zodResolver(changePasswordSchema),
+    defaultValues: {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    },
   });
 
-  const newPassword = watch('newPassword', '');
-
   const onSubmit = async (data: ChangePasswordFormData) => {
-    setError(null);
-    setSuccess(false);
-    setIsLoading(true);
-
-    try {
-      await changePassword(data);
-      setSuccess(true);
-      reset();
-      setTimeout(() => {
-        logout();
-      }, 2000);
-    } catch (err: any) {
-      setError(err.message || 'An error occurred');
-    } finally {
-      setIsLoading(false);
-    }
+    await changePassword(data);
+    form.reset();
   };
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
-          <div className="bg-white shadow rounded-lg">
-            <div className="px-6 py-8 border-b border-gray-200">
-              <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-            </div>
+      <div className="min-h-screen bg-muted/40 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto space-y-6">
+          <div>
+            <h1 className="text-3xl font-bold">{t('title')}</h1>
+            <p className="text-muted-foreground mt-2">
+              Manage your account settings and preferences
+            </p>
+          </div>
 
-            <div className="px-6 py-6 space-y-8">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                  {t('changePassword.title')}
-                </h2>
-
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                  {error && <FormError message={error} />}
-                  
-                  {success && (
-                    <div className="rounded-lg bg-green-50 border border-green-200 p-4">
-                      <p className="text-sm text-green-800">
-                        {t('changePassword.success')}
-                      </p>
-                    </div>
-                  )}
-
-                  <Input
-                    {...register('currentPassword')}
-                    type="password"
-                    label={t('changePassword.currentPassword')}
-                    error={errors.currentPassword?.message}
-                    disabled={isLoading}
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('changePassword.title')}</CardTitle>
+              <CardDescription>
+                Ensure your account is using a strong password
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="currentPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('changePassword.currentPassword')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            autoComplete="current-password"
+                            disabled={isLoading}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
 
-                  <div>
-                    <Input
-                      {...register('newPassword')}
-                      type="password"
-                      label={t('changePassword.newPassword')}
-                      error={errors.newPassword?.message}
-                      disabled={isLoading}
-                    />
-                    <PasswordStrength password={newPassword} />
-                  </div>
-
-                  <Input
-                    {...register('confirmPassword')}
-                    type="password"
-                    label={t('changePassword.confirmPassword')}
-                    error={errors.confirmPassword?.message}
-                    disabled={isLoading}
+                  <FormField
+                    control={form.control}
+                    name="newPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('changePassword.newPassword')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            autoComplete="new-password"
+                            disabled={isLoading}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Must be at least 8 characters with uppercase, lowercase, and number
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
 
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    isLoading={isLoading}
-                    disabled={success}
-                  >
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('changePassword.confirmPassword')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            autoComplete="new-password"
+                            disabled={isLoading}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button type="submit" isLoading={isLoading}>
                     {t('changePassword.submit')}
                   </Button>
                 </form>
-              </div>
+              </Form>
+            </CardContent>
+          </Card>
 
-              <hr className="border-gray-200" />
-
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                  {t('dangerZone.title')}
-                </h2>
-                <p className="text-sm text-gray-600 mb-4">
-                  {t('dangerZone.description')}
-                </p>
-                <Button variant="ghost" onClick={() => logout()}>
-                  {t('logout')}
-                </Button>
-              </div>
-            </div>
-          </div>
+          <Card className="border-destructive">
+            <CardHeader>
+              <CardTitle className="text-destructive">
+                {t('dangerZone.title')}
+              </CardTitle>
+              <CardDescription>
+                {t('dangerZone.description')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Logging out will end your current session
+                </AlertDescription>
+              </Alert>
+              <Button variant="destructive" onClick={() => logout()}>
+                <LogOut className="mr-2 h-4 w-4" />
+                {t('logout')}
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </ProtectedRoute>

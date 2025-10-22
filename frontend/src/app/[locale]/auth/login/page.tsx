@@ -6,92 +6,116 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n';
 import { useAuth } from '@/lib/auth-context';
 import { loginSchema, LoginFormData } from '@/lib/validations/auth.schema';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
-import FormError from '@/components/ui/FormError';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { AuthLayout } from '@/components/layout';
 
 export default function LoginPage() {
   const t = useTranslations('auth.login');
-  const { login, isLoading, error, clearError } = useAuth();
+  const { login, isLoading } = useAuth();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormData>({
+  const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    clearError();
     await login(data);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {t('title')}
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            {t('subtitle')}
-          </p>
-        </div>
+    <AuthLayout>
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold">{t('title')}</CardTitle>
+          <CardDescription>{t('subtitle')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('email')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="name@example.com"
+                        autoComplete="email"
+                        disabled={isLoading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          {error && <FormError message={error} />}
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('password')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        autoComplete="current-password"
+                        disabled={isLoading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="space-y-4">
-            <Input
-              {...register('email')}
-              type="email"
-              label={t('email')}
-              error={errors.email?.message}
-              autoComplete="email"
-              disabled={isLoading}
-            />
+              <div className="flex justify-end">
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-sm font-medium text-primary hover:underline"
+                >
+                  {t('forgotPassword')}
+                </Link>
+              </div>
 
-            <Input
-              {...register('password')}
-              type="password"
-              label={t('password')}
-              error={errors.password?.message}
-              autoComplete="current-password"
-              disabled={isLoading}
-            />
-          </div>
+              <Button type="submit" className="w-full" isLoading={isLoading}>
+                {t('submit')}
+              </Button>
 
-          <div className="flex items-center justify-between">
-            <Link
-              href="/auth/forgot-password"
-              className="text-sm font-medium text-primary-600 hover:text-primary-500"
-            >
-              {t('forgotPassword')}
-            </Link>
-          </div>
-
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            fullWidth
-            isLoading={isLoading}
-          >
-            {t('submit')}
-          </Button>
-
-          <div className="text-center text-sm">
-            <span className="text-gray-600">{t('noAccount')} </span>
-            <Link
-              href="/auth/register"
-              className="font-medium text-primary-600 hover:text-primary-500"
-            >
-              {t('registerLink')}
-            </Link>
-          </div>
-        </form>
-      </div>
-    </div>
+              <div className="text-center text-sm">
+                <span className="text-muted-foreground">{t('noAccount')} </span>
+                <Link
+                  href="/auth/register"
+                  className="font-medium text-primary hover:underline"
+                >
+                  {t('registerLink')}
+                </Link>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </AuthLayout>
   );
 }

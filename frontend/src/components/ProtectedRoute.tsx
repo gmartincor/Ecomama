@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-import Loading from './ui/Loading';
+import { Loading } from './ui/spinner';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { toast } from '@/hooks/use-toast';
 import { authService } from '@/services/auth.service';
 import type {
   User,
@@ -95,12 +96,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (response.success && response.data) {
         saveTokens(response.data.accessToken, response.data.refreshToken);
         setUser(response.data.user);
+        toast({
+          title: 'Login successful',
+          description: 'Welcome back!',
+        });
         router.push('/');
       } else {
-        setError(response.error?.message || 'Login failed');
+        const errorMessage = response.error?.message || 'Login failed';
+        setError(errorMessage);
+        toast({
+          variant: 'destructive',
+          title: 'Login failed',
+          description: errorMessage,
+        });
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      const errorMessage = 'An unexpected error occurred';
+      setError(errorMessage);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -115,12 +132,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (response.success && response.data) {
         saveTokens(response.data.accessToken, response.data.refreshToken);
         setUser(response.data.user);
+        toast({
+          title: 'Registration successful',
+          description: 'Welcome to Ecomama!',
+        });
         router.push(`/${locale}`);
       } else {
-        setError(response.error?.message || 'Registration failed');
+        const errorMessage = response.error?.message || 'Registration failed';
+        setError(errorMessage);
+        toast({
+          variant: 'destructive',
+          title: 'Registration failed',
+          description: errorMessage,
+        });
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      const errorMessage = 'An unexpected error occurred';
+      setError(errorMessage);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -146,11 +179,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (response.success && response.data && user) {
         setUser({ ...user, profile: response.data });
+        toast({
+          title: 'Profile updated',
+          description: 'Your profile has been updated successfully.',
+        });
       } else {
-        setError(response.error?.message || 'Profile update failed');
+        const errorMessage = response.error?.message || 'Profile update failed';
+        setError(errorMessage);
+        toast({
+          variant: 'destructive',
+          title: 'Update failed',
+          description: errorMessage,
+        });
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      const errorMessage = 'An unexpected error occurred';
+      setError(errorMessage);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -162,11 +211,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setError(null);
       const response = await authService.changePassword(data);
 
-      if (!response.success) {
-        setError(response.error?.message || 'Password change failed');
+      if (response.success) {
+        toast({
+          title: 'Password changed',
+          description: 'Your password has been changed successfully.',
+        });
+      } else {
+        const errorMessage = response.error?.message || 'Password change failed';
+        setError(errorMessage);
+        toast({
+          variant: 'destructive',
+          title: 'Password change failed',
+          description: errorMessage,
+        });
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      const errorMessage = 'An unexpected error occurred';
+      setError(errorMessage);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }

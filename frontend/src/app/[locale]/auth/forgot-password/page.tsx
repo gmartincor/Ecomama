@@ -7,92 +7,113 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n';
 import { authService } from '@/services/auth.service';
 import { forgotPasswordSchema, ForgotPasswordFormData } from '@/lib/validations/auth.schema';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
-import FormError from '@/components/ui/FormError';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CheckCircle2 } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
   const t = useTranslations('auth.forgotPassword');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ForgotPasswordFormData>({
+  const form = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: {
+      email: '',
+    },
   });
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
-    setError(null);
     setIsLoading(true);
 
     try {
       const response = await authService.forgotPassword(data);
       if (response.success) {
         setSuccess(true);
-      } else {
-        setError(response.error?.message || 'An error occurred');
       }
-    } catch (err) {
-      setError('An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {t('title')}
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            {t('subtitle')}
-          </p>
-        </div>
+    <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold">{t('title')}</CardTitle>
+          <CardDescription>{t('subtitle')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {success ? (
+            <div className="space-y-4">
+              <Alert className="bg-green-50 border-green-200">
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-green-800">
+                  {t('successMessage')}
+                </AlertDescription>
+              </Alert>
+              <Link href="/auth/login">
+                <Button className="w-full" variant="outline">
+                  {t('backToLogin')}
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('email')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="name@example.com"
+                          autoComplete="email"
+                          disabled={isLoading}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-        {success ? (
-          <div className="rounded-lg bg-green-50 border border-green-200 p-4">
-            <p className="text-sm text-green-800">{t('successMessage')}</p>
-          </div>
-        ) : (
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            {error && <FormError message={error} />}
+                <Button type="submit" className="w-full" isLoading={isLoading}>
+                  {t('submit')}
+                </Button>
 
-            <Input
-              {...register('email')}
-              type="email"
-              label={t('email')}
-              error={errors.email?.message}
-              autoComplete="email"
-              disabled={isLoading}
-            />
-
-            <Button
-              type="submit"
-              variant="primary"
-              size="lg"
-              fullWidth
-              isLoading={isLoading}
-            >
-              {t('submit')}
-            </Button>
-          </form>
-        )}
-
-        <div className="text-center">
-          <Link
-            href="/auth/login"
-            className="text-sm font-medium text-primary-600 hover:text-primary-500"
-          >
-            {t('backToLogin')}
-          </Link>
-        </div>
-      </div>
+                <div className="text-center">
+                  <Link
+                    href="/auth/login"
+                    className="text-sm font-medium text-primary hover:underline"
+                  >
+                    {t('backToLogin')}
+                  </Link>
+                </div>
+              </form>
+            </Form>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

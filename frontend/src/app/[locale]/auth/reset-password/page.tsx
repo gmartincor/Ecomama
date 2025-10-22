@@ -7,9 +7,24 @@ import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { authService } from '@/services/auth.service';
 import { resetPasswordSchema, ResetPasswordFormData } from '@/lib/validations/auth.schema';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
-import FormError from '@/components/ui/FormError';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 export default function ResetPasswordPage() {
   const t = useTranslations('auth.resetPassword');
@@ -18,83 +33,89 @@ export default function ResetPasswordPage() {
   const token = searchParams.get('token') || '';
 
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ResetPasswordFormData>({
+  const form = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
-    defaultValues: { token },
+    defaultValues: {
+      token,
+      newPassword: '',
+      confirmPassword: '',
+    },
   });
 
   const onSubmit = async (data: ResetPasswordFormData) => {
-    setError(null);
     setIsLoading(true);
 
     try {
       const response = await authService.resetPassword(data);
       if (response.success) {
         router.push('/auth/login');
-      } else {
-        setError(response.error?.message || 'An error occurred');
       }
-    } catch (err) {
-      setError('An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {t('title')}
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            {t('subtitle')}
-          </p>
-        </div>
+    <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold">{t('title')}</CardTitle>
+          <CardDescription>{t('subtitle')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <input type="hidden" {...form.register('token')} />
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          {error && <FormError message={error} />}
+              <FormField
+                control={form.control}
+                name="newPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('newPassword')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        autoComplete="new-password"
+                        disabled={isLoading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Must be at least 8 characters with uppercase, lowercase, and number
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <input type="hidden" {...register('token')} />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('confirmPassword')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        autoComplete="new-password"
+                        disabled={isLoading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="space-y-4">
-            <Input
-              {...register('newPassword')}
-              type="password"
-              label={t('newPassword')}
-              error={errors.newPassword?.message}
-              autoComplete="new-password"
-              disabled={isLoading}
-            />
-
-            <Input
-              {...register('confirmPassword')}
-              type="password"
-              label={t('confirmPassword')}
-              error={errors.confirmPassword?.message}
-              autoComplete="new-password"
-              disabled={isLoading}
-            />
-          </div>
-
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            fullWidth
-            isLoading={isLoading}
-          >
-            {t('submit')}
-          </Button>
-        </form>
-      </div>
+              <Button type="submit" className="w-full" isLoading={isLoading}>
+                {t('submit')}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

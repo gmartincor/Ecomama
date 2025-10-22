@@ -1,6 +1,14 @@
 'use client';
 
 import { useLocale, useChangeLocale, LOCALES, LOCALE_LABELS, Locale } from '@/i18n';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
+import { Languages } from 'lucide-react';
 
 export default function LanguageSwitcher() {
   const currentLocale = useLocale();
@@ -12,19 +20,23 @@ export default function LanguageSwitcher() {
 
   return (
     <div className="fixed top-4 right-4 z-50">
-      <select
+      <Select
         value={currentLocale}
-        onChange={(e) => handleChange(e.target.value)}
+        onValueChange={handleChange}
         disabled={isPending}
-        className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
-        aria-label="Language selector"
       >
-        {LOCALES.map((locale) => (
-          <option key={locale} value={locale}>
-            {LOCALE_LABELS[locale]}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger className="w-[180px] gap-2">
+          <Languages className="h-4 w-4" />
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {LOCALES.map((locale) => (
+            <SelectItem key={locale} value={locale}>
+              {LOCALE_LABELS[locale]}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }

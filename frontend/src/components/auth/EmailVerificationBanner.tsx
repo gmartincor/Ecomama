@@ -1,8 +1,12 @@
 'use client';
 
-import { useAuth } from '@/lib/auth-context';
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { AlertTriangle, X } from 'lucide-react';
+import { useAuth } from '@/lib/auth-context';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export default function EmailVerificationBanner() {
   const { user } = useAuth();
@@ -14,54 +18,35 @@ export default function EmailVerificationBanner() {
   }
 
   return (
-    <div className="bg-amber-50 border-b border-amber-200">
-      <div className="max-w-7xl mx-auto py-3 px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between flex-wrap">
-          <div className="flex-1 flex items-center">
-            <span className="flex p-2 rounded-lg bg-amber-100">
-              <svg
-                className="h-6 w-6 text-amber-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
-            </span>
-            <p className="ml-3 font-medium text-amber-800 truncate">
-              <span className="md:hidden">{t('emailNotVerified')}</span>
-              <span className="hidden md:inline">{t('subtitle')}</span>
-            </p>
-          </div>
-          <div className="order-2 flex-shrink-0 sm:order-3 sm:ml-3">
-            <button
-              type="button"
-              onClick={() => setDismissed(true)}
-              className="-mr-1 flex p-2 rounded-md hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-600 sm:-mr-2"
-            >
-              <span className="sr-only">Dismiss</span>
-              <svg
-                className="h-6 w-6 text-amber-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
+    <Alert className={cn(
+      'rounded-none border-x-0 border-t-0',
+      'bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-800'
+    )}>
+      <div className="container flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+          <AlertDescription className={cn(
+            'text-amber-800 dark:text-amber-200',
+            'truncate sm:text-clip'
+          )}>
+            <span className="sm:hidden">{t('emailNotVerified')}</span>
+            <span className="hidden sm:inline">{t('subtitle')}</span>
+          </AlertDescription>
         </div>
+        <Button
+          onClick={() => setDismissed(true)}
+          variant="ghost"
+          size="icon"
+          className={cn(
+            'flex-shrink-0 h-8 w-8',
+            'text-amber-600 hover:bg-amber-100',
+            'dark:text-amber-400 dark:hover:bg-amber-900'
+          )}
+          aria-label="Dismiss"
+        >
+          <X className="h-4 w-4" />
+        </Button>
       </div>
-    </div>
+    </Alert>
   );
 }
