@@ -130,7 +130,10 @@ export const api = {
   async get<T>(url: string, params?: Record<string, any>): Promise<ApiResponse<T>> {
     try {
       const response = await apiClient.get<ApiResponse<T>>(url, { params });
-      return response.data;
+      return {
+        ...response.data,
+        data: response.data.data ?? null,
+      };
     } catch (error) {
       return handleError(error);
     }
@@ -142,7 +145,10 @@ export const api = {
   async post<T>(url: string, data?: any): Promise<ApiResponse<T>> {
     try {
       const response = await apiClient.post<ApiResponse<T>>(url, data);
-      return response.data;
+      return {
+        ...response.data,
+        data: response.data.data ?? null,
+      };
     } catch (error) {
       return handleError(error);
     }
@@ -154,7 +160,10 @@ export const api = {
   async put<T>(url: string, data?: any): Promise<ApiResponse<T>> {
     try {
       const response = await apiClient.put<ApiResponse<T>>(url, data);
-      return response.data;
+      return {
+        ...response.data,
+        data: response.data.data ?? null,
+      };
     } catch (error) {
       return handleError(error);
     }
@@ -166,7 +175,10 @@ export const api = {
   async delete<T>(url: string): Promise<ApiResponse<T>> {
     try {
       const response = await apiClient.delete<ApiResponse<T>>(url);
-      return response.data;
+      return {
+        ...response.data,
+        data: response.data.data ?? null,
+      };
     } catch (error) {
       return handleError(error);
     }
@@ -181,7 +193,11 @@ function handleError(error: unknown): ApiResponse {
     const axiosError = error as AxiosError<ApiResponse>;
     
     if (axiosError.response?.data) {
-      return axiosError.response.data;
+      return {
+        ...axiosError.response.data,
+        data: axiosError.response.data.data ?? null,
+        error: axiosError.response.data.error ?? null,
+      };
     }
     
     return {

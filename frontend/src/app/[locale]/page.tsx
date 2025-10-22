@@ -1,7 +1,5 @@
 import { useTranslations } from 'next-intl';
-import Navigation from '@/components/Navigation';
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Navigation, Card, CardHeader, CardTitle, CardDescription, Badge } from '@/components';
 
 interface FeatureCardProps {
   icon: string;

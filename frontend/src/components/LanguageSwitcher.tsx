@@ -19,24 +19,22 @@ export default function LanguageSwitcher() {
   };
 
   return (
-    <div className="fixed top-4 right-4 z-50">
-      <Select
-        value={currentLocale}
-        onValueChange={handleChange}
-        disabled={isPending}
-      >
-        <SelectTrigger className="w-[180px] gap-2">
-          <Languages className="h-4 w-4" />
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {LOCALES.map((locale) => (
-            <SelectItem key={locale} value={locale}>
-              {LOCALE_LABELS[locale]}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <Select
+      value={currentLocale}
+      onValueChange={handleChange}
+      disabled={isPending}
+    >
+      <SelectTrigger className="w-[120px] gap-2 h-9">
+        <Languages className="h-4 w-4" />
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {LOCALES.map((locale) => (
+          <SelectItem key={locale} value={locale}>
+            {LOCALE_LABELS[locale]}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

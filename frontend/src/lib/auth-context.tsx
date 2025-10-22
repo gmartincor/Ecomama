@@ -100,7 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           title: 'Login successful',
           description: 'Welcome back!',
         });
-        router.push('/');
+        router.push(`/${locale}`);
       } else {
         const errorMessage = response.error?.message || 'Login failed';
         setError(errorMessage);
@@ -163,11 +163,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await authService.logout();
     } catch {
-      // ignore error
     } finally {
       clearTokens();
       setUser(null);
-      router.push('/');
+      router.push(`/${locale}`);
     }
   };
 

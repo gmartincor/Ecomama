@@ -2,14 +2,13 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { authService } from '@/services/auth.service';
 import { useAuth } from '@/lib/auth-context';
-import { useParams } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Spinner } from '@/components/ui/spinner';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { Alert, AlertDescription, Button, Spinner } from '@/components/ui';
+import { SuccessAlert } from '@/components/auth';
+import { XCircle } from 'lucide-react';
+import { CenteredLayout } from '@/components/layout';
 
 type VerificationStatus = 'idle' | 'verifying' | 'success' | 'error' | 'already-verified';
 
@@ -20,16 +19,13 @@ export default function VerifyEmailPage() {
   const params = useParams();
   const locale = params.locale as string;
   const { refreshUser, user } = useAuth();
-
   const [status, setStatus] = useState<VerificationStatus>('idle');
   const [message, setMessage] = useState('');
   const hasVerifiedRef = useRef(false);
 
   useEffect(() => {
     const verifyEmail = async () => {
-      if (hasVerifiedRef.current) {
-        return;
-      }
+      if (hasVerifiedRef.current) return;
 
       const token = searchParams.get('token');
 
@@ -83,7 +79,7 @@ export default function VerifyEmailPage() {
   }, [searchParams, user, locale, router, t, refreshUser]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
+    <CenteredLayout>
       <div className="w-full max-w-md space-y-8 text-center">
         <div>
           <h2 className="text-3xl font-bold">{t('title')}</h2>
@@ -101,10 +97,7 @@ export default function VerifyEmailPage() {
           )}
 
           {(status === 'success' || status === 'already-verified') && (
-            <Alert className="bg-green-50 border-green-200 text-left">
-              <CheckCircle2 className="h-5 w-5 text-green-600" />
-              <AlertDescription className="text-green-800">{message}</AlertDescription>
-            </Alert>
+            <SuccessAlert message={message} className="text-left" />
           )}
 
           {status === 'error' && (
@@ -113,7 +106,6 @@ export default function VerifyEmailPage() {
                 <XCircle className="h-5 w-5" />
                 <AlertDescription>{message}</AlertDescription>
               </Alert>
-
               <Button className="w-full" onClick={() => router.push(`/${locale}`)}>
                 {t('resend')}
               </Button>
@@ -121,6 +113,6 @@ export default function VerifyEmailPage() {
           )}
         </div>
       </div>
-    </div>
+    </CenteredLayout>
   );
 }

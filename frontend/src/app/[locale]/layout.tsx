@@ -3,12 +3,10 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Inter, Poppins } from 'next/font/google';
 import { LOCALES, isValidLocale } from '@/i18n';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
-import PWAProvider from '@/components/PWAProvider';
-import EmailVerificationBanner from '@/components/auth/EmailVerificationBanner';
+import { PWAProvider, EmailVerificationBanner, Toaster } from '@/components';
 import { AuthProvider } from '@/lib/auth-context';
+import { ThemeProvider } from '@/lib/theme-provider';
 import { getPWAMetadata, viewport as pwaViewport } from '@/lib/pwa-metadata';
-import { Toaster } from '@/components/ui/toaster';
 import '@/styles/globals.css';
 
 const inter = Inter({
@@ -64,18 +62,24 @@ export default async function LocaleLayout({ children, params: { locale } }: Loc
         <link rel="apple-touch-icon" href="/icons/icon-192x192.svg" />
       </head>
       <body className="font-sans antialiased">
-        <NextIntlClientProvider messages={messages}>
-          <AuthProvider>
-            <PWAProvider>
-              <div className="flex flex-col min-h-screen">
-                <EmailVerificationBanner />
-                <LanguageSwitcher />
-                {children}
-              </div>
-              <Toaster />
-            </PWAProvider>
-          </AuthProvider>
-        </NextIntlClientProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NextIntlClientProvider messages={messages}>
+            <AuthProvider>
+              <PWAProvider>
+                <div className="flex flex-col min-h-screen">
+                  <EmailVerificationBanner />
+                  {children}
+                </div>
+                <Toaster />
+              </PWAProvider>
+            </AuthProvider>
+          </NextIntlClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -7,31 +7,16 @@ import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { authService } from '@/services/auth.service';
 import { resetPasswordSchema, ResetPasswordFormData } from '@/lib/validations/auth.schema';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Button, Form, FormDescription, FormItem } from '@/components/ui';
+import { CenteredLayout } from '@/components/layout';
+import { FormPasswordInput } from '@/components/forms';
+import { AuthCard } from '@/components/auth';
 
 export default function ResetPasswordPage() {
   const t = useTranslations('auth.resetPassword');
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token') || '';
-
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<ResetPasswordFormData>({
@@ -45,7 +30,6 @@ export default function ResetPasswordPage() {
 
   const onSubmit = async (data: ResetPasswordFormData) => {
     setIsLoading(true);
-
     try {
       const response = await authService.resetPassword(data);
       if (response.success) {
@@ -57,65 +41,37 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">{t('title')}</CardTitle>
-          <CardDescription>{t('subtitle')}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <input type="hidden" {...form.register('token')} />
+    <CenteredLayout>
+      <AuthCard title={t('title')} description={t('subtitle')}>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <input type="hidden" {...form.register('token')} />
 
-              <FormField
-                control={form.control}
+            <FormItem>
+              <FormPasswordInput
                 name="newPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('newPassword')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        autoComplete="new-password"
-                        disabled={isLoading}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Must be at least 8 characters with uppercase, lowercase, and number
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label={t('newPassword')}
+                autoComplete="new-password"
+                disabled={isLoading}
               />
+              <FormDescription>
+                Must be at least 8 characters with uppercase, lowercase, and number
+              </FormDescription>
+            </FormItem>
 
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('confirmPassword')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        autoComplete="new-password"
-                        disabled={isLoading}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormPasswordInput
+              name="confirmPassword"
+              label={t('confirmPassword')}
+              autoComplete="new-password"
+              disabled={isLoading}
+            />
 
-              <Button type="submit" className="w-full" isLoading={isLoading}>
-                {t('submit')}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
+            <Button type="submit" className="w-full" isLoading={isLoading}>
+              {t('submit')}
+            </Button>
+          </form>
+        </Form>
+      </AuthCard>
+    </CenteredLayout>
   );
 }

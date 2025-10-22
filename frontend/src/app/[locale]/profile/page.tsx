@@ -6,10 +6,12 @@ import { Calendar, Mail, MapPin, Phone, User } from 'lucide-react';
 import { Link } from '@/i18n';
 import { useAuth } from '@/lib/auth-context';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import Navigation from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { PageLayout, PageContainer } from '@/components/layout';
 
 export default function ProfilePage() {
   const t = useTranslations('profile');
@@ -30,8 +32,9 @@ export default function ProfilePage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-muted/40 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto space-y-6">
+      <Navigation />
+      <PageLayout>
+        <PageContainer>
           <Card>
             <CardHeader>
               <div className="flex justify-between items-center">
@@ -77,8 +80,8 @@ export default function ProfilePage() {
               )}
             </CardContent>
           </Card>
-        </div>
-      </div>
+        </PageContainer>
+      </PageLayout>
     </ProtectedRoute>
   );
 }

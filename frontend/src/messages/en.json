@@ -144,6 +144,12 @@
     },
     "logout": "Log Out"
   },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
   "pwa": {
     "install": {
       "title": "Install Ecomama",

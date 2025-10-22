@@ -14,7 +14,7 @@ export interface FormatCurrencyOptions {
   maximumFractionDigits?: number;
 }
 
-export function formatDate(
+export function formatDateI18n(
   date: Date | string,
   locale: Locale,
   options: FormatDateOptions = {
@@ -27,7 +27,7 @@ export function formatDate(
   return new Intl.DateTimeFormat(LOCALE_MAP[locale], options).format(dateObj);
 }
 
-export function formatCurrency(
+export function formatCurrencyI18n(
   amount: number,
   currency: string,
   locale: Locale,
@@ -40,11 +40,11 @@ export function formatCurrency(
   }).format(amount);
 }
 
-export function formatNumber(amount: number, locale: Locale): string {
+export function formatNumberI18n(amount: number, locale: Locale): string {
   return new Intl.NumberFormat(LOCALE_MAP[locale]).format(amount);
 }
 
-export function formatRelativeTime(
+export function formatRelativeTimeI18n(
   value: number,
   unit: Intl.RelativeTimeFormatUnit,
   locale: Locale

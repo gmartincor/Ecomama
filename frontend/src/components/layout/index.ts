@@ -1,3 +1,2 @@
-export { PageHeader } from './page-header';
-export { PageContainer } from './page-container';
 export { AuthLayout } from './auth-layout';
+export { PageLayout, PageContainer, PageSection, CenteredLayout } from './page-layout';

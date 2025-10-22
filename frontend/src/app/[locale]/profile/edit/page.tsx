@@ -9,17 +9,10 @@ import { useAuth } from '@/lib/auth-context';
 import { updateProfileSchema, UpdateProfileFormData } from '@/lib/validations/auth.schema';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Form } from '@/components/ui/form';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { PageLayout, PageContainer } from '@/components/layout';
+import { FormInput, FormTextarea } from '@/components/forms';
 
 export default function EditProfilePage() {
   const t = useTranslations('profile');
@@ -60,8 +53,8 @@ export default function EditProfilePage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-muted/40 py-8 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl">
+      <PageLayout>
+        <PageContainer maxWidth='2xl'>
           <Card>
             <CardHeader>
               <CardTitle>{t('edit')}</CardTitle>
@@ -70,90 +63,42 @@ export default function EditProfilePage() {
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                    <FormField
-                      control={form.control}
+                    <FormInput
                       name="firstName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('firstName')}</FormLabel>
-                          <FormControl>
-                            <Input disabled={isLoading} {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      label={t('firstName')}
+                      disabled={isLoading}
                     />
-
-                    <FormField
-                      control={form.control}
+                    <FormInput
                       name="lastName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('lastName')}</FormLabel>
-                          <FormControl>
-                            <Input disabled={isLoading} {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      label={t('lastName')}
+                      disabled={isLoading}
                     />
                   </div>
 
-                  <FormField
-                    control={form.control}
+                  <FormInput
                     name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('phoneNumber')}</FormLabel>
-                        <FormControl>
-                          <Input type="tel" disabled={isLoading} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    label={t('phoneNumber')}
+                    type="tel"
+                    disabled={isLoading}
                   />
 
-                  <FormField
-                    control={form.control}
+                  <FormTextarea
                     name="bio"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('bio')}</FormLabel>
-                        <FormControl>
-                          <Textarea rows={4} disabled={isLoading} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    label={t('bio')}
+                    rows={4}
+                    disabled={isLoading}
                   />
 
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                    <FormField
-                      control={form.control}
+                    <FormInput
                       name="city"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('city')}</FormLabel>
-                          <FormControl>
-                            <Input disabled={isLoading} {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      label={t('city')}
+                      disabled={isLoading}
                     />
-
-                    <FormField
-                      control={form.control}
+                    <FormInput
                       name="country"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('country')}</FormLabel>
-                          <FormControl>
-                            <Input disabled={isLoading} {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      label={t('country')}
+                      disabled={isLoading}
                     />
                   </div>
 
@@ -174,8 +119,8 @@ export default function EditProfilePage() {
               </Form>
             </CardContent>
           </Card>
-        </div>
-      </div>
+        </PageContainer>
+      </PageLayout>
     </ProtectedRoute>
   );
 }
