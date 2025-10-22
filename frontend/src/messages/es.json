@@ -89,7 +89,10 @@
       "expiredToken": "Este enlace de verificación ha expirado. Por favor regístrate de nuevo o solicita un nuevo correo de verificación.",
       "invalidToken": "Este enlace de verificación es inválido. Por favor revisa tu correo para el enlace correcto.",
       "emailNotVerified": "Por favor verifica tu correo para acceder a todas las funciones",
-      "resend": "Ir al inicio"
+      "resend": "Ir al inicio",
+      "resendButton": "Reenviar Correo de Verificación",
+      "resendSuccess": "¡Correo de verificación enviado! Por favor revisa tu bandeja de entrada.",
+      "resendError": "Error al enviar el correo de verificación. Por favor intenta de nuevo."
     },
     "changePassword": {
       "title": "Cambiar Contraseña",

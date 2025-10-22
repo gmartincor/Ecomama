@@ -89,7 +89,10 @@
       "expiredToken": "This verification link has expired. Please register again or request a new verification email.",
       "invalidToken": "This verification link is invalid. Please check your email for the correct link.",
       "emailNotVerified": "Please verify your email to access all features",
-      "resend": "Go to home"
+      "resend": "Go to home",
+      "resendButton": "Resend Verification Email",
+      "resendSuccess": "Verification email sent! Please check your inbox.",
+      "resendError": "Failed to send verification email. Please try again."
     },
     "changePassword": {
       "title": "Change Password",

@@ -1,23 +1,55 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { format } from 'date-fns';
-import { Calendar, Mail, MapPin, Phone, User } from 'lucide-react';
+import { Calendar, Mail, MapPin, Phone, User, AlertCircle, Send } from 'lucide-react';
 import { Link } from '@/i18n';
 import { useAuth } from '@/lib/auth-context';
+import { authService } from '@/services/auth.service';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Navigation from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { PageLayout, PageContainer } from '@/components/layout';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ProfilePage() {
   const t = useTranslations('profile');
+  const tVerify = useTranslations('auth.verifyEmail');
   const { user } = useAuth();
+  const { toast } = useToast();
+  const [isSending, setIsSending] = useState(false);
 
   if (!user) return null;
+
+  const handleResendVerification = async () => {
+    setIsSending(true);
+    try {
+      const response = await authService.resendVerificationEmail();
+      if (response.success) {
+        toast({
+          title: tVerify('resendSuccess'),
+          variant: 'default',
+        });
+      } else {
+        toast({
+          title: tVerify('resendError'),
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: tVerify('resendError'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   const profileFields = [
     { icon: User, label: t('firstName'), value: user.profile.firstName },
@@ -51,6 +83,25 @@ export default function ProfilePage() {
                   {user.emailVerified ? t('emailVerified') : t('emailNotVerified')}
                 </Badge>
               </div>
+
+              {!user.emailVerified && (
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription className="flex items-center justify-between gap-4">
+                    <span className="flex-1">{tVerify('emailNotVerified')}</span>
+                    <Button
+                      onClick={handleResendVerification}
+                      disabled={isSending}
+                      size="sm"
+                      variant="outline"
+                      className="flex-shrink-0"
+                    >
+                      <Send className="h-4 w-4 mr-2" />
+                      {tVerify('resendButton')}
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
 
               <Separator />
 

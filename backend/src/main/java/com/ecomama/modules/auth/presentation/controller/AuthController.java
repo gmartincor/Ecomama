@@ -1,14 +1,19 @@
 package com.ecomama.modules.auth.presentation.controller;
 
 import com.ecomama.modules.auth.application.usecase.*;
+import com.ecomama.modules.auth.infrastructure.security.CustomUserDetails;
 import com.ecomama.modules.auth.presentation.dto.*;
 import com.ecomama.shared.api.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -20,6 +25,7 @@ public class AuthController {
     private final LoginUserUseCase loginUserUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final VerifyEmailUseCase verifyEmailUseCase;
+    private final ResendVerificationEmailUseCase resendVerificationEmailUseCase;
     
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
@@ -48,6 +54,19 @@ public class AuthController {
     public ApiResponse<String> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
         verifyEmailUseCase.execute(request);
         return ApiResponse.success("Email verified successfully");
+    }
+    
+    @PostMapping("/resend-verification")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(
+            summary = "Resend verification email",
+            description = "Sends a new verification email to authenticated user"
+    )
+    public ApiResponse<String> resendVerificationEmail(Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        UUID userId = userDetails.getUserId();
+        resendVerificationEmailUseCase.execute(userId);
+        return ApiResponse.success("Verification email sent successfully");
     }
     
     @PostMapping("/logout")
