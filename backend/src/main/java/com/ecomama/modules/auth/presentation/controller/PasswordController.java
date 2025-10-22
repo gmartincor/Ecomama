@@ -36,10 +36,8 @@ public class PasswordController {
     
     @PostMapping("/reset")
     @Operation(summary = "Reset password", description = "Resets password using token from email")
-    public ApiResponse<String> resetPassword(
-            @RequestParam String email,
-            @Valid @RequestBody ResetPasswordRequest request) {
-        resetPasswordUseCase.execute(email, request);
+    public ApiResponse<String> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        resetPasswordUseCase.execute(request);
         return ApiResponse.success("Password reset successfully");
     }
     

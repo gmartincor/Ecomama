@@ -4,7 +4,6 @@ import com.ecomama.modules.auth.domain.User;
 import com.ecomama.modules.auth.domain.repository.UserRepository;
 import com.ecomama.modules.auth.domain.service.PasswordService;
 import com.ecomama.modules.auth.presentation.dto.ResetPasswordRequest;
-import com.ecomama.shared.exception.NotFoundException;
 import com.ecomama.shared.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +19,9 @@ public class ResetPasswordUseCase {
     private final PasswordService passwordService;
     
     @Transactional
-    public void execute(String email, ResetPasswordRequest request) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+    public void execute(ResetPasswordRequest request) {
+        User user = userRepository.findByPasswordResetToken(request.token())
+                .orElseThrow(() -> new ValidationException("Invalid or expired reset token"));
         
         if (!user.isPasswordResetTokenValid(request.token())) {
             throw new ValidationException("Invalid or expired reset token");

@@ -1,15 +1,16 @@
 'use client';
 
 import { useFormContext } from 'react-hook-form';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { PasswordInput, type PasswordInputProps } from './password-input';
 
 interface FormPasswordInputProps extends Omit<PasswordInputProps, 'name'> {
   name: string;
   label?: string;
+  description?: string;
 }
 
-export function FormPasswordInput({ name, label, ...props }: FormPasswordInputProps) {
+export function FormPasswordInput({ name, label, description, ...props }: FormPasswordInputProps) {
   const { control } = useFormContext();
 
   return (
@@ -22,6 +23,7 @@ export function FormPasswordInput({ name, label, ...props }: FormPasswordInputPr
           <FormControl>
             <PasswordInput {...field} {...props} />
           </FormControl>
+          {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />
         </FormItem>
       )}

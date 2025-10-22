@@ -1,16 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { authService } from '@/services/auth.service';
 import { resetPasswordSchema, ResetPasswordFormData } from '@/lib/validations/auth.schema';
-import { Button, Form, FormDescription, FormItem } from '@/components/ui';
-import { CenteredLayout } from '@/components/layout';
+import { Button, Form } from '@/components/ui';
+import { AuthLayout } from '@/components/layout';
 import { FormPasswordInput } from '@/components/forms';
 import { AuthCard } from '@/components/auth';
+import { toast } from '@/hooks/use-toast';
 
 export default function ResetPasswordPage() {
   const t = useTranslations('auth.resetPassword');
@@ -28,36 +29,63 @@ export default function ResetPasswordPage() {
     },
   });
 
+  useEffect(() => {
+    if (!token) {
+      toast({
+        variant: 'destructive',
+        title: 'Invalid Link',
+        description: 'Password reset link is invalid or expired',
+      });
+      router.push('/auth/forgot-password');
+    }
+  }, [token, router]);
+
   const onSubmit = async (data: ResetPasswordFormData) => {
     setIsLoading(true);
     try {
       const response = await authService.resetPassword(data);
       if (response.success) {
+        toast({
+          title: 'Success',
+          description: t('successMessage'),
+        });
         router.push('/auth/login');
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: response.error?.message || 'Failed to reset password',
+        });
       }
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'An unexpected error occurred',
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (!token) {
+    return null;
+  }
+
   return (
-    <CenteredLayout>
+    <AuthLayout>
       <AuthCard title={t('title')} description={t('subtitle')}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <input type="hidden" {...form.register('token')} />
 
-            <FormItem>
-              <FormPasswordInput
-                name="newPassword"
-                label={t('newPassword')}
-                autoComplete="new-password"
-                disabled={isLoading}
-              />
-              <FormDescription>
-                Must be at least 8 characters with uppercase, lowercase, and number
-              </FormDescription>
-            </FormItem>
+            <FormPasswordInput
+              name="newPassword"
+              label={t('newPassword')}
+              description="Must be at least 8 characters with uppercase, lowercase, and number"
+              autoComplete="new-password"
+              disabled={isLoading}
+            />
 
             <FormPasswordInput
               name="confirmPassword"
@@ -72,6 +100,6 @@ export default function ResetPasswordPage() {
           </form>
         </Form>
       </AuthCard>
-    </CenteredLayout>
+    </AuthLayout>
   );
 }

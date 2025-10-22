@@ -50,8 +50,8 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login", 
-                                "/api/v1/auth/refresh-token", "/api/v1/auth/verify-email",
-                                "/api/v1/auth/forgot-password", "/api/v1/auth/reset-password").permitAll()
+                                "/api/v1/auth/refresh-token", "/api/v1/auth/verify-email").permitAll()
+                        .requestMatchers("/api/v1/password/forgot", "/api/v1/password/reset").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/health").permitAll()

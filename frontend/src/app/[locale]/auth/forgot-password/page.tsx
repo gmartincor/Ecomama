@@ -8,9 +8,10 @@ import { Link } from '@/i18n';
 import { authService } from '@/services/auth.service';
 import { forgotPasswordSchema, ForgotPasswordFormData } from '@/lib/validations/auth.schema';
 import { Button, Form } from '@/components/ui';
-import { CenteredLayout } from '@/components/layout';
+import { AuthLayout } from '@/components/layout';
 import { FormInput } from '@/components/forms';
 import { AuthCard, SuccessAlert } from '@/components/auth';
+import { toast } from '@/hooks/use-toast';
 
 export default function ForgotPasswordPage() {
   const t = useTranslations('auth.forgotPassword');
@@ -30,14 +31,26 @@ export default function ForgotPasswordPage() {
       const response = await authService.forgotPassword(data);
       if (response.success) {
         setSuccess(true);
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: response.error?.message || 'Failed to send reset email',
+        });
       }
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'An unexpected error occurred',
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <CenteredLayout>
+    <AuthLayout>
       <AuthCard title={t('title')} description={t('subtitle')}>
         {success ? (
           <div className="space-y-4">
@@ -76,6 +89,6 @@ export default function ForgotPasswordPage() {
           </Form>
         )}
       </AuthCard>
-    </CenteredLayout>
+    </AuthLayout>
   );
 }

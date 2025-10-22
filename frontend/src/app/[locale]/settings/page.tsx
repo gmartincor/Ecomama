@@ -8,7 +8,7 @@ import { changePasswordSchema, ChangePasswordFormData } from '@/lib/validations/
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Navigation from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
-import { Form, FormDescription, FormItem } from '@/components/ui/form';
+import { Form } from '@/components/ui/form';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { AlertCircle, LogOut } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -63,17 +63,13 @@ export default function SettingsPage() {
                       disabled={isLoading}
                     />
 
-                    <FormItem>
-                      <FormPasswordInput
-                        name="newPassword"
-                        label={t('changePassword.newPassword')}
-                        autoComplete="new-password"
-                        disabled={isLoading}
-                      />
-                      <FormDescription>
-                        Must be at least 8 characters with uppercase, lowercase, and number
-                      </FormDescription>
-                    </FormItem>
+                    <FormPasswordInput
+                      name="newPassword"
+                      label={t('changePassword.newPassword')}
+                      description="Must be at least 8 characters with uppercase, lowercase, and number"
+                      autoComplete="new-password"
+                      disabled={isLoading}
+                    />
 
                     <FormPasswordInput
                       name="confirmPassword"

@@ -2,15 +2,16 @@
 
 import { ComponentProps } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
 interface FormInputProps extends Omit<ComponentProps<typeof Input>, 'name'> {
   name: string;
   label?: string;
+  description?: string;
 }
 
-export function FormInput({ name, label, ...props }: FormInputProps) {
+export function FormInput({ name, label, description, ...props }: FormInputProps) {
   const { control } = useFormContext();
 
   return (
@@ -23,6 +24,7 @@ export function FormInput({ name, label, ...props }: FormInputProps) {
           <FormControl>
             <Input {...field} {...props} />
           </FormControl>
+          {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />
         </FormItem>
       )}
