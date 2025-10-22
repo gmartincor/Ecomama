@@ -28,7 +28,6 @@ import com.ecomama.modules.auth.presentation.dto.AuthResponse;
 import com.ecomama.modules.auth.presentation.dto.LoginRequest;
 import com.ecomama.modules.auth.presentation.mapper.UserMapper;
 import com.ecomama.shared.exception.UnauthorizedException;
-import com.ecomama.shared.exception.ValidationException;
 import com.ecomama.shared.test.fixture.UserFixture;
 
 @ExtendWith(MockitoExtension.class)
@@ -152,18 +151,24 @@ class LoginUserUseCaseTest {
         }
         
         @Test
-        @DisplayName("Should throw exception when email is not verified")
-        void shouldThrowExceptionWhenEmailNotVerified() {
+        @DisplayName("Should allow login with unverified email")
+        void shouldAllowLoginWithUnverifiedEmail() {
             User unverifiedUser = UserFixture.anUnverifiedUser().email(TEST_EMAIL).build();
             
             when(userRepository.findByEmail(validRequest.email())).thenReturn(Optional.of(unverifiedUser));
             when(passwordService.matches(anyString(), anyString())).thenReturn(true);
+            when(jwtTokenProvider.generateAccessToken(any(), anyString(), anyString())).thenReturn(ACCESS_TOKEN);
+            when(jwtTokenProvider.generateRefreshToken(any())).thenReturn(REFRESH_TOKEN);
             
-            assertThatThrownBy(() -> loginUserUseCase.execute(validRequest))
-                    .isInstanceOf(ValidationException.class)
-                    .hasMessage("Please verify your email before logging in");
+            AuthResponse response = loginUserUseCase.execute(validRequest);
             
-            verify(userRepository, never()).save(any());
+            assertThat(response).isNotNull();
+            assertThat(response.accessToken()).isEqualTo(ACCESS_TOKEN);
+            assertThat(response.refreshToken()).isEqualTo(REFRESH_TOKEN);
+            
+            verify(userRepository).save(userCaptor.capture());
+            User savedUser = userCaptor.getValue();
+            assertThat(savedUser).isNotNull();
         }
     }
 }

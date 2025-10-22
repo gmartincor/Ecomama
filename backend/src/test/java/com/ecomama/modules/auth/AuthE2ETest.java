@@ -105,8 +105,8 @@ class AuthE2ETest extends BaseIntegrationTest {
     }
     
     @Test
-    @DisplayName("Should reject login with unverified email")
-    void shouldRejectLoginWithUnverifiedEmail() throws Exception {
+    @DisplayName("Should allow login with unverified email")
+    void shouldAllowLoginWithUnverifiedEmail() throws Exception {
         RegisterRequest registerRequest = new RegisterRequest(
                 "unverified@example.com",
                 "SecurePassword123!",
@@ -125,6 +125,9 @@ class AuthE2ETest extends BaseIntegrationTest {
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.accessToken").exists())
+                .andExpect(jsonPath("$.data.user.emailVerified").value(false));
     }
 }
