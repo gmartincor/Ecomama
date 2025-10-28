@@ -6,6 +6,7 @@ plugins {
 
 group = 'com.ecomama'
 version = '0.1.0-SNAPSHOT'
+description = 'Backend API for Ecomama - A multi-user platform connecting farmers and consumers for direct purchase of organic products'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
