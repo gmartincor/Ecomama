@@ -16,9 +16,22 @@ export const env = {
   },
   
   get AUTH_SECRET() {
-    return getOptionalEnvVar('NEXTAUTH_SECRET') || 
-           getOptionalEnvVar('AUTH_SECRET') || 
-           (this.IS_DEVELOPMENT ? 'dev-secret-key-not-for-production' : '');
+    // In development, use a default secret for convenience
+    if (this.IS_DEVELOPMENT) {
+      return getOptionalEnvVar('NEXTAUTH_SECRET') || 
+             getOptionalEnvVar('AUTH_SECRET') || 
+             'dev-secret-key-not-for-production';
+    }
+    
+    // In production, AUTH_SECRET is REQUIRED
+    const secret = getOptionalEnvVar('NEXTAUTH_SECRET') || getOptionalEnvVar('AUTH_SECRET');
+    if (!secret) {
+      throw new Error(
+        'AUTH_SECRET or NEXTAUTH_SECRET is required in production. ' +
+        'Generate one with: openssl rand -base64 32'
+      );
+    }
+    return secret;
   },
   
   get NEXTAUTH_URL() {
