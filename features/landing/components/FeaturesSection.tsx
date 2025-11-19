@@ -3,14 +3,14 @@ import { FeatureCard } from './FeatureCard';
 
 const features = [
   {
-    icon: '🏘️',
-    title: 'Comunidades Locales',
-    description: 'Únete a comunidades de tu zona donde agricultores y consumidores comparten los mismos valores de sostenibilidad y alimentación saludable.',
-  },
-  {
     icon: '🌾',
     title: 'Productos Ecológicos',
     description: 'Accede a una amplia variedad de productos orgánicos certificados, cultivados con prácticas sostenibles y respetuosas con el medio ambiente.',
+  },
+  {
+    icon: '📋',
+    title: 'Tablón de Anuncios',
+    description: 'Publica lo que necesitas comprar o los productos que tienes disponibles. Conecta oferta y demanda de forma directa y transparente.',
   },
   {
     icon: '🤝',
@@ -23,9 +23,9 @@ const features = [
     description: 'Encuentra productos de temporada en tu área local. Reduce tu huella de carbono comprando de kilómetro cero.',
   },
   {
-    icon: '🎯',
-    title: 'Ofertas y Demandas',
-    description: 'Publica lo que necesitas o lo que tienes disponible. Sistema inteligente de matching entre agricultores y consumidores.',
+    icon: '🗺️',
+    title: 'Mapa Interactivo',
+    description: 'Visualiza en tiempo real dónde están los agricultores y productos disponibles cerca de ti. Navega y explora tu zona.',
   },
   {
     icon: '📅',

@@ -39,21 +39,6 @@ export const CTASection = () => {
               </Button>
             </Link>
           </div>
-          
-          <div className="mt-12 flex flex-wrap justify-center gap-8 text-white/80">
-            <div className="flex items-center gap-2">
-              <span>✓</span>
-              <span>100% Gratis</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span>✓</span>
-              <span>Sin comisiones</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span>✓</span>
-              <span>Registro en 2 minutos</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
