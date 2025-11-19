@@ -7,7 +7,7 @@ import { useMapData } from "@/features/map/hooks";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { PageError } from "@/components/common/PageError";
-import type { MapFilters, MapItem } from "@/features/map/types";
+import type { MapFilters } from "@/features/map/types";
 
 const GlobalMap = dynamic(
   () => import("@/features/map/components").then((mod) => mod.GlobalMap),
@@ -24,7 +24,6 @@ export default function MapPage() {
     includeListings: true,
   });
   const { events, listings, isLoading, error } = useMapData(filters);
-  const [selectedItem, setSelectedItem] = useState<MapItem | null>(null);
 
   const handleToggleEvents = () => {
     setFilters(prev => ({
@@ -40,14 +39,12 @@ export default function MapPage() {
     }));
   };
 
-  const handleViewDetails = () => {
-    if (!selectedItem) return;
-    
-    if (selectedItem.itemType === 'event') {
-      router.push(`/events/${selectedItem.id}`);
-    } else {
-      router.push(`/listings/${selectedItem.id}`);
-    }
+  const handleNavigateToEvent = (eventId: string) => {
+    router.push(`/events/${eventId}`);
+  };
+
+  const handleNavigateToListing = (listingId: string) => {
+    router.push(`/listings/${listingId}`);
   };
 
   if (error) {
@@ -133,44 +130,12 @@ export default function MapPage() {
             <GlobalMap
               events={displayEvents}
               listings={displayListings}
-              onItemClick={setSelectedItem}
+              onNavigateToEvent={handleNavigateToEvent}
+              onNavigateToListing={handleNavigateToListing}
             />
           )}
         </Card>
       </div>
-
-      {selectedItem && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-11/12 sm:w-96 z-[1000]">
-          <Card className="p-4 shadow-lg">
-            <div className="flex justify-between items-start mb-2">
-              <div className="flex-1">
-                <h3 className="font-bold text-sm sm:text-base">{selectedItem.title}</h3>
-                <p className="text-xs text-muted-foreground">
-                  {selectedItem.itemType === 'event' ? '📅 Evento' : '📦 Anuncio'}
-                </p>
-              </div>
-              <button
-                onClick={() => setSelectedItem(null)}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                ✕
-              </button>
-            </div>
-            <p className="text-xs sm:text-sm mb-3">
-              {selectedItem.description.substring(0, 150)}
-              {selectedItem.description.length > 150 ? '...' : ''}
-            </p>
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-muted-foreground">
-                👤 {selectedItem.author.name}
-              </span>
-              <Button size="sm" className="text-xs" onClick={handleViewDetails}>
-                Ver detalles
-              </Button>
-            </div>
-          </Card>
-        </div>
-      )}
     </div>
   );
 }

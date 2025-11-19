@@ -65,7 +65,7 @@ export const ListingCard = ({
           <div className="flex sm:flex-col gap-2 justify-end sm:justify-start flex-shrink-0">
             {onViewDetails && (
               <Button size="sm" variant="primary" onClick={() => onViewDetails(listing.id)} className="text-xs sm:text-sm">
-                Ver Detalle
+                Ver Anuncio
               </Button>
             )}
             {isAuthor ? (

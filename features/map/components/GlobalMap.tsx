@@ -3,12 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import type { MapItem, MapEvent, MapListing } from "../types";
+import type { MapEvent, MapListing } from "../types";
 
 type GlobalMapProps = {
   events: MapEvent[];
   listings: MapListing[];
-  onItemClick?: (item: MapItem) => void;
+  onNavigateToEvent?: (eventId: string) => void;
+  onNavigateToListing?: (listingId: string) => void;
   center?: [number, number];
   zoom?: number;
 };
@@ -30,7 +31,8 @@ const LISTING_ICON = L.divIcon({
 export const GlobalMap = ({
   events,
   listings,
-  onItemClick,
+  onNavigateToEvent,
+  onNavigateToListing,
   center = [40.4168, -3.7038],
   zoom = 6,
 }: GlobalMapProps) => {
@@ -106,20 +108,30 @@ export const GlobalMap = ({
 
         const marker = L.marker([event.latitude, event.longitude], { icon: EVENT_ICON });
         
-        marker.bindPopup(`
-          <div style="min-width: 200px;">
-            <h3 style="font-weight: bold; margin-bottom: 8px;">${event.title}</h3>
-            <p style="font-size: 12px; color: #666; margin-bottom: 4px;">${event.type}</p>
-            <p style="font-size: 14px;">${event.description.substring(0, 100)}${event.description.length > 100 ? '...' : ''}</p>
-            ${event.location ? `<p style="font-size: 12px; margin-top: 8px;">📍 ${event.location}</p>` : ''}
-            <p style="font-size: 12px; margin-top: 8px;">👤 ${event.author.name}</p>
+        const popupContent = `
+          <div style="min-width: 200px; font-family: system-ui, -apple-system, sans-serif;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <div style="flex: 1;">
+                <h3 style="font-weight: 600; font-size: 14px; margin: 0 0 4px 0;">${event.title}</h3>
+                <p style="font-size: 12px; color: #6b7280; margin: 0;">📅 Evento</p>
+              </div>
+            </div>
+            <p style="font-size: 13px; margin: 0 0 12px 0; color: #374151;">
+              ${event.description.substring(0, 150)}${event.description.length > 150 ? '...' : ''}
+            </p>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+              <span style="color: #6b7280;">👤 ${event.author.name}</span>
+              <button 
+                onclick="window.navigateToEvent('${event.id}')"
+                style="background: #3b82f6; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 500;"
+              >
+                Ver Evento
+              </button>
+            </div>
           </div>
-        `);
+        `;
         
-        if (onItemClick) {
-          marker.on('click', () => onItemClick(event));
-        }
-        
+        marker.bindPopup(popupContent, { maxWidth: 300 });
         markersLayerRef.current.addLayer(marker);
       });
 
@@ -128,20 +140,30 @@ export const GlobalMap = ({
 
         const marker = L.marker([listing.latitude, listing.longitude], { icon: LISTING_ICON });
         
-        marker.bindPopup(`
-          <div style="min-width: 200px;">
-            <h3 style="font-weight: bold; margin-bottom: 8px;">${listing.title}</h3>
-            <p style="font-size: 12px; color: #666; margin-bottom: 4px;">${listing.type}</p>
-            <p style="font-size: 14px;">${listing.description.substring(0, 100)}${listing.description.length > 100 ? '...' : ''}</p>
-            ${listing.city ? `<p style="font-size: 12px; margin-top: 8px;">📍 ${listing.city}, ${listing.country}</p>` : ''}
-            <p style="font-size: 12px; margin-top: 8px;">👤 ${listing.author.name}</p>
+        const popupContent = `
+          <div style="min-width: 200px; font-family: system-ui, -apple-system, sans-serif;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <div style="flex: 1;">
+                <h3 style="font-weight: 600; font-size: 14px; margin: 0 0 4px 0;">${listing.title}</h3>
+                <p style="font-size: 12px; color: #6b7280; margin: 0;">📦 Anuncio</p>
+              </div>
+            </div>
+            <p style="font-size: 13px; margin: 0 0 12px 0; color: #374151;">
+              ${listing.description.substring(0, 150)}${listing.description.length > 150 ? '...' : ''}
+            </p>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+              <span style="color: #6b7280;">👤 ${listing.author.name}</span>
+              <button 
+                onclick="window.navigateToListing('${listing.id}')"
+                style="background: #3b82f6; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 500;"
+              >
+                Ver Anuncio
+              </button>
+            </div>
           </div>
-        `);
+        `;
         
-        if (onItemClick) {
-          marker.on('click', () => onItemClick(listing));
-        }
-        
+        marker.bindPopup(popupContent, { maxWidth: 300 });
         markersLayerRef.current.addLayer(marker);
       });
 
@@ -164,7 +186,25 @@ export const GlobalMap = ({
 
     requestAnimationFrame(updateMarkers);
 
-  }, [isMapReady, events, listings, onItemClick]);
+  }, [isMapReady, events, listings, onNavigateToEvent, onNavigateToListing]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).navigateToEvent = (eventId: string) => {
+        onNavigateToEvent?.(eventId);
+      };
+      (window as any).navigateToListing = (listingId: string) => {
+        onNavigateToListing?.(listingId);
+      };
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        delete (window as any).navigateToEvent;
+        delete (window as any).navigateToListing;
+      }
+    };
+  }, [onNavigateToEvent, onNavigateToListing]);
 
   return <div ref={containerRef} className="w-full h-full rounded-lg" />;
 };
