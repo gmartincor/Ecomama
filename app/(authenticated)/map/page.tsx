@@ -62,12 +62,12 @@ export default function MapPage() {
   const showLoading = isLoading && events.length === 0 && listings.length === 0;
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col">
-      <div className="container mx-auto px-2 sm:px-4 py-3 sm:py-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-7xl">
+      <div className="mb-4 sm:mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold">Mapa Global</h1>
-            <p className="text-xs sm:text-sm text-muted-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">Mapa Global</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Explora eventos y anuncios en el mapa
             </p>
           </div>
@@ -93,49 +93,47 @@ export default function MapPage() {
         </div>
       </div>
 
-      <div className="flex-1 px-2 sm:px-4 pb-2 sm:pb-4">
-        <Card className="h-full p-0 overflow-hidden">
-          {showLoading ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center p-8">
-                <div className="animate-pulse space-y-4">
-                  <div className="h-16 w-16 bg-muted rounded-full mx-auto" />
-                  <div className="h-4 bg-muted rounded w-32 mx-auto" />
-                </div>
+      <Card className="w-full h-[600px] sm:h-[700px] p-0 overflow-hidden">
+        {showLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center p-8">
+              <div className="animate-pulse space-y-4">
+                <div className="h-16 w-16 bg-muted rounded-full mx-auto" />
+                <div className="h-4 bg-muted rounded w-32 mx-auto" />
               </div>
             </div>
-          ) : hasNoData ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center p-8">
-                <p className="text-lg font-semibold text-muted-foreground mb-2">
-                  No hay datos disponibles
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Aún no hay eventos ni anuncios con ubicación
-                </p>
-              </div>
+          </div>
+        ) : hasNoData ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center p-8">
+              <p className="text-lg font-semibold text-muted-foreground mb-2">
+                No hay datos disponibles
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Aún no hay eventos ni anuncios con ubicación
+              </p>
             </div>
-          ) : hasNoFilteredData ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center p-8">
-                <p className="text-lg font-semibold text-muted-foreground mb-2">
-                  Sin resultados
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Selecciona al menos un filtro para ver el mapa
-                </p>
-              </div>
+          </div>
+        ) : hasNoFilteredData ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center p-8">
+              <p className="text-lg font-semibold text-muted-foreground mb-2">
+                Sin resultados
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Selecciona al menos un filtro para ver el mapa
+              </p>
             </div>
-          ) : (
-            <GlobalMap
-              events={displayEvents}
-              listings={displayListings}
-              onNavigateToEvent={handleNavigateToEvent}
-              onNavigateToListing={handleNavigateToListing}
-            />
-          )}
-        </Card>
-      </div>
+          </div>
+        ) : (
+          <GlobalMap
+            events={displayEvents}
+            listings={displayListings}
+            onNavigateToEvent={handleNavigateToEvent}
+            onNavigateToListing={handleNavigateToListing}
+          />
+        )}
+      </Card>
     </div>
   );
 }
