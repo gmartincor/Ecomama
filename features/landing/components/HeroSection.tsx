@@ -38,8 +38,8 @@ export const HeroSection = () => {
             {[
               { value: '100%', label: 'Orgánico' },
               { value: '0%', label: 'Comisión' },
-              { value: 'Local', label: 'Comunidades' },
               { value: 'Directo', label: 'Del agricultor' },
+              { value: 'Global', label: 'Accesible' },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="text-2xl md:text-3xl font-bold text-primary mb-1">
