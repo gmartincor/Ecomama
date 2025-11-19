@@ -37,42 +37,73 @@ export const GlobalMap = ({
   const mapRef = useRef<L.Map | null>(null);
   const markersLayerRef = useRef<L.LayerGroup | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isClient, setIsClient] = useState(false);
+  const [isMapReady, setIsMapReady] = useState(false);
+  const isUpdatingRef = useRef(false);
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    if (!containerRef.current || mapRef.current) return;
 
-  useEffect(() => {
-    if (!isClient || !containerRef.current) return;
+    const map = L.map(containerRef.current, {
+      center,
+      zoom,
+      zoomControl: true,
+      preferCanvas: true,
+    });
 
-    if (!mapRef.current) {
-      const map = L.map(containerRef.current).setView(center, zoom);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
+    }).addTo(map);
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 19,
-      }).addTo(map);
+    markersLayerRef.current = L.layerGroup().addTo(map);
+    mapRef.current = map;
 
-      markersLayerRef.current = L.layerGroup().addTo(map);
-      mapRef.current = map;
-    }
+    setTimeout(() => {
+      map.invalidateSize();
+      setIsMapReady(true);
+    }, 100);
 
     return () => {
+      if (markersLayerRef.current) {
+        markersLayerRef.current.clearLayers();
+        markersLayerRef.current.remove();
+        markersLayerRef.current = null;
+      }
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
       }
+      setIsMapReady(false);
     };
-  }, [isClient, center, zoom]);
+  }, []);
 
   useEffect(() => {
-    if (!mapRef.current || !markersLayerRef.current) return;
+    if (!isMapReady || !mapRef.current || !markersLayerRef.current || isUpdatingRef.current) return;
 
-    markersLayerRef.current.clearLayers();
+    isUpdatingRef.current = true;
 
-    events.forEach((event) => {
-      if (event.latitude && event.longitude) {
+    const updateMarkers = () => {
+      if (!markersLayerRef.current || !mapRef.current) return;
+
+      markersLayerRef.current.clearLayers();
+
+      const filteredEvents = events.filter(e => 
+        e.latitude != null && 
+        e.longitude != null && 
+        !isNaN(e.latitude) && 
+        !isNaN(e.longitude)
+      );
+
+      const filteredListings = listings.filter(l => 
+        l.latitude != null && 
+        l.longitude != null && 
+        !isNaN(l.latitude) && 
+        !isNaN(l.longitude)
+      );
+
+      filteredEvents.forEach((event) => {
+        if (!markersLayerRef.current) return;
+
         const marker = L.marker([event.latitude, event.longitude], { icon: EVENT_ICON });
         
         marker.bindPopup(`
@@ -89,12 +120,12 @@ export const GlobalMap = ({
           marker.on('click', () => onItemClick(event));
         }
         
-        markersLayerRef.current?.addLayer(marker);
-      }
-    });
+        markersLayerRef.current.addLayer(marker);
+      });
 
-    listings.forEach((listing) => {
-      if (listing.latitude && listing.longitude) {
+      filteredListings.forEach((listing) => {
+        if (!markersLayerRef.current) return;
+
         const marker = L.marker([listing.latitude, listing.longitude], { icon: LISTING_ICON });
         
         marker.bindPopup(`
@@ -111,26 +142,29 @@ export const GlobalMap = ({
           marker.on('click', () => onItemClick(listing));
         }
         
-        markersLayerRef.current?.addLayer(marker);
-      }
-    });
+        markersLayerRef.current.addLayer(marker);
+      });
 
-    if (events.length > 0 || listings.length > 0) {
       const allPoints = [
-        ...events.filter(e => e.latitude && e.longitude).map(e => [e.latitude, e.longitude] as [number, number]),
-        ...listings.filter(l => l.latitude && l.longitude).map(l => [l.latitude, l.longitude] as [number, number]),
+        ...filteredEvents.map(e => [e.latitude, e.longitude] as [number, number]),
+        ...filteredListings.map(l => [l.latitude, l.longitude] as [number, number]),
       ];
 
-      if (allPoints.length > 0) {
+      if (allPoints.length > 0 && mapRef.current) {
         const bounds = L.latLngBounds(allPoints);
-        mapRef.current.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
+        mapRef.current.fitBounds(bounds, { 
+          padding: [50, 50], 
+          maxZoom: 12,
+          animate: false 
+        });
       }
-    }
-  }, [events, listings, onItemClick]);
 
-  if (!isClient) {
-    return <div className="w-full h-full bg-muted animate-pulse rounded-lg" />;
-  }
+      isUpdatingRef.current = false;
+    };
+
+    requestAnimationFrame(updateMarkers);
+
+  }, [isMapReady, events, listings, onItemClick]);
 
   return <div ref={containerRef} className="w-full h-full rounded-lg" />;
 };

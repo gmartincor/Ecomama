@@ -26,11 +26,17 @@ export default function MapPage() {
   const [selectedItem, setSelectedItem] = useState<MapItem | null>(null);
 
   const handleToggleEvents = () => {
-    setFilters(prev => ({ ...prev, includeEvents: !prev.includeEvents }));
+    setFilters(prev => ({
+      ...prev,
+      includeEvents: !prev.includeEvents,
+    }));
   };
 
   const handleToggleListings = () => {
-    setFilters(prev => ({ ...prev, includeListings: !prev.includeListings }));
+    setFilters(prev => ({
+      ...prev,
+      includeListings: !prev.includeListings,
+    }));
   };
 
   if (isLoading && events.length === 0 && listings.length === 0) {
@@ -40,6 +46,15 @@ export default function MapPage() {
   if (error) {
     return <PageError message={error} />;
   }
+
+  const hasNoData = events.length === 0 && listings.length === 0;
+  const hasNoFilteredData = 
+    (filters.includeEvents && !filters.includeListings && events.length === 0) ||
+    (!filters.includeEvents && filters.includeListings && listings.length === 0) ||
+    (!filters.includeEvents && !filters.includeListings);
+
+  const displayEvents = filters.includeEvents ? events : [];
+  const displayListings = filters.includeListings ? listings : [];
 
   return (
     <div className="h-[calc(100vh-4rem)] flex flex-col">
@@ -59,7 +74,7 @@ export default function MapPage() {
               onClick={handleToggleEvents}
               className="flex-1 sm:flex-none text-xs sm:text-sm"
             >
-              📅 Eventos {filters.includeEvents && `(${events.length})`}
+              📅 Eventos ({events.length})
             </Button>
             <Button
               variant={filters.includeListings ? "default" : "outline"}
@@ -67,7 +82,7 @@ export default function MapPage() {
               onClick={handleToggleListings}
               className="flex-1 sm:flex-none text-xs sm:text-sm"
             >
-              📦 Anuncios {filters.includeListings && `(${listings.length})`}
+              📦 Anuncios ({listings.length})
             </Button>
           </div>
         </div>
@@ -75,11 +90,35 @@ export default function MapPage() {
 
       <div className="flex-1 px-2 sm:px-4 pb-2 sm:pb-4">
         <Card className="h-full p-0 overflow-hidden">
-          <GlobalMap
-            events={filters.includeEvents ? events : []}
-            listings={filters.includeListings ? listings : []}
-            onItemClick={setSelectedItem}
-          />
+          {hasNoData ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center p-8">
+                <p className="text-lg font-semibold text-muted-foreground mb-2">
+                  No hay datos disponibles
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Aún no hay eventos ni anuncios con ubicación
+                </p>
+              </div>
+            </div>
+          ) : hasNoFilteredData ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center p-8">
+                <p className="text-lg font-semibold text-muted-foreground mb-2">
+                  Sin resultados
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Selecciona al menos un filtro para ver el mapa
+                </p>
+              </div>
+            </div>
+          ) : (
+            <GlobalMap
+              events={displayEvents}
+              listings={displayListings}
+              onItemClick={setSelectedItem}
+            />
+          )}
         </Card>
       </div>
 

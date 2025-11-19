@@ -29,6 +29,14 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  if (
+    event.request.url.includes('/_next/') ||
+    event.request.url.includes('/__nextjs') ||
+    event.request.url.includes('/api/')
+  ) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((response) => {
       if (response) {
@@ -43,6 +51,8 @@ self.addEventListener('fetch', (event) => {
           cache.put(event.request, responseToCache);
         });
         return response;
+      }).catch(() => {
+        return new Response('Offline', { status: 503 });
       });
     })
   );

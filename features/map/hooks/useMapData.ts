@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { fetchWithError } from "@/lib/utils/fetch-helpers";
 import type { MapEvent, MapListing, MapFilters } from "../types";
 
@@ -19,10 +19,16 @@ type UseMapDataResult = {
 
 export const useMapData = (filters?: MapFilters): UseMapDataResult => {
   const [data, setData] = useState<MapData>({ events: [], listings: [] });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchMapData = async () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    abortControllerRef.current = new AbortController();
     setIsLoading(true);
     setError(null);
 
@@ -33,10 +39,17 @@ export const useMapData = (filters?: MapFilters): UseMapDataResult => {
       if (filters?.eventType) params.eventType = filters.eventType;
       if (filters?.listingType) params.listingType = filters.listingType;
 
-      const response = await fetchWithError<MapData>('/api/map/data', { params });
+      const response = await fetchWithError<MapData>('/api/map/data', { 
+        params,
+        signal: abortControllerRef.current.signal 
+      });
       setData(response);
     } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        return;
+      }
       setError(err instanceof Error ? err.message : "Error al cargar datos del mapa");
+      setData({ events: [], listings: [] });
     } finally {
       setIsLoading(false);
     }
@@ -44,7 +57,18 @@ export const useMapData = (filters?: MapFilters): UseMapDataResult => {
 
   useEffect(() => {
     fetchMapData();
-  }, [JSON.stringify(filters)]);
+
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [
+    filters?.includeEvents,
+    filters?.includeListings,
+    filters?.eventType,
+    filters?.listingType,
+  ]);
 
   return {
     events: data.events,
