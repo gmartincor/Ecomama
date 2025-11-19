@@ -2,11 +2,13 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { UserRole } from '@prisma/client';
 import { authService } from '@/features/auth/services/authService';
+import { env } from '@/lib/config/env';
 
 const DEFAULT_REDIRECT = '/tablon';
 const SIGN_IN_PAGE = '/login';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret: env.AUTH_SECRET,
   providers: [
     Credentials({
       credentials: {
@@ -63,6 +65,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: 'jwt',
   },
-  trustHost: true,
-  debug: process.env.NODE_ENV === 'development',
+  trustHost: env.TRUST_HOST,
+  debug: env.IS_DEVELOPMENT,
 });

@@ -17,3 +17,4 @@ export {
 } from './utils/auth-helpers';
 
 export { prisma } from './prisma/client';
+export { env } from './config/env';
