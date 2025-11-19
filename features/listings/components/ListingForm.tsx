@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/textarea";
+import { AddressInput } from "@/components/ui/AddressInput";
 import { Alert } from "@/components/ui/Alert";
 import type { ListingType, CreateListingData, Listing } from "../types";
 
@@ -23,7 +24,27 @@ export const ListingForm = ({
 }: ListingFormProps) => {
   const [title, setTitle] = useState(initialData?.title || "");
   const [description, setDescription] = useState(initialData?.description || "");
+  const [address, setAddress] = useState("");
+  const [location, setLocation] = useState<{
+    latitude?: number;
+    longitude?: number;
+    city?: string;
+    country?: string;
+  }>({
+    latitude: initialData?.latitude ?? undefined,
+    longitude: initialData?.longitude ?? undefined,
+    city: initialData?.city ?? undefined,
+    country: initialData?.country ?? undefined,
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleLocationChange = (locationData: { latitude: number; longitude: number; city?: string; country?: string } | null) => {
+    if (locationData) {
+      setLocation(locationData);
+    } else {
+      setLocation({});
+    }
+  };
 
   const typeLabel = type === "OFFER" ? "Oferta" : "Demanda";
   const typeIcon = type === "OFFER" ? "🌾" : "🛒";
@@ -46,6 +67,14 @@ export const ListingForm = ({
       newErrors.description = "La descripción debe tener al menos 10 caracteres";
     }
 
+    if (!address.trim()) {
+      newErrors.address = "La ubicación es requerida";
+    }
+
+    if (!location.latitude || !location.longitude) {
+      newErrors.address = "Debes buscar y confirmar la ubicación antes de publicar";
+    }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -56,6 +85,10 @@ export const ListingForm = ({
         type,
         title: title.trim(),
         description: description.trim(),
+        latitude: location.latitude,
+        longitude: location.longitude,
+        city: location.city,
+        country: location.country,
       });
     } catch (error) {
       setErrors({ submit: "Error al guardar. Intenta nuevamente." });
@@ -106,6 +139,24 @@ export const ListingForm = ({
           />
           <p className="text-xs text-muted-foreground mt-1">
             {description.length}/5000 caracteres
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-muted-foreground mb-1">
+            Ubicación <span className="text-red-500">*</span>
+          </label>
+          <AddressInput
+            value={address}
+            onChange={setAddress}
+            onLocationChange={handleLocationChange}
+            placeholder="Ej: Madrid, España o Calle Gran Vía 1, Madrid"
+            error={errors.address}
+            disabled={isLoading}
+            required={true}
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            Escribe tu ubicación y presiona el botón 🔍 o Enter para confirmar
           </p>
         </div>
 

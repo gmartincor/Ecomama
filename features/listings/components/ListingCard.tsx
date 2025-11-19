@@ -55,6 +55,12 @@ export const ListingCard = ({
             <span className="truncate">Publicado por {listing.author.name}</span>
             <span className="hidden sm:inline">•</span>
             <span className="whitespace-nowrap">{createdDate}</span>
+            {listing.city && listing.country && (
+              <>
+                <span className="hidden sm:inline">•</span>
+                <span className="whitespace-nowrap">📍 {listing.city}, {listing.country}</span>
+              </>
+            )}
           </div>
         </div>
 

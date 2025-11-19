@@ -14,6 +14,10 @@ export type CreateListingData = {
   type: ListingType;
   title: string;
   description: string;
+  latitude?: number;
+  longitude?: number;
+  city?: string;
+  country?: string;
 };
 
 export type UpdateListingData = Partial<CreateListingData> & {
