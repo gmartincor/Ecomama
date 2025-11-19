@@ -20,7 +20,8 @@
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "icons": "node scripts/generate-icons.js",
-    "verify:deployment": "node scripts/verify-deployment.js"
+    "verify:deployment": "node scripts/verify-deployment.js",
+    "verify:pwa": "node scripts/verify-pwa.js"
   },
   "dependencies": {
     "@prisma/client": "6.16.3",

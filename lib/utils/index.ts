@@ -4,6 +4,7 @@ export * from './cn';
 export * from './fetch-helpers';
 export * from './password';
 export * from './prisma-helpers';
+export * from './pwa-validator';
 export * from './query-params';
 export * from './route-helpers';
 export * from './transformers';

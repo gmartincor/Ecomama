@@ -31,19 +31,37 @@
     --success-light: 145 50% 94%;
     --warning: 38 95% 58%;
     --warning-light: 38 90% 94%;
+    --warning-foreground: 0 0% 100%;
     --info: 205 70% 50%;
     --info-light: 205 65% 94%;
     --radius: 0.5rem;
   }
 
-  body {
-    @apply bg-background text-foreground;
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
+  html {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
   }
 
   input[type="number"]::-webkit-inner-spin-button,

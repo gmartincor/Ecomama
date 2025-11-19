@@ -22,6 +22,10 @@ const nextConfig: NextConfig = {
             key: 'Service-Worker-Allowed',
             value: '/',
           },
+          {
+            key: 'Content-Type',
+            value: 'application/javascript; charset=utf-8',
+          },
         ],
       },
       {
@@ -29,11 +33,20 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Content-Type',
-            value: 'application/manifest+json',
+            value: 'application/manifest+json; charset=utf-8',
           },
           {
             key: 'Cache-Control',
             value: 'public, max-age=3600, must-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/icons/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },

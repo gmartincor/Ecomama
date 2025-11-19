@@ -66,7 +66,7 @@ function generateIcon(size) {
 }
 
 async function generateAllIcons() {
-  const pwaIconSizes = [72, 96, 128, 144, 152, 192, 384, 512];
+  const pwaIconSizes = [72, 96, 128, 144, 152, 180, 192, 384, 512];
   
   console.log('Generating PWA icons...');
   for (const size of pwaIconSizes) {
