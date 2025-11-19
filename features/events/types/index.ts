@@ -17,11 +17,6 @@ export type UserEventWithDetails = {
   type: EventType;
   eventDate: Date | null;
   location: string | null;
-  community: {
-    id: string;
-    name: string;
-    city: string;
-  };
   author: {
     id: string;
     name: string;
@@ -43,4 +38,5 @@ export type EventFilters = {
   type?: EventType;
   isPinned?: boolean;
   authorId?: string;
+  upcoming?: boolean;
 };

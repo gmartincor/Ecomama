@@ -15,12 +15,7 @@ export const getUserStatusVariant = (status: UserStatus): StatusVariant => {
 export const getUserRoleVariant = (role: UserRole): RoleVariant => {
   const roleMap: Record<UserRole, RoleVariant> = {
     SUPERADMIN: "destructive",
-    ADMIN: "secondary",
     USER: "success",
   };
   return roleMap[role];
-};
-
-export const getCommunityStatusVariant = (status: "ACTIVE" | "INACTIVE"): StatusVariant => {
-  return status === "ACTIVE" ? "success" : "muted";
 };

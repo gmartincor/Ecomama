@@ -13,7 +13,6 @@ import { Alert } from '@/components/ui/Alert';
 import { useUserEvents } from '@/features/events/hooks/useUserEvents';
 import { UserEventCard } from '@/features/events/components/UserEventCard';
 import { UserEventsCalendar } from '@/features/events/components/UserEventsCalendar';
-import { UserMembershipRequests } from '@/features/memberships/components';
 import type { ProfileWithUser } from '@/features/profiles/types';
 
 export default function MyProfilePage() {
@@ -82,8 +81,6 @@ export default function MyProfilePage() {
           onEdit={handleEdit}
           onBack={handleBack}
         />
-
-        <UserMembershipRequests />
 
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

@@ -15,7 +15,6 @@ type UseListingsResult = {
 };
 
 export const useListings = (
-  communityId: string,
   filters?: ListingFilters
 ): UseListingsResult => {
   const [listings, setListings] = useState<ListingWithAuthor[]>([]);
@@ -23,18 +22,11 @@ export const useListings = (
   const [error, setError] = useState<string | null>(null);
 
   const fetchListings = async () => {
-    if (!communityId) {
-      setListings([]);
-      setError(null);
-      setIsLoading(false);
-      return;
-    }
-
     setIsLoading(true);
     setError(null);
 
     try {
-      const params: Record<string, string | undefined> = { communityId };
+      const params: Record<string, string | undefined> = {};
       if (filters?.type) params.type = filters.type;
       if (filters?.status) params.status = filters.status;
       if (filters?.authorId) params.authorId = filters.authorId;
@@ -50,7 +42,7 @@ export const useListings = (
   };
 
   const createListing = async (data: CreateListingData) => {
-    await fetchJSON('/api/listings', { ...data, communityId }, 'POST');
+    await fetchJSON('/api/listings', data, 'POST');
     await fetchListings();
   };
 
@@ -66,7 +58,7 @@ export const useListings = (
 
   useEffect(() => {
     fetchListings();
-  }, [communityId, filters?.type, filters?.status, filters?.authorId, filters?.search]);
+  }, [filters?.type, filters?.status, filters?.authorId, filters?.search]);
 
   return {
     listings,

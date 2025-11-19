@@ -35,10 +35,6 @@ export const ProfileDetailView = ({
     });
   };
 
-  const getRoleBadgeVariant = (role: string): "primary" | "muted" => {
-    return role === "ADMIN" ? "primary" : "muted";
-  };
-
   return (
     <div className="space-y-6">
       <Card className="p-6">
@@ -138,44 +134,6 @@ export const ProfileDetailView = ({
           </div>
         </div>
       </Card>
-
-      {profile.communities && profile.communities.length > 0 && (
-        <Card className="p-6">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold flex items-center gap-2">
-              <span>🏘️</span>
-              Comunidades
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Miembro de {profile.communities.length}{" "}
-              {profile.communities.length === 1 ? "comunidad" : "comunidades"}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {profile.communities.map((community) => (
-              <div
-                key={community.id}
-                className="border rounded-lg p-4 hover:border-primary/50 transition-colors"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-semibold text-base">{community.name}</h3>
-                  <Badge variant={getRoleBadgeVariant(community.role)}>
-                    {community.role === "ADMIN" ? "Admin" : "Miembro"}
-                  </Badge>
-                </div>
-                <p className="text-sm text-muted-foreground flex items-center gap-1">
-                  <span>📍</span>
-                  {community.city}, {community.country}
-                </p>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Desde {formatDate(community.joinedAt)}
-                </p>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
     </div>
   );
 };

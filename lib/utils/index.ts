@@ -5,4 +5,5 @@ export * from './fetch-helpers';
 export * from './password';
 export * from './prisma-helpers';
 export * from './query-params';
+export * from './route-helpers';
 export * from './transformers';

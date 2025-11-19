@@ -6,20 +6,13 @@ import { Card } from "@/components/ui/Card";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
-import { useActiveCommunity } from "@/features/communities/hooks/useActiveCommunity";
 
 type Settings = {
-  defaultCommunityId: string | null;
   emailNotifications: boolean;
-  defaultCommunity?: {
-    id: string;
-    name: string;
-  } | null;
 };
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { userCommunities, setActiveCommunity } = useActiveCommunity();
   const [settings, setSettings] = useState<Settings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -63,10 +56,6 @@ export default function SettingsPage() {
       setSettings(updatedSettings);
       setSuccess(true);
 
-      if (updatedSettings.defaultCommunity) {
-        setActiveCommunity(updatedSettings.defaultCommunity);
-      }
-
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -101,35 +90,6 @@ export default function SettingsPage() {
             <Button onClick={() => router.push('/profile/me/edit')} variant="outline">
               ✏️ Editar Perfil
             </Button>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Comunidad por defecto</h2>
-          <p className="text-sm text-muted-foreground mb-4">
-            Selecciona la comunidad que se mostrará automáticamente al iniciar sesión
-          </p>
-
-          <div className="space-y-2">
-            <Label htmlFor="defaultCommunity">Comunidad</Label>
-            <select
-              id="defaultCommunity"
-              value={settings?.defaultCommunityId || ""}
-              onChange={(e) =>
-                setSettings((prev) => ({
-                  ...prev!,
-                  defaultCommunityId: e.target.value || null,
-                }))
-              }
-              className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option value="">Sin comunidad por defecto</option>
-              {userCommunities.map((community) => (
-                <option key={community.id} value={community.id}>
-                  {community.name} - {community.city}, {community.country}
-                </option>
-              ))}
-            </select>
           </div>
         </Card>
 

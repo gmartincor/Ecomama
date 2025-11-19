@@ -33,7 +33,7 @@ export const useUsers = () => {
 
   const toggleUserRole = useCallback(
     async (userId: string, currentRole: UserRole) => {
-      const newRole: UserRole = currentRole === "ADMIN" ? "USER" : "ADMIN";
+      const newRole: UserRole = currentRole === "SUPERADMIN" ? "USER" : "SUPERADMIN";
       return updateUser(userId, { role: newRole });
     },
     [updateUser]

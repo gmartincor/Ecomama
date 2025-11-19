@@ -36,9 +36,9 @@ class EventRepository extends BaseRepository<EventWithAuthor> {
   protected model = prisma.event;
 
   async findAll(filters: EventFilters = {}): Promise<EventWithAuthor[]> {
-    const { upcoming, latitude, longitude, radiusKm, ...restFilters } = filters;
+    const { upcoming, ...restFilters } = filters;
 
-    const where: any = {
+    const where: Record<string, unknown> = {
       ...this.buildSafeUpdateData(restFilters),
     };
 

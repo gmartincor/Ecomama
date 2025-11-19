@@ -1,5 +1,5 @@
 import { EventCard } from "./EventCard";
-import { EmptyState } from "@/features/dashboard/components";
+import { EmptyState } from "@/components/common";
 import type { EventWithAuthor } from "../types";
 
 type EventFeedProps = {

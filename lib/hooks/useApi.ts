@@ -6,7 +6,7 @@ interface UseApiOptions<TData, TBody = void> {
   endpoint: string;
   method?: HttpMethod;
   autoFetch?: boolean;
-  transformResponse?: (data: any) => TData;
+  transformResponse?: (data: unknown) => TData;
   getErrorMessage?: (status: number) => string;
 }
 

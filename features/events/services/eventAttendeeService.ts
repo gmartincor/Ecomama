@@ -6,22 +6,6 @@ export const registerForEvent = async (
   userId: string,
   eventId: string
 ): Promise<EventAttendee> => {
-  const existingMembership = await prisma.communityMember.findFirst({
-    where: {
-      userId,
-      status: 'APPROVED',
-      community: {
-        events: {
-          some: { id: eventId },
-        },
-      },
-    },
-  });
-
-  if (!existingMembership) {
-    throw new Error('Debes ser miembro de la comunidad para registrarte');
-  }
-
   return await prisma.eventAttendee.upsert({
     where: {
       eventId_userId: { eventId, userId },
@@ -66,13 +50,6 @@ export const getUserEvents = async (userId: string): Promise<UserEventWithDetail
     include: {
       event: {
         include: {
-          community: {
-            select: {
-              id: true,
-              name: true,
-              city: true,
-            },
-          },
           author: {
             select: {
               id: true,
@@ -96,7 +73,6 @@ export const getUserEvents = async (userId: string): Promise<UserEventWithDetail
     type: attendance.event.type,
     eventDate: attendance.event.eventDate,
     location: attendance.event.location,
-    community: attendance.event.community,
     author: attendance.event.author,
     registeredAt: attendance.createdAt,
   }));

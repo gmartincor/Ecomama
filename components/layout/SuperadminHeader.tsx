@@ -4,17 +4,14 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { useCommunityStore } from "@/lib/stores/useCommunityStore";
 import { navVariants } from "@/lib/design";
 
 export function SuperadminHeader() {
   const { user, isAuthenticated } = useAuth();
-  const { clearCommunityState } = useCommunityStore();
 
   if (!isAuthenticated) return null;
 
   const handleLogout = () => {
-    clearCommunityState();
     signOut({ callbackUrl: "/login" });
   };
 

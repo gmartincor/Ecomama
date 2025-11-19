@@ -37,9 +37,9 @@ class ListingRepository extends BaseRepository<ListingWithAuthor> {
   protected model = prisma.listing;
 
   async findAll(filters: ListingFilters = {}): Promise<ListingWithAuthor[]> {
-    const { search, latitude, longitude, radiusKm, ...restFilters } = filters;
+    const { search, ...restFilters } = filters;
 
-    const where: any = {
+    const where: Record<string, unknown> = {
       ...this.buildSafeUpdateData(restFilters),
     };
 

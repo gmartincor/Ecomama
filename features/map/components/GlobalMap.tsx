@@ -1,0 +1,136 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import type { MapItem, MapEvent, MapListing } from "../types";
+
+type GlobalMapProps = {
+  events: MapEvent[];
+  listings: MapListing[];
+  onItemClick?: (item: MapItem) => void;
+  center?: [number, number];
+  zoom?: number;
+};
+
+const EVENT_ICON = L.divIcon({
+  html: '<div style="background: #3b82f6; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">📅</div>',
+  className: '',
+  iconSize: [32, 32],
+  iconAnchor: [16, 16],
+});
+
+const LISTING_ICON = L.divIcon({
+  html: '<div style="background: #10b981; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">📦</div>',
+  className: '',
+  iconSize: [32, 32],
+  iconAnchor: [16, 16],
+});
+
+export const GlobalMap = ({
+  events,
+  listings,
+  onItemClick,
+  center = [40.4168, -3.7038],
+  zoom = 6,
+}: GlobalMapProps) => {
+  const mapRef = useRef<L.Map | null>(null);
+  const markersLayerRef = useRef<L.LayerGroup | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient || !containerRef.current) return;
+
+    if (!mapRef.current) {
+      const map = L.map(containerRef.current).setView(center, zoom);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19,
+      }).addTo(map);
+
+      markersLayerRef.current = L.layerGroup().addTo(map);
+      mapRef.current = map;
+    }
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, [isClient, center, zoom]);
+
+  useEffect(() => {
+    if (!mapRef.current || !markersLayerRef.current) return;
+
+    markersLayerRef.current.clearLayers();
+
+    events.forEach((event) => {
+      if (event.latitude && event.longitude) {
+        const marker = L.marker([event.latitude, event.longitude], { icon: EVENT_ICON });
+        
+        marker.bindPopup(`
+          <div style="min-width: 200px;">
+            <h3 style="font-weight: bold; margin-bottom: 8px;">${event.title}</h3>
+            <p style="font-size: 12px; color: #666; margin-bottom: 4px;">${event.type}</p>
+            <p style="font-size: 14px;">${event.description.substring(0, 100)}${event.description.length > 100 ? '...' : ''}</p>
+            ${event.location ? `<p style="font-size: 12px; margin-top: 8px;">📍 ${event.location}</p>` : ''}
+            <p style="font-size: 12px; margin-top: 8px;">👤 ${event.author.name}</p>
+          </div>
+        `);
+        
+        if (onItemClick) {
+          marker.on('click', () => onItemClick(event));
+        }
+        
+        markersLayerRef.current?.addLayer(marker);
+      }
+    });
+
+    listings.forEach((listing) => {
+      if (listing.latitude && listing.longitude) {
+        const marker = L.marker([listing.latitude, listing.longitude], { icon: LISTING_ICON });
+        
+        marker.bindPopup(`
+          <div style="min-width: 200px;">
+            <h3 style="font-weight: bold; margin-bottom: 8px;">${listing.title}</h3>
+            <p style="font-size: 12px; color: #666; margin-bottom: 4px;">${listing.type}</p>
+            <p style="font-size: 14px;">${listing.description.substring(0, 100)}${listing.description.length > 100 ? '...' : ''}</p>
+            ${listing.city ? `<p style="font-size: 12px; margin-top: 8px;">📍 ${listing.city}, ${listing.country}</p>` : ''}
+            <p style="font-size: 12px; margin-top: 8px;">👤 ${listing.author.name}</p>
+          </div>
+        `);
+        
+        if (onItemClick) {
+          marker.on('click', () => onItemClick(listing));
+        }
+        
+        markersLayerRef.current?.addLayer(marker);
+      }
+    });
+
+    if (events.length > 0 || listings.length > 0) {
+      const allPoints = [
+        ...events.filter(e => e.latitude && e.longitude).map(e => [e.latitude, e.longitude] as [number, number]),
+        ...listings.filter(l => l.latitude && l.longitude).map(l => [l.latitude, l.longitude] as [number, number]),
+      ];
+
+      if (allPoints.length > 0) {
+        const bounds = L.latLngBounds(allPoints);
+        mapRef.current.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
+      }
+    }
+  }, [events, listings, onItemClick]);
+
+  if (!isClient) {
+    return <div className="w-full h-full bg-muted animate-pulse rounded-lg" />;
+  }
+
+  return <div ref={containerRef} className="w-full h-full rounded-lg" />;
+};

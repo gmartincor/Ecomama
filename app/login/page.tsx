@@ -1,6 +1,10 @@
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { LoginForm } from '@/features/auth/components/LoginForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { PageLoading } from '@/components/common/PageLoading';
+
+export const dynamic = 'force-dynamic';
 
 export default function LoginPage() {
   return (
@@ -17,7 +21,9 @@ export default function LoginPage() {
             <CardDescription>Accede a tu cuenta</CardDescription>
           </CardHeader>
           <CardContent>
-            <LoginForm />
+            <Suspense fallback={<PageLoading />}>
+              <LoginForm />
+            </Suspense>
           </CardContent>
         </Card>
 

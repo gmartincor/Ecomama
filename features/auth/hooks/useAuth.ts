@@ -15,7 +15,6 @@ export function useAuth() {
   };
 
   const isSuperAdmin = hasRole('SUPERADMIN');
-  const isAdmin = hasRole('ADMIN');
   const isUser = hasRole('USER');
 
   return {
@@ -25,7 +24,6 @@ export function useAuth() {
     isAuthenticated,
     hasRole,
     isSuperAdmin,
-    isAdmin,
     isUser,
   };
 }

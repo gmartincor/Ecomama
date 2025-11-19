@@ -1,17 +1,16 @@
 import { withAuthor, buildWhereClause } from '@/lib/utils/prisma-helpers';
-import type { Prisma } from '@prisma/client';
 
-type WhereInput = Record<string, any>;
+type WhereInput = Record<string, unknown>;
 
-type FindOptions<T = any> = {
+type FindOptions = {
   includeAuthor?: boolean;
-  include?: any;
-  select?: any;
+  include?: Record<string, boolean | object>;
+  select?: Record<string, boolean>;
   where?: WhereInput;
 };
 
-type FindManyOptions<T = any> = FindOptions<T> & {
-  orderBy?: any;
+type FindManyOptions = FindOptions & {
+  orderBy?: Record<string, string> | Array<Record<string, string>>;
   skip?: number;
   take?: number;
 };
@@ -32,17 +31,18 @@ type PaginatedResult<T> = {
 };
 
 export abstract class BaseRepository<T> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected abstract model: any;
 
-  protected buildInclude(options: FindOptions): any {
+  protected buildInclude(options: FindOptions): Record<string, boolean | object> | undefined {
     if (options.includeAuthor) {
       return withAuthor();
     }
     return options.include;
   }
 
-  protected buildFindOptions(options: FindOptions = {}): any {
-    const queryOptions: any = {};
+  protected buildFindOptions(options: FindOptions = {}): Record<string, unknown> {
+    const queryOptions: Record<string, unknown> = {};
     
     const includeConfig = this.buildInclude(options);
     
@@ -117,19 +117,19 @@ export abstract class BaseRepository<T> {
     });
   }
 
-  async create(data: any, options: FindOptions = {}): Promise<T> {
+  async create(data: Partial<T>, options: FindOptions = {}): Promise<T> {
     return await this.model.create({
       data,
       ...this.buildFindOptions(options),
     });
   }
 
-  async createMany(data: any[]): Promise<number> {
+  async createMany(data: Partial<T>[]): Promise<number> {
     const result = await this.model.createMany({ data });
     return result.count;
   }
 
-  async update(id: string, data: any, options: FindOptions = {}): Promise<T> {
+  async update(id: string, data: Partial<T>, options: FindOptions = {}): Promise<T> {
     return await this.model.update({
       where: { id },
       data,
@@ -137,15 +137,15 @@ export abstract class BaseRepository<T> {
     });
   }
 
-  async updateMany(where: WhereInput, data: any): Promise<number> {
+  async updateMany(where: WhereInput, data: Partial<T>): Promise<number> {
     const result = await this.model.updateMany({ where, data });
     return result.count;
   }
 
   async upsert(
     where: { id: string },
-    create: any,
-    update: any,
+    create: Partial<T>,
+    update: Partial<T>,
     options: FindOptions = {}
   ): Promise<T> {
     return await this.model.upsert({
@@ -174,7 +174,7 @@ export abstract class BaseRepository<T> {
     return await this.model.count({ where });
   }
 
-  protected buildSafeUpdateData<D extends Record<string, any>>(data: Partial<D>): Partial<D> {
+  protected buildSafeUpdateData<D extends Record<string, unknown>>(data: Partial<D>): Partial<D> {
     return buildWhereClause(data);
   }
 }

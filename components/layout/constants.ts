@@ -6,7 +6,6 @@ export const HEADER_CONFIG = {
     gap: "gap-3",
   },
   breakpoints: {
-    showCommunity: "md",
     stackLayout: "md",
   },
 } as const;

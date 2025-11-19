@@ -16,7 +16,6 @@ type UseEventsResult = {
 };
 
 export const useEvents = (
-  communityId: string,
   filters?: EventFilters
 ): UseEventsResult => {
   const [events, setEvents] = useState<EventWithAuthor[]>([]);
@@ -24,13 +23,6 @@ export const useEvents = (
   const [error, setError] = useState<string | null>(null);
 
   const fetchEvents = async () => {
-    if (!communityId) {
-      setEvents([]);
-      setError(null);
-      setIsLoading(false);
-      return;
-    }
-
     setIsLoading(true);
     setError(null);
 
@@ -39,9 +31,10 @@ export const useEvents = (
       if (filters?.type) params.type = filters.type;
       if (filters?.isPinned !== undefined) params.isPinned = filters.isPinned;
       if (filters?.authorId) params.authorId = filters.authorId;
+      if (filters?.upcoming !== undefined) params.upcoming = filters.upcoming;
 
       const data = await fetchWithError<EventWithAuthor[]>(
-        `/api/communities/${communityId}/events`,
+        '/api/events',
         { params }
       );
       setEvents(data);
@@ -53,7 +46,7 @@ export const useEvents = (
   };
 
   const createEvent = async (data: CreateEventData) => {
-    await fetchJSON(`/api/communities/${communityId}/events`, data, 'POST');
+    await fetchJSON('/api/events', data, 'POST');
     await fetchEvents();
   };
 
@@ -74,7 +67,7 @@ export const useEvents = (
 
   useEffect(() => {
     fetchEvents();
-  }, [communityId, JSON.stringify(filters)]);
+  }, [JSON.stringify(filters)]);
 
   return {
     events,

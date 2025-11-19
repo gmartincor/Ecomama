@@ -1,28 +1,27 @@
-import { NextResponse } from 'next/server';
 import { ZodSchema } from 'zod';
 import { requireAuth, AuthenticatedSession } from '@/lib/utils/auth-helpers';
 import { ApiResponse, handleApiError } from '@/lib/utils/api-response';
 
 type RouteContext = {
-  params?: Record<string, any>;
+  params?: Record<string, string | string[]>;
   searchParams?: URLSearchParams;
   session?: AuthenticatedSession;
-  body?: any;
+  body?: unknown;
 };
 
-type RouteHandler<T = any> = (context: RouteContext) => Promise<T>;
+type RouteHandler<T = unknown> = (context: RouteContext) => Promise<T>;
 
 type AuthorizationCheck = (context: RouteContext) => Promise<boolean>;
 
-type RouteConfig<T = any> = {
+type RouteConfig<T = unknown> = {
   handler: RouteHandler<T>;
   authRequired?: boolean;
   bodySchema?: ZodSchema;
   authorize?: AuthorizationCheck;
 };
 
-export const createRouteHandler = <T = any>(config: RouteConfig<T>) => {
-  return async (request: Request, { params }: { params?: Promise<any> } = {}) => {
+export const createRouteHandler = <T = unknown>(config: RouteConfig<T>) => {
+  return async (request: Request, { params }: { params?: Promise<Record<string, string | string[]>> } = {}) => {
     try {
       const context: RouteContext = {};
 
@@ -74,25 +73,25 @@ export const createRouteHandler = <T = any>(config: RouteConfig<T>) => {
   };
 };
 
-export const createGetHandler = <T = any>(
+export const createGetHandler = <T = unknown>(
   handler: RouteHandler<T>,
   authRequired = true,
   authorize?: AuthorizationCheck
 ) => createRouteHandler({ handler, authRequired, authorize });
 
-export const createPostHandler = <T = any>(
+export const createPostHandler = <T = unknown>(
   handler: RouteHandler<T>,
   bodySchema?: ZodSchema,
   authorize?: AuthorizationCheck
 ) => createRouteHandler({ handler, bodySchema, authorize });
 
-export const createPutHandler = <T = any>(
+export const createPutHandler = <T = unknown>(
   handler: RouteHandler<T>,
   bodySchema?: ZodSchema,
   authorize?: AuthorizationCheck
 ) => createRouteHandler({ handler, bodySchema, authorize });
 
-export const createDeleteHandler = <T = any>(
+export const createDeleteHandler = <T = unknown>(
   handler: RouteHandler<T>,
   authorize?: AuthorizationCheck
 ) => createRouteHandler({ handler, authorize });

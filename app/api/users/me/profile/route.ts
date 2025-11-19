@@ -8,7 +8,7 @@ export const GET = createGetHandler(async ({ session }) => {
 
 export const PUT = createPutHandler(
   async ({ session, body }) => {
-    return await updateUserProfile(session!.user.id, body);
+    return await updateUserProfile(session!.user.id, body as Parameters<typeof updateUserProfile>[1]);
   },
   profileSchema
 );

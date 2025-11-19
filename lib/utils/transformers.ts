@@ -8,13 +8,6 @@ export const transformUserSelect = {
   email: true,
 } as const;
 
-export const transformCommunitySelect = {
-  id: true,
-  name: true,
-  city: true,
-  country: true,
-} as const;
-
 export const transformToUserSummary = (user: {
   id: string;
   name: string;
@@ -23,16 +16,4 @@ export const transformToUserSummary = (user: {
   id: user.id,
   name: user.name,
   email: user.email,
-});
-
-export const transformToCommunitySummary = (community: {
-  id: string;
-  name: string;
-  city: string;
-  country: string;
-}) => ({
-  id: community.id,
-  name: community.name,
-  city: community.city,
-  country: community.country,
 });

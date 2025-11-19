@@ -9,6 +9,8 @@ import { PageLoading } from '@/components/common/PageLoading';
 import { PageError } from '@/components/common/PageError';
 import { Alert } from '@/components/ui/Alert';
 
+export const dynamic = 'force-dynamic';
+
 export default function EditProfilePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -45,7 +47,7 @@ export default function EditProfilePage() {
   }, []);
 
   const handleSuccess = () => {
-    router.push('/communities/map');
+    router.push('/feed');
     router.refresh();
   };
 
@@ -73,7 +75,7 @@ export default function EditProfilePage() {
           </h1>
           <p className="text-muted-foreground mt-2">
             {isFirstTime 
-              ? 'Completa tu información para que los administradores de las comunidades puedan conocerte mejor antes de aceptar tu solicitud'
+              ? 'Completa tu información para que otros miembros de la comunidad puedan conocerte mejor'
               : 'Actualiza tu información personal visible para otros miembros'
             }
           </p>
@@ -81,7 +83,7 @@ export default function EditProfilePage() {
 
         {isFirstTime && (
           <Alert variant="info" className="mb-6">
-            Es importante que completes tu perfil antes de solicitar unirte a una comunidad. Los campos requeridos son: biografía, teléfono y ubicación.
+            Completa tu perfil para comenzar a interactuar con la comunidad. Los campos importantes son: biografía, teléfono y ubicación.
           </Alert>
         )}
 

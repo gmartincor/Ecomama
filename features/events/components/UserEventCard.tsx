@@ -61,11 +61,6 @@ export const UserEventCard = ({ event }: UserEventCardProps) => {
             </div>
           )}
 
-          <div className="flex items-start gap-2 text-xs sm:text-sm text-muted-foreground mb-2">
-            <span>🏘️</span>
-            <span className="break-words">{event.community.name} - {event.community.city}</span>
-          </div>
-
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mt-4 pt-4 border-t">
             <span>Inscrito el {registeredDate}</span>
           </div>

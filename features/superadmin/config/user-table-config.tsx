@@ -66,7 +66,6 @@ export const useUserTableConfig = (
       label: "Actividad",
       render: (user) => (
         <div className="space-y-1 text-sm text-muted-foreground">
-          <div>🏘️ {user.communitiesCount} comunidades</div>
           <div>📦 {user.listingsCount} publicaciones</div>
           <div>📅 {user.eventsCount} eventos</div>
         </div>
@@ -82,13 +81,7 @@ export const useUserTableConfig = (
       return [];
     }
 
-    const actions: Action<SuperadminUser>[] = [
-      {
-        label: user.role === "ADMIN" ? "↓ USER" : "↑ ADMIN",
-        variant: "outline",
-        onClick: async (u) => onToggleUserRole(u.id, u.role),
-      },
-    ];
+    const actions: Action<SuperadminUser>[] = [];
 
     switch (user.status) {
       case "ACTIVE":

@@ -15,22 +15,15 @@ export type ProfileWithUser = UserProfile & {
     name: string;
     email: string;
   };
-  communities?: {
-    id: string;
-    name: string;
-    city: string;
-    country: string;
-    role: string;
-    joinedAt: Date;
-  }[];
 };
 
 export type MemberProfile = {
   id: string;
   name: string;
   email: string;
-  profile: UserProfile | null;
-  memberSince: Date;
+  bio: string | null;
+  location: string | null;
+  avatar: string | null;
 };
 
 export type ProfileUpdateInput = {

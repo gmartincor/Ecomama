@@ -52,32 +52,25 @@ export function useLoginForm(): UseLoginFormReturn {
     setIsLoading(true);
 
     try {
-      const csrfResponse = await fetch('/api/auth/csrf');
-      const { csrfToken } = await csrfResponse.json();
-
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
-        csrfToken,
         redirect: false,
       });
 
       if (result?.error) {
         setServerError('Email o contraseña incorrectos');
+        setIsLoading(false);
         return;
       }
 
       if (result?.ok) {
-        const callbackUrl = searchParams.get('callbackUrl');
-        if (callbackUrl) {
-          router.push(callbackUrl);
-        } else {
-          window.location.href = '/dashboard';
-        }
+        const callbackUrl = searchParams.get('callbackUrl') || '/feed';
+        router.push(callbackUrl);
+        router.refresh();
       }
     } catch (error) {
       setServerError('Error de conexión. Intenta nuevamente.');
-    } finally {
       setIsLoading(false);
     }
   };

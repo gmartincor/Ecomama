@@ -16,11 +16,6 @@ export function SuperadminNav() {
       label: "Usuarios",
       icon: "👥",
     },
-    {
-      href: "/superadmin/communities",
-      label: "Comunidades",
-      icon: "🏘️",
-    },
   ];
 
   return (

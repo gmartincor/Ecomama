@@ -5,6 +5,7 @@ import { checkProfileCompletion } from "@/lib/utils/profile-checker";
 
 const PUBLIC_ROUTES = ["/", "/login", "/register"];
 const AUTH_ROUTES = ["/login", "/register"];
+const DASHBOARD_ROUTE = "/dashboard";
 
 export async function middleware(request: NextRequest) {
   const session = await auth();
@@ -14,6 +15,7 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute = AUTH_ROUTES.includes(pathname);
   const isSuperadminRoute = pathname.startsWith('/superadmin');
   const isProfileRoute = pathname.startsWith('/profile/me');
+  const isDashboardRoute = pathname === DASHBOARD_ROUTE;
 
   if (!session && !isPublicRoute) {
     const url = new URL('/login', request.url);
@@ -24,6 +26,10 @@ export async function middleware(request: NextRequest) {
   if (session && isAuthRoute) {
     const redirectPath = session.user.role === 'SUPERADMIN' ? '/superadmin/dashboard' : '/feed';
     return NextResponse.redirect(new URL(redirectPath, request.url));
+  }
+
+  if (isDashboardRoute) {
+    return NextResponse.next();
   }
 
   if (session && session.user.role !== "SUPERADMIN" && !isProfileRoute && !isPublicRoute) {

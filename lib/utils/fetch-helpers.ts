@@ -2,7 +2,7 @@ type FetchOptions = RequestInit & {
   params?: Record<string, string | number | boolean | undefined>;
 };
 
-export const fetchWithError = async <T = any>(
+export const fetchWithError = async <T = unknown>(
   url: string,
   options?: FetchOptions
 ): Promise<T> => {
@@ -34,9 +34,9 @@ export const fetchWithError = async <T = any>(
   return response.json();
 };
 
-export const fetchJSON = async <T = any>(
+export const fetchJSON = async <T = unknown>(
   url: string,
-  data?: any,
+  data?: unknown,
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' = 'POST'
 ): Promise<T> => {
   return fetchWithError<T>(url, {

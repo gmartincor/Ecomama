@@ -7,7 +7,7 @@ type FilterConfig<T> = {
   };
 };
 
-export const parseFilters = <T extends Record<string, any>>(
+export const parseFilters = <T extends Record<string, unknown>>(
   searchParams: URLSearchParams,
   config: FilterConfig<T>
 ): Partial<T> => {
@@ -22,17 +22,17 @@ export const parseFilters = <T extends Record<string, any>>(
 
     switch (paramConfig.type) {
       case 'string':
-        filters[key as keyof T] = parseQueryParam(value) as any;
+        filters[key as keyof T] = parseQueryParam(value) as T[keyof T];
         break;
       case 'number':
-        filters[key as keyof T] = parseNumberParam(value) as any;
+        filters[key as keyof T] = parseNumberParam(value) as T[keyof T];
         break;
       case 'boolean':
-        filters[key as keyof T] = parseBooleanParam(value) as any;
+        filters[key as keyof T] = parseBooleanParam(value) as T[keyof T];
         break;
       case 'enum':
         if (paramConfig.enumValues) {
-          filters[key as keyof T] = parseEnumParam(value, paramConfig.enumValues) as any;
+          filters[key as keyof T] = parseEnumParam(value, paramConfig.enumValues) as T[keyof T];
         }
         break;
     }

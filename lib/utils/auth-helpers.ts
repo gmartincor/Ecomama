@@ -1,4 +1,3 @@
-import { Session } from 'next-auth';
 import { auth } from '@/lib/auth/config';
 import { UserRole } from '@prisma/client';
 import { UnauthorizedError, ForbiddenError } from '@/lib/utils/api-response';

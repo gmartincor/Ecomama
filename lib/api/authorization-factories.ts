@@ -7,7 +7,7 @@ type ResourceType = 'listing' | 'event';
 
 export const createResourceOwnershipCheck = (
   resourceType: ResourceType,
-  getResourceId: (params: Record<string, any>) => string
+  getResourceId: (params: Record<string, string | string[]>) => string
 ): AuthorizationCheck => {
   return async ({ session, params }) => {
     if (!session) return false;
@@ -27,5 +27,12 @@ export const createResourceOwnershipCheck = (
   };
 };
 
-export const listingOwnerCheck = createResourceOwnershipCheck('listing', (params) => params.id);
-export const eventOwnerCheck = createResourceOwnershipCheck('event', (params) => params.id);
+export const listingOwnerCheck = createResourceOwnershipCheck('listing', (params) => {
+  const id = params.id;
+  return Array.isArray(id) ? id[0] : id;
+});
+
+export const eventOwnerCheck = createResourceOwnershipCheck('event', (params) => {
+  const id = params.id;
+  return Array.isArray(id) ? id[0] : id;
+});

@@ -22,7 +22,7 @@ export const withAuthor = (): AuthorInclude => ({
   },
 });
 
-export const buildWhereClause = <T extends Record<string, any>>(
+export const buildWhereClause = <T extends Record<string, unknown>>(
   filters: Partial<T>
 ): Partial<T> => {
   return Object.entries(filters).reduce((acc, [key, value]) => {

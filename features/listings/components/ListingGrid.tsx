@@ -1,10 +1,9 @@
 import { ListingCard } from "./ListingCard";
-import { EmptyState } from "@/features/dashboard/components";
-import type { ListingWithAuthor, ListingType } from "../types";
+import { EmptyState } from "@/components/common";
+import type { ListingWithAuthor } from "../types";
 
 type ListingGridProps = {
   listings: ListingWithAuthor[];
-  type: ListingType;
   isLoading?: boolean;
   currentUserId?: string;
   onEdit?: (listingId: string) => void;
@@ -17,7 +16,6 @@ type ListingGridProps = {
 
 export const ListingGrid = ({
   listings,
-  type,
   isLoading = false,
   currentUserId,
   onEdit,
@@ -27,10 +25,6 @@ export const ListingGrid = ({
   emptyActionLabel,
   onEmptyAction,
 }: ListingGridProps) => {
-  const defaultEmptyMessage = type === "OFFER" 
-    ? "No hay ofertas disponibles" 
-    : "No hay demandas publicadas";
-
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -46,9 +40,9 @@ export const ListingGrid = ({
   if (listings.length === 0) {
     return (
       <EmptyState
-        icon={type === "OFFER" ? "🌾" : "🛒"}
-        title={emptyMessage || defaultEmptyMessage}
-        description={`Las ${type === "OFFER" ? "ofertas" : "demandas"} de los miembros aparecerán aquí`}
+        icon="�"
+        title={emptyMessage || "No hay publicaciones disponibles"}
+        description="Las ofertas y demandas de los miembros aparecerán aquí"
         actionLabel={emptyActionLabel}
         onAction={onEmptyAction}
       />

@@ -5,7 +5,7 @@ export {
   updateEvent,
   deleteEvent,
   togglePinEvent,
-  isUserAdminOfEventCommunity,
+  isUserEventAuthor,
 } from "./eventService";
 
 export {

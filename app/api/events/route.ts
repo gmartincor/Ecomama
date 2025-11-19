@@ -15,7 +15,7 @@ export const GET = createGetHandler(async ({ searchParams }) => {
 
 export const POST = createPostHandler(
   async ({ session, body }) => {
-    return await createEvent(session!.user.id, body);
+    return await createEvent(session!.user.id, body as Parameters<typeof createEvent>[1]);
   },
   createEventSchema
 );

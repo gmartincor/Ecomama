@@ -2,9 +2,10 @@ import { getEventById, updateEvent, deleteEvent } from "@/features/events/servic
 import { updateEventSchema } from "@/lib/validations/eventValidation";
 import { createGetHandler, createPutHandler, createDeleteHandler, eventOwnerCheck } from "@/lib/api";
 import { NotFoundError } from "@/lib/utils/api-response";
+import { extractId } from "@/lib/utils/route-helpers";
 
 export const GET = createGetHandler(async ({ params }) => {
-  const eventId = params!.id;
+  const eventId = extractId(params!.id);
   const event = await getEventById(eventId);
 
   if (!event) {
@@ -16,8 +17,8 @@ export const GET = createGetHandler(async ({ params }) => {
 
 export const PUT = createPutHandler(
   async ({ params, body }) => {
-    const eventId = params!.id;
-    return await updateEvent(eventId, body);
+    const eventId = extractId(params!.id);
+    return await updateEvent(eventId, body as Parameters<typeof updateEvent>[1]);
   },
   updateEventSchema,
   eventOwnerCheck
@@ -25,7 +26,7 @@ export const PUT = createPutHandler(
 
 export const DELETE = createDeleteHandler(
   async ({ params }) => {
-    const eventId = params!.id;
+    const eventId = extractId(params!.id);
     await deleteEvent(eventId);
     return { success: true };
   },

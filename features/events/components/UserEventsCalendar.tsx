@@ -92,11 +92,6 @@ export const UserEventsCalendar = ({ events }: UserEventsCalendarProps) => {
                           <span className="break-words">{event.location}</span>
                         </p>
                       )}
-                      
-                      <p className="text-xs text-muted-foreground flex items-start gap-1">
-                        <span>🏘️</span>
-                        <span className="break-words">{event.community.name}</span>
-                      </p>
                     </div>
                   </div>
                 );

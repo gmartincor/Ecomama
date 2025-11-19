@@ -19,18 +19,8 @@ export const METRICS_CONFIG: MetricConfig[] = [
     href: "/superadmin/users",
   },
   {
-    key: "totalCommunities",
-    label: "Total Comunidades",
-    icon: "🏘️",
-    activeKey: "activeCommunities",
-    activeLabel: "activas",
-    inactiveKey: "inactiveCommunities",
-    inactiveLabel: "inactivas",
-    href: "/superadmin/communities",
-  },
-  {
     key: "totalListings",
-    label: "Total Publicaciones",
+    label: "Total Anuncios",
     icon: "📦",
   },
   {
