@@ -1,55 +1,26 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Logo } from "./Logo";
 import { UserAvatar } from "./UserAvatar";
 import { LogoutButton } from "./LogoutButton";
-import { Button } from "@/components/ui/Button";
+import { NavLinks } from "./NavLinks";
 import type { HeaderUser } from "./types";
 
 type HeaderContentProps = {
   user: HeaderUser;
   onLogout: () => void;
+  isLoggingOut?: boolean;
 };
 
-export const HeaderContent = ({ user, onLogout }: HeaderContentProps) => {
-  const router = useRouter();
-
+export const HeaderContent = ({ user, onLogout, isLoggingOut }: HeaderContentProps) => {
   return (
     <nav className="flex items-center justify-between h-full px-4" aria-label="Main navigation">
       <Logo />
       
       <div className="flex items-center gap-2 sm:gap-4">
-        <div className="hidden sm:flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push("/tablon")}
-            className="text-sm"
-          >
-            📰 Tablón
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push("/listings")}
-            className="text-sm"
-          >
-            📦 Anuncios
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push("/map")}
-            className="text-sm"
-          >
-            🗺️ Mapa
-          </Button>
-        </div>
-        
+        <NavLinks />
         <UserAvatar user={user} size="md" />
-        
-        <LogoutButton onLogout={onLogout} />
+        <LogoutButton onLogout={onLogout} isLoading={isLoggingOut} />
       </div>
     </nav>
   );

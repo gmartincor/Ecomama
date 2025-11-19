@@ -6,10 +6,16 @@ import { checkProfileCompletion } from "@/lib/utils/profile-checker";
 const PUBLIC_ROUTES = ["/", "/login", "/register"];
 const AUTH_ROUTES = ["/login", "/register"];
 const DASHBOARD_ROUTE = "/dashboard";
+const API_AUTH_ROUTES = ["/api/auth"];
 
 export async function middleware(request: NextRequest) {
-  const session = await auth();
   const { pathname } = request.nextUrl;
+
+  if (API_AUTH_ROUTES.some(route => pathname.startsWith(route))) {
+    return NextResponse.next();
+  }
+
+  const session = await auth();
 
   const isPublicRoute = PUBLIC_ROUTES.some(route => pathname.startsWith(route));
   const isAuthRoute = AUTH_ROUTES.includes(pathname);

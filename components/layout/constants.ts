@@ -1,3 +1,9 @@
+export const NAV_LINKS = [
+  { href: "/tablon", label: "Tablón", icon: "📰" },
+  { href: "/listings", label: "Anuncios", icon: "📦" },
+  { href: "/map", label: "Mapa", icon: "🗺️" },
+] as const;
+
 export const HEADER_CONFIG = {
   height: "h-16",
   spacing: {

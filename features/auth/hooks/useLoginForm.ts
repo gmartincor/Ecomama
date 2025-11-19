@@ -3,6 +3,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { loginSchema, type LoginInput } from '@/lib/validations/auth';
 
+const DEFAULT_CALLBACK = '/tablon';
+const AUTH_ERROR_MESSAGE = 'Email o contraseña incorrectos';
+const CONNECTION_ERROR_MESSAGE = 'Error de conexión. Intenta nuevamente.';
+
 interface UseLoginFormReturn {
   formData: LoginInput;
   errors: Partial<Record<keyof LoginInput, string>>;
@@ -59,18 +63,18 @@ export function useLoginForm(): UseLoginFormReturn {
       });
 
       if (result?.error) {
-        setServerError('Email o contraseña incorrectos');
+        setServerError(AUTH_ERROR_MESSAGE);
         setIsLoading(false);
         return;
       }
 
       if (result?.ok) {
-        const callbackUrl = searchParams.get('callbackUrl') || '/tablon';
+        const callbackUrl = searchParams.get('callbackUrl') || DEFAULT_CALLBACK;
         router.push(callbackUrl);
         router.refresh();
       }
     } catch (error) {
-      setServerError('Error de conexión. Intenta nuevamente.');
+      setServerError(CONNECTION_ERROR_MESSAGE);
       setIsLoading(false);
     }
   };

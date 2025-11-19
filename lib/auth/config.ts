@@ -3,6 +3,9 @@ import Credentials from 'next-auth/providers/credentials';
 import { UserRole } from '@prisma/client';
 import { authService } from '@/features/auth/services/authService';
 
+const DEFAULT_REDIRECT = '/tablon';
+const SIGN_IN_PAGE = '/login';
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
@@ -50,12 +53,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async redirect({ url, baseUrl }) {
       if (url.startsWith("/")) return `${baseUrl}${url}`;
-      else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl + "/tablon";
+      if (new URL(url).origin === baseUrl) return url;
+      return `${baseUrl}${DEFAULT_REDIRECT}`;
     },
   },
   pages: {
-    signIn: '/login',
+    signIn: SIGN_IN_PAGE,
   },
   session: {
     strategy: 'jwt',

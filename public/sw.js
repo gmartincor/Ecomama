@@ -1,16 +1,30 @@
 const CACHE_NAME = 'ecomama-v1';
-const urlsToCache = [
-  '/',
-  '/login',
-  '/register',
+const STATIC_ASSETS = [
   '/manifest.json',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
 ];
 
+const shouldBypassCache = (url) => {
+  return (
+    url.includes('/_next/') ||
+    url.includes('/__nextjs') ||
+    url.includes('/api/') ||
+    url.includes('/login') ||
+    url.includes('/register') ||
+    url.includes('/profile') ||
+    url.includes('/tablon') ||
+    url.includes('/events') ||
+    url.includes('/listings') ||
+    url.includes('/map') ||
+    url.includes('/settings') ||
+    url.includes('/superadmin')
+  );
+};
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
   );
   self.skipWaiting();
 });
@@ -30,9 +44,9 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (
-    event.request.url.includes('/_next/') ||
-    event.request.url.includes('/__nextjs') ||
-    event.request.url.includes('/api/')
+    shouldBypassCache(event.request.url) ||
+    event.request.method !== 'GET' ||
+    event.request.mode === 'navigate'
   ) {
     return;
   }
@@ -42,7 +56,9 @@ self.addEventListener('fetch', (event) => {
       if (response) {
         return response;
       }
-      return fetch(event.request).then((response) => {
+      return fetch(event.request, {
+        redirect: 'follow'
+      }).then((response) => {
         if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
         }
