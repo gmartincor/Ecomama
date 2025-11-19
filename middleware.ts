@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth/config";
 
+// Force Node.js runtime for middleware to avoid Edge Runtime size limits
+export const runtime = 'nodejs';
+
 const PUBLIC_ROUTES = ["/", "/login", "/register"];
 const AUTH_ROUTES = ["/login", "/register"];
 const DASHBOARD_ROUTE = "/dashboard";
