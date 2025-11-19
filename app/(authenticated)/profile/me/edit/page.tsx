@@ -47,7 +47,7 @@ export default function EditProfilePage() {
   }, []);
 
   const handleSuccess = () => {
-    router.push('/feed');
+    router.push('/tablon');
     router.refresh();
   };
 

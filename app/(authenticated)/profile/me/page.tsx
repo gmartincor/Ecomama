@@ -16,6 +16,7 @@ import { UserEventsCalendar } from '@/features/events/components/UserEventsCalen
 import { useUserListings } from '@/features/listings/hooks/useUserListings';
 import { UserListingCard } from '@/features/listings/components/UserListingCard';
 import type { ProfileWithUser } from '@/features/profiles/types';
+import type { ListingStatus } from '@/features/listings/types';
 
 export default function MyProfilePage() {
   const router = useRouter();
@@ -35,8 +36,7 @@ export default function MyProfilePage() {
     isLoading: listingsLoading, 
     error: listingsError,
     deleteListing,
-    updateListingStatus,
-    refetch: refetchListings
+    updateListingStatus
   } = useUserListings();
 
   const handleEdit = () => {
@@ -65,7 +65,7 @@ export default function MyProfilePage() {
   const handleStatusChange = async (listingId: string, status: string) => {
     setIsUpdatingStatus(listingId);
     try {
-      await updateListingStatus(listingId, status as any);
+      await updateListingStatus(listingId, status as ListingStatus);
     } catch (error) {
       alert(error instanceof Error ? error.message : 'Error al actualizar el estado');
     } finally {

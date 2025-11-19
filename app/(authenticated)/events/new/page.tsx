@@ -13,14 +13,14 @@ export default function CreateEventPage() {
   const handleSubmit = async (data: CreateEventData) => {
     try {
       await createEvent(data);
-      router.push("/feed");
+      router.push("/tablon");
     } catch (error) {
       throw error;
     }
   };
 
   const handleCancel = () => {
-    router.push("/feed");
+    router.push("/tablon");
   };
 
   return (
@@ -34,7 +34,7 @@ export default function CreateEventPage() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Crear Evento</h1>
         <p className="text-muted-foreground">
-          Comparte un evento o anuncio con toda la comunidad
+          Comparte un evento o noticia con toda la comunidad
         </p>
       </div>
 

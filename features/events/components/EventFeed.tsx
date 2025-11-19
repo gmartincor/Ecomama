@@ -52,7 +52,7 @@ export const EventFeed = ({
       <EmptyState
         icon="📭"
         title={emptyMessage}
-        description="Las publicaciones de eventos y anuncios aparecerán aquí"
+        description="Las publicaciones de eventos y noticias aparecerán aquí"
         actionLabel={emptyActionLabel}
         onAction={onEmptyAction}
       />

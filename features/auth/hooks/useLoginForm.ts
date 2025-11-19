@@ -65,7 +65,7 @@ export function useLoginForm(): UseLoginFormReturn {
       }
 
       if (result?.ok) {
-        const callbackUrl = searchParams.get('callbackUrl') || '/feed';
+        const callbackUrl = searchParams.get('callbackUrl') || '/tablon';
         router.push(callbackUrl);
         router.refresh();
       }

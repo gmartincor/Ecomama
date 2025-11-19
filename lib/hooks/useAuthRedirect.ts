@@ -12,7 +12,7 @@ export function useAuthRedirect() {
     if (status === "loading") return;
     if (!session?.user) return;
 
-    const redirectPath = session.user.role === "SUPERADMIN" ? "/superadmin/dashboard" : "/feed";
+    const redirectPath = session.user.role === "SUPERADMIN" ? "/superadmin/dashboard" : "/tablon";
     router.push(redirectPath);
   }, [session, status, router]);
 

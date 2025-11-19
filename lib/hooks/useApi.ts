@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
-interface UseApiOptions<TData, TBody = void> {
+interface UseApiOptions<TData> {
   endpoint: string;
   method?: HttpMethod;
   autoFetch?: boolean;
@@ -36,7 +36,7 @@ export function useApi<TData, TBody = void>({
   autoFetch = true,
   transformResponse,
   getErrorMessage = getDefaultErrorMessage,
-}: UseApiOptions<TData, TBody>): UseApiReturn<TData, TBody> {
+}: UseApiOptions<TData>): UseApiReturn<TData, TBody> {
   const [data, setData] = useState<TData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

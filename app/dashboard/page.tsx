@@ -10,7 +10,7 @@ export default async function DashboardPage() {
 
   const targetRoute = session.user.role === 'SUPERADMIN' 
     ? '/superadmin/dashboard' 
-    : '/feed';
+    : '/tablon';
 
   redirect(targetRoute);
 }

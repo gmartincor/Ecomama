@@ -47,7 +47,7 @@ export default function EditEventPage() {
     return (
       <PageError
         message={error || "Evento no encontrado"}
-        onBack={() => router.push("/feed")}
+        onBack={() => router.push("/tablon")}
       />
     );
   }
@@ -55,14 +55,14 @@ export default function EditEventPage() {
   const handleSubmit = async (data: CreateEventData) => {
     try {
       await updateEvent(eventId, data);
-      router.push("/feed");
+      router.push("/tablon");
     } catch (error) {
       throw error;
     }
   };
 
   const handleCancel = () => {
-    router.push("/feed");
+    router.push("/tablon");
   };
 
   return (

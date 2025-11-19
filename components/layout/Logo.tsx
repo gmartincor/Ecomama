@@ -5,7 +5,7 @@ type LogoProps = {
   compact?: boolean;
 };
 
-export const Logo = ({ href = "/feed", compact = false }: LogoProps) => {
+export const Logo = ({ href = "/tablon", compact = false }: LogoProps) => {
   return (
     <Link href={href} className="flex items-center gap-2 group">
       <span className="text-2xl transition-transform group-hover:scale-110">🌱</span>

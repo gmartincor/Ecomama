@@ -24,10 +24,10 @@ export const HeaderContent = ({ user, onLogout }: HeaderContentProps) => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => router.push("/feed")}
+            onClick={() => router.push("/tablon")}
             className="text-sm"
           >
-            📰 Feed
+            📰 Tablón
           </Button>
           <Button
             variant="ghost"

@@ -12,7 +12,7 @@ import { PageLoading } from "@/components/common/PageLoading";
 import { PageError } from "@/components/common/PageError";
 import { useGlobalStats } from "@/lib/hooks/useGlobalStats";
 
-export default function FeedPage() {
+export default function TablonPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { stats } = useGlobalStats();
@@ -94,15 +94,15 @@ export default function FeedPage() {
   };
 
   if (loadingEvents && !events.length) {
-    return <PageLoading title="Cargando feed..." />;
+    return <PageLoading title="Cargando tablón..." />;
   }
 
   return (
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-4xl">
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Feed Global</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Tablón Global</h1>
         <p className="text-muted-foreground text-sm sm:text-base">
-          Eventos y anuncios de toda la comunidad
+          Eventos y noticias de toda la comunidad
         </p>
       </div>
 

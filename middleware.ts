@@ -24,7 +24,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (session && isAuthRoute) {
-    const redirectPath = session.user.role === 'SUPERADMIN' ? '/superadmin/dashboard' : '/feed';
+    const redirectPath = session.user.role === 'SUPERADMIN' ? '/superadmin/dashboard' : '/tablon';
     return NextResponse.redirect(new URL(redirectPath, request.url));
   }
 
@@ -41,7 +41,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isSuperadminRoute && session?.user.role !== 'SUPERADMIN') {
-    return NextResponse.redirect(new URL('/feed', request.url));
+    return NextResponse.redirect(new URL('/tablon', request.url));
   }
 
   return NextResponse.next();

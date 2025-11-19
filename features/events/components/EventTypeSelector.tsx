@@ -10,7 +10,7 @@ type EventTypeOption = {
 export const EVENT_TYPE_OPTIONS: EventTypeOption[] = [
   {
     value: "ANNOUNCEMENT",
-    label: "Anuncio",
+    label: "Noticia",
     icon: "📢",
     description: "Comunicados, noticias y novedades de la comunidad",
   },
