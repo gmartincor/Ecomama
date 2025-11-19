@@ -11,7 +11,7 @@ export default function SuperadminLayout({
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SuperadminHeader />
-      <div className="flex-1 container mx-auto py-8 px-4">
+      <div className="flex-1 container mx-auto px-4 pt-24 pb-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <aside className="lg:col-span-1">
             <SuperadminNav />

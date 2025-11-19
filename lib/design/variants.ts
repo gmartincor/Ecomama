@@ -45,9 +45,9 @@ export const cardVariants = {
 } as const;
 
 export const navVariants = {
-  default: 'bg-card',
-  sticky: 'bg-card/95 backdrop-blur-sm sticky top-0 z-50',
-  floating: 'bg-card/90 backdrop-blur-md border border-border rounded-lg shadow-lg',
+  default: 'bg-white',
+  sticky: 'bg-white border-b border-border fixed top-0 left-0 right-0 z-50',
+  floating: 'bg-white border border-border rounded-lg shadow-lg',
 } as const;
 
 export function getVariant<T extends Record<string, string>>(

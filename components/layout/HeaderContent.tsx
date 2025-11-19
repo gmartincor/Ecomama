@@ -16,7 +16,7 @@ export const HeaderContent = ({ user, onLogout }: HeaderContentProps) => {
   const router = useRouter();
 
   return (
-    <nav className="flex items-center justify-between h-16 px-4" aria-label="Main navigation">
+    <nav className="flex items-center justify-between h-full px-4" aria-label="Main navigation">
       <Logo />
       
       <div className="flex items-center gap-2 sm:gap-4">

@@ -20,7 +20,7 @@ export function Header() {
 
   return (
     <header className={navVariants.sticky}>
-      <div className="container mx-auto">
+      <div className="container mx-auto h-16">
         <HeaderContent user={headerUser} onLogout={handleLogout} />
       </div>
     </header>
