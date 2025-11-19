@@ -22,7 +22,12 @@ export const fetchWithError = async <T = unknown>(
     }
   }
 
-  const response = await fetch(fullUrl, fetchOptions);
+  const defaultOptions: RequestInit = {
+    cache: 'no-store',
+    ...fetchOptions,
+  };
+
+  const response = await fetch(fullUrl, defaultOptions);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({

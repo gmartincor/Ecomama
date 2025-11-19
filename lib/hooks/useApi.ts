@@ -64,6 +64,7 @@ export function useApi<TData, TBody = void>({
           method,
           headers: body ? { "Content-Type": "application/json" } : undefined,
           body: body ? JSON.stringify(body) : undefined,
+          cache: 'no-store',
         };
 
         const response = await fetch(endpoint, options);

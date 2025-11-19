@@ -1,7 +1,10 @@
 import { getListings, createListing } from "@/features/listings/services/listingService";
 import { createListingSchema } from "@/lib/validations/listingValidation";
 import { createGetHandler, createPostHandler, parseFilters } from "@/lib/api";
+import { revalidatePath } from "next/cache";
 import type { ListingFilters } from "@/lib/repositories/listing-repository";
+
+export const dynamic = 'force-dynamic';
 
 export const GET = createGetHandler(async ({ searchParams }) => {
   const filters = parseFilters<ListingFilters>(searchParams!, {
@@ -16,7 +19,11 @@ export const GET = createGetHandler(async ({ searchParams }) => {
 
 export const POST = createPostHandler(
   async ({ session, body }) => {
-    return await createListing(session!.user.id, body as Parameters<typeof createListing>[1]);
+    const result = await createListing(session!.user.id, body as Parameters<typeof createListing>[1]);
+    
+    revalidatePath('/listings');
+    
+    return result;
   },
   createListingSchema
 );

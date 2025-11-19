@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { fetchWithError, fetchJSON } from "@/lib/utils/fetch-helpers";
 import type { ListingWithAuthor, CreateListingData, UpdateListingData, ListingFilters } from "../types";
 
@@ -21,7 +21,7 @@ export const useListings = (
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchListings = async () => {
+  const fetchListings = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
@@ -39,7 +39,7 @@ export const useListings = (
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filters?.type, filters?.status, filters?.authorId, filters?.search]);
 
   const createListing = async (data: CreateListingData) => {
     await fetchJSON('/api/listings', data, 'POST');
@@ -58,7 +58,16 @@ export const useListings = (
 
   useEffect(() => {
     fetchListings();
-  }, [filters?.type, filters?.status, filters?.authorId, filters?.search]);
+  }, [fetchListings]);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchListings();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [fetchListings]);
 
   return {
     listings,

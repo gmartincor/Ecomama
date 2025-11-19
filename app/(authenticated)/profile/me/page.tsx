@@ -13,11 +13,15 @@ import { Alert } from '@/components/ui/Alert';
 import { useUserEvents } from '@/features/events/hooks/useUserEvents';
 import { UserEventCard } from '@/features/events/components/UserEventCard';
 import { UserEventsCalendar } from '@/features/events/components/UserEventsCalendar';
+import { useUserListings } from '@/features/listings/hooks/useUserListings';
+import { UserListingCard } from '@/features/listings/components/UserListingCard';
 import type { ProfileWithUser } from '@/features/profiles/types';
 
 export default function MyProfilePage() {
   const router = useRouter();
   const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState<string | null>(null);
 
   const { data: profile, isLoading, error, refetch } = useFetch<ProfileWithUser>({
     endpoint: '/api/users/me/profile',
@@ -26,6 +30,14 @@ export default function MyProfilePage() {
 
   const { isComplete, completionPercentage } = useProfileCompletion(profile || null);
   const { events, isLoading: eventsLoading, error: eventsError } = useUserEvents();
+  const { 
+    listings, 
+    isLoading: listingsLoading, 
+    error: listingsError,
+    deleteListing,
+    updateListingStatus,
+    refetch: refetchListings
+  } = useUserListings();
 
   const handleEdit = () => {
     router.push('/profile/me/edit');
@@ -33,6 +45,32 @@ export default function MyProfilePage() {
 
   const handleBack = () => {
     router.back();
+  };
+
+  const handleDeleteListing = async (listingId: string) => {
+    if (!confirm('¿Estás seguro de que quieres eliminar este anuncio?')) {
+      return;
+    }
+
+    setIsDeleting(listingId);
+    try {
+      await deleteListing(listingId);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Error al eliminar el anuncio');
+    } finally {
+      setIsDeleting(null);
+    }
+  };
+
+  const handleStatusChange = async (listingId: string, status: string) => {
+    setIsUpdatingStatus(listingId);
+    try {
+      await updateListingStatus(listingId, status as any);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Error al actualizar el estado');
+    } finally {
+      setIsUpdatingStatus(null);
+    }
   };
 
   if (isLoading) {
@@ -147,6 +185,56 @@ export default function MyProfilePage() {
                 </div>
               )}
             </>
+          )}
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              <span>📦</span>
+              Mis Anuncios
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              {listings.length} {listings.length === 1 ? 'anuncio' : 'anuncios'} publicados
+            </p>
+          </div>
+
+          {listingsLoading && (
+            <Card className="p-8 text-center">
+              <p className="text-muted-foreground">Cargando anuncios...</p>
+            </Card>
+          )}
+
+          {listingsError && (
+            <Card className="p-8 text-center">
+              <p className="text-red-600">{listingsError}</p>
+            </Card>
+          )}
+
+          {!listingsLoading && !listingsError && listings.length === 0 && (
+            <Card className="p-8 text-center">
+              <div className="text-4xl mb-4">📦</div>
+              <p className="text-muted-foreground mb-2">
+                No tienes anuncios publicados
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Crea un anuncio para ofrecer o solicitar productos
+              </p>
+            </Card>
+          )}
+
+          {!listingsLoading && !listingsError && listings.length > 0 && (
+            <div className="space-y-4">
+              {listings.map((listing) => (
+                <UserListingCard
+                  key={listing.id}
+                  listing={listing}
+                  onDelete={isDeleting !== listing.id ? handleDeleteListing : undefined}
+                  onStatusChange={handleStatusChange}
+                  isUpdating={isUpdatingStatus === listing.id || isDeleting === listing.id}
+                />
+              ))}
+            </div>
           )}
         </div>
       </div>

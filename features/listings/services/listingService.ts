@@ -1,5 +1,6 @@
 import { listingRepository, ListingWithAuthor, ListingFilters } from '@/lib/repositories/listing-repository';
-import type { CreateListingData, UpdateListingData } from '../types';
+import { prisma } from '@/lib/prisma/client';
+import type { CreateListingData, UpdateListingData, UserListingWithDetails } from '../types';
 
 export const getListings = async (
   filters?: ListingFilters
@@ -9,6 +10,26 @@ export const getListings = async (
 
 export const getListingById = async (listingId: string): Promise<ListingWithAuthor | null> => {
   return listingRepository.findById(listingId, { includeAuthor: true });
+};
+
+export const getUserListings = async (userId: string): Promise<UserListingWithDetails[]> => {
+  const listings = await prisma.listing.findMany({
+    where: { authorId: userId },
+    select: {
+      id: true,
+      type: true,
+      title: true,
+      description: true,
+      status: true,
+      city: true,
+      country: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return listings;
 };
 
 export const createListing = async (

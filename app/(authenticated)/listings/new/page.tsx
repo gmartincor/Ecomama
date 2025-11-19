@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useListings } from "@/features/listings/hooks/useListings";
 import { ListingForm } from "@/features/listings/components";
+import { Button } from "@/components/ui/Button";
 import type { CreateListingData, ListingType } from "@/features/listings/types";
 
 export const dynamic = 'force-dynamic';
@@ -34,6 +35,12 @@ export default function CreateListingPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
+      <div className="mb-6">
+        <Button variant="ghost" size="sm" onClick={() => router.back()}>
+          ← Volver
+        </Button>
+      </div>
+
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">{title}</h1>
         <p className="text-muted-foreground">{description}</p>

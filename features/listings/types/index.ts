@@ -10,6 +10,18 @@ export type ListingWithAuthor = Listing & {
   };
 };
 
+export type UserListingWithDetails = {
+  id: string;
+  type: ListingType;
+  title: string;
+  description: string;
+  status: ListingStatus;
+  city: string | null;
+  country: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type CreateListingData = {
   type: ListingType;
   title: string;

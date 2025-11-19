@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { LISTING_TYPE_CONFIG, LISTING_STATUS_CONFIG } from "../config/status-config";
 import type { ListingWithAuthor } from "../types";
 
 type ListingCardProps = {
@@ -20,9 +21,8 @@ export const ListingCard = ({
   showActions = true,
   isAuthor = false,
 }: ListingCardProps) => {
-  const typeIcon = listing.type === "OFFER" ? "🌾" : "🛒";
-  const typeLabel = listing.type === "OFFER" ? "Oferta" : "Demanda";
-  const typeVariant = listing.type === "OFFER" ? "success" : "info";
+  const typeConfig = LISTING_TYPE_CONFIG[listing.type];
+  const statusConfig = LISTING_STATUS_CONFIG[listing.status];
 
   const createdDate = new Date(listing.createdAt).toLocaleDateString("es-ES", {
     year: "numeric",
@@ -30,22 +30,17 @@ export const ListingCard = ({
     day: "numeric",
   });
 
-  const statusConfig = {
-    ACTIVE: { label: "Activo", variant: "success" as const },
-    INACTIVE: { label: "Inactivo", variant: "muted" as const },
-    EXPIRED: { label: "Expirado", variant: "destructive" as const },
-  };
-
-  const status = statusConfig[listing.status];
-
   return (
     <Card variant="elevated" className="p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row sm:items-start gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="text-xl sm:text-2xl">{typeIcon}</span>
-            <Badge variant={typeVariant} className="text-xs">{typeLabel}</Badge>
-            <Badge variant={status.variant} className="text-xs">{status.label}</Badge>
+            <span className="text-xl sm:text-2xl">{typeConfig.icon}</span>
+            <Badge variant={typeConfig.variant} className="text-xs">{typeConfig.label}</Badge>
+            <Badge variant={statusConfig.variant} className="text-xs flex items-center gap-1">
+              <span>{statusConfig.icon}</span>
+              <span>{statusConfig.label}</span>
+            </Badge>
           </div>
 
           <h3 className="text-lg sm:text-xl font-bold mb-2 break-words">{listing.title}</h3>
