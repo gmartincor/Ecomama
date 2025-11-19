@@ -3,7 +3,7 @@ import { AuthenticatedSession } from '@/lib/utils/auth-helpers';
 
 type AuthorizationContext = {
   session?: AuthenticatedSession;
-  params?: Record<string, string | string[]>;
+  params?: Record<string, string | string[] | undefined>;
 };
 
 export type AuthorizationCheck = (context: AuthorizationContext) => Promise<boolean>;

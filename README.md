@@ -56,6 +56,71 @@ ecomama/
 └── prisma/               # Schema and migrations
 ```
 
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20+
+- pnpm (recommended) or npm
+- PostgreSQL 14+
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/gmartincor/Ecomama.git
+cd Ecomama
+```
+
+2. Install dependencies:
+
+```bash
+pnpm install
+```
+
+3. Set up environment variables:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and configure your database URL and other variables.
+
+4. Set up the database:
+
+```bash
+# Generate Prisma Client
+pnpm db:generate
+
+# Run migrations
+pnpm db:migrate
+
+# Seed the database (optional)
+pnpm db:seed
+```
+
+5. Run the development server:
+
+```bash
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Deployment
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions on deploying to Vercel with Postgres database.
+
+### Quick Deploy to Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fgmartincor%2FEcomama)
+
+1. Click the button above
+2. Add a Postgres database from the Storage tab
+3. Configure environment variables (AUTH_SECRET)
+4. Deploy!
+
 ## PWA Installation
 
 The app is installable as a Progressive Web App:

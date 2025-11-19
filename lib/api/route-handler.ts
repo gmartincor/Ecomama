@@ -3,7 +3,7 @@ import { requireAuth, AuthenticatedSession } from '@/lib/utils/auth-helpers';
 import { ApiResponse, handleApiError } from '@/lib/utils/api-response';
 
 type RouteContext = {
-  params?: Record<string, string | string[]>;
+  params?: Record<string, string | string[] | undefined>;
   searchParams?: URLSearchParams;
   session?: AuthenticatedSession;
   body?: unknown;
@@ -20,21 +20,28 @@ type RouteConfig<T = unknown> = {
   authorize?: AuthorizationCheck;
 };
 
+type NextJSRouteContext = {
+  params: Promise<Record<string, string | string[] | undefined>>;
+};
+
 export const createRouteHandler = <T = unknown>(config: RouteConfig<T>) => {
-  return async (request: Request, { params }: { params?: Promise<Record<string, string | string[]>> } = {}) => {
+  return async (
+    request: Request, 
+    nextContext: NextJSRouteContext
+  ) => {
     try {
-      const context: RouteContext = {};
+      const routeContext: RouteContext = {};
 
       if (config.authRequired !== false) {
-        context.session = await requireAuth();
+        routeContext.session = await requireAuth();
       }
 
-      if (params) {
-        context.params = await params;
+      if (nextContext.params) {
+        routeContext.params = await nextContext.params;
       }
 
       const url = new URL(request.url);
-      context.searchParams = url.searchParams;
+      routeContext.searchParams = url.searchParams;
 
       if (['POST', 'PUT', 'PATCH'].includes(request.method)) {
         const contentType = request.headers.get('content-type');
@@ -45,24 +52,24 @@ export const createRouteHandler = <T = unknown>(config: RouteConfig<T>) => {
             const body = await request.json();
             
             if (config.bodySchema) {
-              context.body = config.bodySchema.parse(body);
+              routeContext.body = config.bodySchema.parse(body);
             } else {
-              context.body = body;
+              routeContext.body = body;
             }
           } catch {
-            context.body = undefined;
+            routeContext.body = undefined;
           }
         }
       }
 
       if (config.authorize) {
-        const authorized = await config.authorize(context);
+        const authorized = await config.authorize(routeContext);
         if (!authorized) {
           return ApiResponse.forbidden('No tienes permisos para esta operación');
         }
       }
 
-      const result = await config.handler(context);
+      const result = await config.handler(routeContext);
       
       return request.method === 'POST'
         ? ApiResponse.created(result)

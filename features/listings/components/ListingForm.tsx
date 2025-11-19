@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@/components/ui/Textarea";
 import { AddressInput } from "@/components/ui/AddressInput";
 import { Alert } from "@/components/ui/Alert";
 import type { ListingType, CreateListingData, Listing } from "../types";
