@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v5';
+const CACHE_VERSION = 'v6';
 const CACHE_NAME = `ecomama-${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   '/',
@@ -42,8 +42,8 @@ self.addEventListener('install', (event) => {
           console.error('Failed to cache assets:', err);
         });
       })
+      .then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -56,8 +56,8 @@ self.addEventListener('activate', (event) => {
             .map(name => caches.delete(name))
         )
       )
+      .then(() => self.clients.claim())
   );
-  return self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
@@ -95,7 +95,7 @@ self.addEventListener('fetch', (event) => {
             return response;
           })
           .catch(() => {
-            return caches.match('/');
+            return caches.match('/').then(fallback => fallback || new Response('Offline'));
           });
       })
   );

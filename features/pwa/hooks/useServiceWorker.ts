@@ -1,57 +1,64 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 
 export const useServiceWorker = () => {
-  useEffect(() => {
+  const registerServiceWorker = useCallback(async () => {
     if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
       return;
     }
 
-    const registerSW = async () => {
-      try {
-        const registration = await navigator.serviceWorker.register('/sw.js', {
-          scope: '/',
-          updateViaCache: 'none',
-        });
+    try {
+      const registration = await navigator.serviceWorker.register('/sw.js', {
+        scope: '/',
+        updateViaCache: 'none',
+      });
 
-        let refreshing = false;
+      let isRefreshing = false;
 
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (refreshing) return;
-          refreshing = true;
-          window.location.reload();
-        });
+      const handleControllerChange = () => {
+        if (isRefreshing) return;
+        isRefreshing = true;
+        window.location.reload();
+      };
 
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          if (!newWorker) return;
+      const handleUpdateFound = () => {
+        const newWorker = registration.installing;
+        if (!newWorker) return;
 
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              newWorker.postMessage({ type: 'SKIP_WAITING' });
-            }
-          });
-        });
-
-        const checkUpdate = async () => {
-          try {
-            await registration.update();
-          } catch (error) {
-            console.error('Update check failed:', error);
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            newWorker.postMessage({ type: 'SKIP_WAITING' });
           }
-        };
+        });
+      };
 
-        checkUpdate();
+      navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
+      registration.addEventListener('updatefound', handleUpdateFound);
 
-        const updateInterval = setInterval(checkUpdate, 60000);
+      const checkForUpdates = async () => {
+        try {
+          await registration.update();
+        } catch (error) {
+          console.error('SW update check failed:', error);
+        }
+      };
 
-        return () => clearInterval(updateInterval);
-      } catch (error) {
-        console.error('SW registration failed:', error);
-      }
-    };
+      await checkForUpdates();
 
-    registerSW();
+      const updateInterval = setInterval(checkForUpdates, 60000);
+
+      return () => {
+        clearInterval(updateInterval);
+        navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
+        registration.removeEventListener('updatefound', handleUpdateFound);
+      };
+    } catch (error) {
+      console.error('SW registration failed:', error);
+    }
   }, []);
+
+  useEffect(() => {
+    registerServiceWorker();
+  }, [registerServiceWorker]);
 };

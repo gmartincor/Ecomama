@@ -4,6 +4,7 @@ export { UserAvatar } from "./UserAvatar";
 export { LogoutButton } from "./LogoutButton";
 export { HeaderContent } from "./HeaderContent";
 export { NavLinks } from "./NavLinks";
+export { MobileNav } from "./MobileNav";
 export { AuthenticatedLayout } from "./AuthenticatedLayout";
 export { SuperadminHeader } from "./SuperadminHeader";
 export { HEADER_CONFIG, NAV_LINKS } from "./constants";
