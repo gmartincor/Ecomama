@@ -4,19 +4,21 @@ import { Button } from '@/components/ui/Button';
 import { useInstallPrompt } from '../hooks/useInstallPrompt';
 
 export const InstallPWAButton = () => {
-  const { canInstall, isStandalone, promptInstall } = useInstallPrompt();
+  const { canInstall, isStandalone, promptInstall, isSecureContext, isSupportedBrowser } = useInstallPrompt();
 
   if (isStandalone) {
     return null;
   }
 
   const handleInstall = async () => {
-    if (!canInstall) {
-      return;
-    }
-
     await promptInstall();
   };
+
+  const showButton = isSecureContext && isSupportedBrowser;
+
+  if (!showButton) {
+    return null;
+  }
 
   return (
     <Button

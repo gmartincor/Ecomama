@@ -15,20 +15,38 @@ export const useServiceWorker = () => {
           updateViaCache: 'none',
         });
 
+        let refreshing = false;
+
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (refreshing) return;
+          refreshing = true;
+          window.location.reload();
+        });
+
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
           if (!newWorker) return;
 
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              if (window.confirm('Nueva versión disponible. ¿Actualizar ahora?')) {
-                window.location.reload();
-              }
+              newWorker.postMessage({ type: 'SKIP_WAITING' });
             }
           });
         });
 
-        await registration.update();
+        const checkUpdate = async () => {
+          try {
+            await registration.update();
+          } catch (error) {
+            console.error('Update check failed:', error);
+          }
+        };
+
+        checkUpdate();
+
+        const updateInterval = setInterval(checkUpdate, 60000);
+
+        return () => clearInterval(updateInterval);
       } catch (error) {
         console.error('SW registration failed:', error);
       }
