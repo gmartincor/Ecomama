@@ -1,16 +1,17 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useEvents } from "@/features/events/hooks/useEvents";
 import { useEventRegistration } from "@/features/events/hooks/useEventRegistration";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { EventFeed } from "@/features/events/components";
+import { EventFeed, EventTypeFilter } from "@/features/events/components";
 import { PageLoading } from "@/components/common/PageLoading";
 import { PageError } from "@/components/common/PageError";
 import { useGlobalStats } from "@/lib/hooks/useGlobalStats";
+import type { EventType } from "@/features/events/types";
 
 export default function TablonPage() {
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function TablonPage() {
   const [registeredEventIds, setRegisteredEventIds] = useState<Set<string>>(new Set());
   const [attendeesCounts, setAttendeesCounts] = useState<Map<string, number>>(new Map());
   const [loadingRegistrations, setLoadingRegistrations] = useState(true);
+  const [typeFilter, setTypeFilter] = useState<EventType | "ALL">("ALL");
 
   const { isRegistering, register, cancel } = useEventRegistration(() => {
     fetchUserRegistrations();
@@ -28,6 +30,11 @@ export default function TablonPage() {
   });
 
   const isSuperAdmin = user?.role === 'SUPERADMIN';
+
+  const filteredEvents = useMemo(() => {
+    if (typeFilter === "ALL") return events;
+    return events.filter(event => event.type === typeFilter);
+  }, [events, typeFilter]);
 
   const fetchUserRegistrations = useCallback(async () => {
     if (!user?.id || events.length === 0) {
@@ -107,11 +114,7 @@ export default function TablonPage() {
       </div>
 
       {stats && (
-        <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
-          <Card className="p-3 sm:p-4 text-center">
-            <div className="text-xs sm:text-sm text-muted-foreground mb-1">Usuarios</div>
-            <div className="text-xl sm:text-2xl font-bold">{stats.totalUsers}</div>
-          </Card>
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
           <Card className="p-3 sm:p-4 text-center">
             <div className="text-xs sm:text-sm text-muted-foreground mb-1">Publicaciones</div>
             <div className="text-xl sm:text-2xl font-bold">{stats.activeListings}</div>
@@ -123,9 +126,10 @@ export default function TablonPage() {
         </div>
       )}
 
-      <div className="mb-4 sm:mb-6 flex justify-end">
+      <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <EventTypeFilter value={typeFilter} onChange={setTypeFilter} />
         <Button onClick={() => router.push("/events/new")} className="w-full sm:w-auto text-sm">
-          📝 Crear Evento
+          📝 Crear Noticia o Evento
         </Button>
       </div>
 
@@ -133,7 +137,7 @@ export default function TablonPage() {
         <PageError message={eventsError} />
       ) : (
         <EventFeed
-          events={events}
+          events={filteredEvents}
           isLoading={loadingEvents || loadingRegistrations}
           isAdmin={isSuperAdmin}
           onEdit={handleEditEvent}
