@@ -9,6 +9,7 @@ type ListingCardProps = {
   onEdit?: (listingId: string) => void;
   onDelete?: (listingId: string) => void;
   onContactAuthor?: (authorId: string) => void;
+  onViewDetails?: (listingId: string) => void;
   showActions?: boolean;
   isAuthor?: boolean;
 };
@@ -18,6 +19,7 @@ export const ListingCard = ({
   onEdit,
   onDelete,
   onContactAuthor,
+  onViewDetails,
   showActions = true,
   isAuthor = false,
 }: ListingCardProps) => {
@@ -61,10 +63,15 @@ export const ListingCard = ({
 
         {showActions && (
           <div className="flex sm:flex-col gap-2 justify-end sm:justify-start flex-shrink-0">
+            {onViewDetails && (
+              <Button size="sm" variant="primary" onClick={() => onViewDetails(listing.id)} className="text-xs sm:text-sm">
+                Ver Detalle
+              </Button>
+            )}
             {isAuthor ? (
               <>
                 {onEdit && (
-                  <Button variant="ghost" size="sm" onClick={() => onEdit(listing.id)} className="text-xs sm:text-sm">
+                  <Button variant="outline" size="sm" onClick={() => onEdit(listing.id)} className="text-xs sm:text-sm">
                     Editar
                   </Button>
                 )}
@@ -81,7 +88,7 @@ export const ListingCard = ({
               </>
             ) : (
               onContactAuthor && (
-                <Button size="sm" variant="primary" onClick={() => onContactAuthor(listing.author.id)} className="text-xs sm:text-sm">
+                <Button size="sm" variant="outline" onClick={() => onContactAuthor(listing.author.id)} className="text-xs sm:text-sm">
                   Ver Perfil
                 </Button>
               )

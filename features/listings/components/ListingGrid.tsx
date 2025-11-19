@@ -9,6 +9,7 @@ type ListingGridProps = {
   onEdit?: (listingId: string) => void;
   onDelete?: (listingId: string) => void;
   onContactAuthor?: (authorId: string) => void;
+  onViewDetails?: (listingId: string) => void;
   emptyMessage?: string;
   emptyActionLabel?: string;
   onEmptyAction?: () => void;
@@ -21,6 +22,7 @@ export const ListingGrid = ({
   onEdit,
   onDelete,
   onContactAuthor,
+  onViewDetails,
   emptyMessage,
   emptyActionLabel,
   onEmptyAction,
@@ -59,6 +61,7 @@ export const ListingGrid = ({
           onEdit={onEdit}
           onDelete={onDelete}
           onContactAuthor={onContactAuthor}
+          onViewDetails={onViewDetails}
         />
       ))}
     </div>

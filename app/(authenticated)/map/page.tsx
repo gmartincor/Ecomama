@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useMapData } from "@/features/map/hooks";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { PageLoading } from "@/components/common/PageLoading";
 import { PageError } from "@/components/common/PageError";
 import type { MapFilters, MapItem } from "@/features/map/types";
 
@@ -18,6 +18,7 @@ const GlobalMap = dynamic(
 );
 
 export default function MapPage() {
+  const router = useRouter();
   const [filters, setFilters] = useState<MapFilters>({
     includeEvents: true,
     includeListings: true,
@@ -39,9 +40,15 @@ export default function MapPage() {
     }));
   };
 
-  if (isLoading && events.length === 0 && listings.length === 0) {
-    return <PageLoading title="Cargando mapa..." />;
-  }
+  const handleViewDetails = () => {
+    if (!selectedItem) return;
+    
+    if (selectedItem.itemType === 'event') {
+      router.push(`/events/${selectedItem.id}`);
+    } else {
+      router.push(`/listings/${selectedItem.id}`);
+    }
+  };
 
   if (error) {
     return <PageError message={error} />;
@@ -55,6 +62,7 @@ export default function MapPage() {
 
   const displayEvents = filters.includeEvents ? events : [];
   const displayListings = filters.includeListings ? listings : [];
+  const showLoading = isLoading && events.length === 0 && listings.length === 0;
 
   return (
     <div className="h-[calc(100vh-4rem)] flex flex-col">
@@ -90,7 +98,16 @@ export default function MapPage() {
 
       <div className="flex-1 px-2 sm:px-4 pb-2 sm:pb-4">
         <Card className="h-full p-0 overflow-hidden">
-          {hasNoData ? (
+          {showLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center p-8">
+                <div className="animate-pulse space-y-4">
+                  <div className="h-16 w-16 bg-muted rounded-full mx-auto" />
+                  <div className="h-4 bg-muted rounded w-32 mx-auto" />
+                </div>
+              </div>
+            </div>
+          ) : hasNoData ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center p-8">
                 <p className="text-lg font-semibold text-muted-foreground mb-2">
@@ -147,7 +164,7 @@ export default function MapPage() {
               <span className="text-muted-foreground">
                 👤 {selectedItem.author.name}
               </span>
-              <Button size="sm" className="text-xs">
+              <Button size="sm" className="text-xs" onClick={handleViewDetails}>
                 Ver detalles
               </Button>
             </div>

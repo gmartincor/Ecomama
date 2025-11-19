@@ -7,6 +7,9 @@ export type ListingWithAuthor = Listing & {
     id: string;
     name: string;
     email: string;
+    profile: {
+      phone: string | null;
+    } | null;
   };
 };
 

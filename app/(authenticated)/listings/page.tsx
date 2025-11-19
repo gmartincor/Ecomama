@@ -33,6 +33,10 @@ export default function ListingsPage() {
     }
   };
 
+  const handleViewDetails = (listingId: string) => {
+    router.push(`/listings/${listingId}`);
+  };
+
   if (isLoading && !listings.length) {
     return <PageLoading title="Cargando anuncios..." />;
   }
@@ -86,6 +90,7 @@ export default function ListingsPage() {
           listings={listings}
           onEdit={(id) => router.push(`/listings/${id}/edit`)}
           onDelete={handleDeleteListing}
+          onViewDetails={handleViewDetails}
         />
       )}
     </div>

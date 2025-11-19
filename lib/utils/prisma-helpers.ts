@@ -6,6 +6,11 @@ type AuthorInclude = {
       id: true;
       name: true;
       email: true;
+      profile: {
+        select: {
+          phone: true;
+        };
+      };
     };
   };
 };
@@ -14,6 +19,11 @@ export const authorSelect = {
   id: true,
   name: true,
   email: true,
+  profile: {
+    select: {
+      phone: true,
+    },
+  },
 } as const;
 
 export const withAuthor = (): AuthorInclude => ({
