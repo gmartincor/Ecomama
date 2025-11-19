@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ecomama-v1';
+const CACHE_NAME = 'ecomama-v3';
 const STATIC_ASSETS = [
   '/manifest.json',
   '/icons/icon-192x192.png',

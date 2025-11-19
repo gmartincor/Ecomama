@@ -14,7 +14,7 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
-    "pwa:icons": "node scripts/generate-pwa-icons.js"
+    "icons": "node scripts/generate-icons.js"
   },
   "dependencies": {
     "@prisma/client": "6.16.3",

@@ -25,12 +25,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/icons/icon.svg', type: 'image/svg+xml' },
     ],
-    apple: [
-      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-    ],
+    apple: '/icons/icon-192x192.png',
   },
 };
 
@@ -48,10 +46,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <head>
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground antialiased`}>
         <Providers>{children}</Providers>
       </body>
