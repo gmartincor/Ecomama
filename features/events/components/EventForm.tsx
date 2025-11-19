@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/textarea";
+import { AddressInput } from "@/components/ui/AddressInput";
 import { Alert } from "@/components/ui/Alert";
 import { EventTypeSelector } from "./EventTypeSelector";
 import type { EventType, CreateEventData, Event } from "../types";
@@ -28,8 +29,23 @@ export const EventForm = ({
       ? new Date(initialData.eventDate).toISOString().slice(0, 16)
       : ""
   );
-  const [location, setLocation] = useState(initialData?.location || "");
+  const [address, setAddress] = useState("");
+  const [locationData, setLocationData] = useState<{
+    latitude?: number;
+    longitude?: number;
+  }>({
+    latitude: initialData?.latitude ?? undefined,
+    longitude: initialData?.longitude ?? undefined,
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleLocationChange = (location: { latitude: number; longitude: number } | null) => {
+    if (location) {
+      setLocationData(location);
+    } else {
+      setLocationData({});
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +69,14 @@ export const EventForm = ({
       newErrors.eventDate = "Los eventos deben tener una fecha";
     }
 
+    if (type === "EVENT" && !address.trim()) {
+      newErrors.address = "La ubicación es requerida para eventos";
+    }
+
+    if (type === "EVENT" && (!locationData.latitude || !locationData.longitude)) {
+      newErrors.address = "Debes buscar y confirmar la ubicación antes de publicar";
+    }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -64,7 +88,9 @@ export const EventForm = ({
         title: title.trim(),
         description: description.trim(),
         eventDate: eventDate ? new Date(eventDate) : null,
-        location: location.trim() || null,
+        location: address.trim() || null,
+        latitude: locationData.latitude,
+        longitude: locationData.longitude,
       });
     } catch (error) {
       setErrors({ submit: "Error al guardar. Intenta nuevamente." });
@@ -122,15 +148,20 @@ export const EventForm = ({
 
             <div>
               <label className="block text-sm font-medium text-muted-foreground mb-1">
-                Ubicación (opcional)
+                Ubicación <span className="text-red-500">*</span>
               </label>
-              <Input
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Lugar donde se realizará el evento"
-                maxLength={200}
+              <AddressInput
+                value={address}
+                onChange={setAddress}
+                onLocationChange={handleLocationChange}
+                placeholder="Ej: Madrid, España o Calle Gran Vía 1, Madrid"
+                error={errors.address}
                 disabled={isLoading}
+                required={true}
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                Escribe la ubicación y presiona el botón 🔍 o Enter para confirmar
+              </p>
             </div>
           </>
         )}

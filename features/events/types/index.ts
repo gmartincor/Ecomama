@@ -30,6 +30,8 @@ export type CreateEventData = {
   description: string;
   eventDate?: Date | null;
   location?: string | null;
+  latitude?: number;
+  longitude?: number;
 };
 
 export type UpdateEventData = Partial<CreateEventData>;
