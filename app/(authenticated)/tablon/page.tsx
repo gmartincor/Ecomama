@@ -80,6 +80,10 @@ export default function TablonPage() {
     router.push(`/events/${eventId}/edit`);
   };
 
+  const handleViewEvent = (eventId: string) => {
+    router.push(`/events/${eventId}`);
+  };
+
   const handleDeleteEvent = async (eventId: string) => {
     if (window.confirm("¿Estás seguro de que quieres eliminar este evento?")) {
       await deleteEvent(eventId);
@@ -145,6 +149,7 @@ export default function TablonPage() {
           onTogglePin={handleTogglePin}
           onRegister={handleRegister}
           onCancelRegistration={handleCancelRegistration}
+          onView={handleViewEvent}
           registeredEventIds={registeredEventIds}
           isRegistering={isRegistering}
           attendeesCounts={attendeesCounts}

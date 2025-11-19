@@ -12,6 +12,7 @@ type EventCardProps = {
   onTogglePin?: (eventId: string, isPinned: boolean) => void;
   onRegister?: (eventId: string) => void;
   onCancelRegistration?: (eventId: string) => void;
+  onView?: (eventId: string) => void;
   isAdmin?: boolean;
   isRegistered?: boolean;
   isRegistering?: boolean;
@@ -25,6 +26,7 @@ export const EventCard = ({
   onTogglePin,
   onRegister,
   onCancelRegistration,
+  onView,
   isAdmin = false,
   isRegistered = false,
   isRegistering = false,
@@ -98,6 +100,17 @@ export const EventCard = ({
         </div>
 
         <div className="flex sm:flex-col gap-2 justify-end sm:justify-start flex-shrink-0">
+          {onView && (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => onView(event.id)}
+              className="text-xs sm:text-sm"
+            >
+              Ver Evento
+            </Button>
+          )}
+
           {isAdmin && (
             <>
               {onTogglePin && (

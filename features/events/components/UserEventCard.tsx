@@ -1,15 +1,17 @@
 "use client";
 
 import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { CalendarIcon } from "@/components/ui/CalendarIcon";
 import type { UserEventWithDetails } from "../types";
 import { EVENT_TYPE_OPTIONS } from "./EventTypeSelector";
 
 type UserEventCardProps = {
   event: UserEventWithDetails;
+  onView?: (eventId: string) => void;
 };
 
-export const UserEventCard = ({ event }: UserEventCardProps) => {
+export const UserEventCard = ({ event, onView }: UserEventCardProps) => {
   const typeOption = EVENT_TYPE_OPTIONS.find((opt) => opt.value === event.type);
   const hasEventDate = event.type === "EVENT" && !!event.eventDate;
   
@@ -32,7 +34,7 @@ export const UserEventCard = ({ event }: UserEventCardProps) => {
 
   return (
     <Card variant="elevated" className="p-4 sm:p-6">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
             {hasEventDate && event.eventDate && (
@@ -65,6 +67,19 @@ export const UserEventCard = ({ event }: UserEventCardProps) => {
             <span>Inscrito el {registeredDate}</span>
           </div>
         </div>
+
+        {onView && (
+          <div className="flex sm:flex-col gap-2 justify-end sm:justify-start flex-shrink-0">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => onView(event.id)}
+              className="text-xs sm:text-sm w-full sm:w-auto"
+            >
+              Ver Evento
+            </Button>
+          </div>
+        )}
       </div>
     </Card>
   );

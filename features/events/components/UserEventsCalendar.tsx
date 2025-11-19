@@ -3,11 +3,13 @@
 import { useMemo } from "react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 import { CalendarIcon } from "@/components/ui/CalendarIcon";
 import type { UserEventWithDetails } from "../types";
 
 type UserEventsCalendarProps = {
   events: UserEventWithDetails[];
+  onView?: (eventId: string) => void;
 };
 
 type GroupedEvents = {
@@ -15,7 +17,7 @@ type GroupedEvents = {
   events: UserEventWithDetails[];
 };
 
-export const UserEventsCalendar = ({ events }: UserEventsCalendarProps) => {
+export const UserEventsCalendar = ({ events, onView }: UserEventsCalendarProps) => {
   const groupedEvents = useMemo(() => {
     const eventsWithDates = events.filter(e => e.eventDate);
     
@@ -93,6 +95,17 @@ export const UserEventsCalendar = ({ events }: UserEventsCalendarProps) => {
                         </p>
                       )}
                     </div>
+
+                    {onView && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onView(event.id)}
+                        className="text-xs flex-shrink-0"
+                      >
+                        Ver
+                      </Button>
+                    )}
                   </div>
                 );
               })}

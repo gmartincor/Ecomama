@@ -11,6 +11,7 @@ type EventFeedProps = {
   onTogglePin?: (eventId: string, isPinned: boolean) => void;
   onRegister?: (eventId: string) => void;
   onCancelRegistration?: (eventId: string) => void;
+  onView?: (eventId: string) => void;
   registeredEventIds?: Set<string>;
   isRegistering?: boolean;
   attendeesCounts?: Map<string, number>;
@@ -28,6 +29,7 @@ export const EventFeed = ({
   onTogglePin,
   onRegister,
   onCancelRegistration,
+  onView,
   registeredEventIds,
   isRegistering = false,
   attendeesCounts,
@@ -71,6 +73,7 @@ export const EventFeed = ({
           onTogglePin={onTogglePin}
           onRegister={onRegister}
           onCancelRegistration={onCancelRegistration}
+          onView={onView}
           isRegistered={registeredEventIds?.has(event.id)}
           isRegistering={isRegistering}
           attendeesCount={attendeesCounts?.get(event.id)}

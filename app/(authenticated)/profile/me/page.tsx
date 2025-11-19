@@ -47,6 +47,10 @@ export default function MyProfilePage() {
     router.back();
   };
 
+  const handleViewEvent = (eventId: string) => {
+    router.push(`/events/${eventId}`);
+  };
+
   const handleDeleteListing = async (listingId: string) => {
     if (!confirm('¿Estás seguro de que quieres eliminar este anuncio?')) {
       return;
@@ -176,11 +180,20 @@ export default function MyProfilePage() {
 
           {!eventsLoading && !eventsError && events.length > 0 && (
             <>
-              {viewMode === 'calendar' && <UserEventsCalendar events={events} />}
+              {viewMode === 'calendar' && (
+                <UserEventsCalendar 
+                  events={events} 
+                  onView={handleViewEvent}
+                />
+              )}
               {viewMode === 'list' && (
                 <div className="space-y-4">
                   {events.map((event) => (
-                    <UserEventCard key={event.id} event={event} />
+                    <UserEventCard 
+                      key={event.id} 
+                      event={event} 
+                      onView={handleViewEvent}
+                    />
                   ))}
                 </div>
               )}
