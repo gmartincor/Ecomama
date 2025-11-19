@@ -2,10 +2,9 @@ import { eventRepository, EventWithAuthor, EventFilters } from '@/lib/repositori
 import type { CreateEventData, UpdateEventData } from '../types';
 
 export const getEvents = async (
-  communityId: string,
-  filters?: Omit<EventFilters, 'communityId'>
+  filters?: EventFilters
 ): Promise<EventWithAuthor[]> => {
-  return eventRepository.findByCommunity({ communityId, ...filters });
+  return eventRepository.findAll(filters);
 };
 
 export const getEventById = async (eventId: string): Promise<EventWithAuthor | null> => {
@@ -13,11 +12,10 @@ export const getEventById = async (eventId: string): Promise<EventWithAuthor | n
 };
 
 export const createEvent = async (
-  communityId: string,
   authorId: string,
   data: CreateEventData
 ): Promise<EventWithAuthor> => {
-  return eventRepository.createEvent(communityId, authorId, data);
+  return eventRepository.createEvent(authorId, data);
 };
 
 export const updateEvent = async (
@@ -38,9 +36,9 @@ export const togglePinEvent = async (
   return eventRepository.togglePin(eventId, isPinned);
 };
 
-export const isUserAdminOfEventCommunity = async (
+export const isUserEventAuthor = async (
   userId: string,
   eventId: string
 ): Promise<boolean> => {
-  return eventRepository.isUserAdminOfCommunity(userId, eventId);
+  return eventRepository.isAuthor(userId, eventId);
 };

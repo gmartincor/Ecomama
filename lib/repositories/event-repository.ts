@@ -11,10 +11,13 @@ export type EventWithAuthor = Event & {
 };
 
 export type EventFilters = {
-  communityId: string;
   type?: EventType;
   isPinned?: boolean;
   authorId?: string;
+  upcoming?: boolean;
+  latitude?: number;
+  longitude?: number;
+  radiusKm?: number;
 };
 
 export type CreateEventData = {
@@ -23,6 +26,8 @@ export type CreateEventData = {
   description: string;
   eventDate?: Date | null;
   location?: string | null;
+  latitude?: number;
+  longitude?: number;
 };
 
 export type UpdateEventData = Partial<CreateEventData>;
@@ -30,13 +35,18 @@ export type UpdateEventData = Partial<CreateEventData>;
 class EventRepository extends BaseRepository<EventWithAuthor> {
   protected model = prisma.event;
 
-  async findByCommunity(filters: EventFilters): Promise<EventWithAuthor[]> {
-    const { communityId, ...restFilters } = filters;
+  async findAll(filters: EventFilters = {}): Promise<EventWithAuthor[]> {
+    const { upcoming, latitude, longitude, radiusKm, ...restFilters } = filters;
 
-    const where = {
-      communityId,
+    const where: any = {
       ...this.buildSafeUpdateData(restFilters),
     };
+
+    if (upcoming) {
+      where.eventDate = {
+        gte: new Date(),
+      };
+    }
 
     return this.findMany(where, {
       orderBy: [{ isPinned: 'desc' }, { createdAt: 'desc' }],
@@ -45,13 +55,11 @@ class EventRepository extends BaseRepository<EventWithAuthor> {
   }
 
   async createEvent(
-    communityId: string,
     authorId: string,
     data: CreateEventData
   ): Promise<EventWithAuthor> {
     return this.create(
       {
-        communityId,
         authorId,
         ...data,
         eventDate: data.eventDate || null,
@@ -75,19 +83,8 @@ class EventRepository extends BaseRepository<EventWithAuthor> {
     return this.update(id, { isPinned }, { includeAuthor: true });
   }
 
-  async isUserAdminOfCommunity(userId: string, eventId: string): Promise<boolean> {
-    const event = await prisma.event.findUnique({
-      where: { id: eventId },
-      select: {
-        community: {
-          select: {
-            adminId: true,
-          },
-        },
-      },
-    });
-
-    return event?.community.adminId === userId;
+  async isAuthor(userId: string, eventId: string): Promise<boolean> {
+    return this.exists({ id: eventId, authorId: userId });
   }
 }
 

@@ -2,36 +2,31 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth/config";
 import { checkProfileCompletion } from "@/lib/utils/profile-checker";
-import {
-  ROUTE_CONFIG,
-  DEFAULT_REDIRECTS,
-  isRouteMatch,
-  shouldRedirectSuperadmin,
-  shouldRedirectRegularUser,
-} from "@/lib/auth/route-config";
+
+const PUBLIC_ROUTES = ["/", "/login", "/register"];
+const AUTH_ROUTES = ["/login", "/register"];
 
 export async function middleware(request: NextRequest) {
   const session = await auth();
   const { pathname } = request.nextUrl;
 
-  const isPublicRoute = isRouteMatch(pathname, ROUTE_CONFIG.public);
-  const isAuthRoute = ROUTE_CONFIG.auth.includes(pathname as typeof ROUTE_CONFIG.auth[number]);
-  const isSuperadminRoute = isRouteMatch(pathname, ROUTE_CONFIG.superadmin);
-  const isSharedRoute = isRouteMatch(pathname, ROUTE_CONFIG.shared);
+  const isPublicRoute = PUBLIC_ROUTES.some(route => pathname.startsWith(route));
+  const isAuthRoute = AUTH_ROUTES.includes(pathname);
+  const isSuperadminRoute = pathname.startsWith('/superadmin');
   const isProfileRoute = pathname.startsWith('/profile/me');
-  const isDashboardRoute = pathname === '/dashboard';
 
   if (!session && !isPublicRoute) {
-    const url = new URL(DEFAULT_REDIRECTS.unauthorized, request.url);
+    const url = new URL('/login', request.url);
     url.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(url);
   }
 
   if (session && isAuthRoute) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    const redirectPath = session.user.role === 'SUPERADMIN' ? '/superadmin/dashboard' : '/feed';
+    return NextResponse.redirect(new URL(redirectPath, request.url));
   }
 
-  if (session && session.user.role !== "SUPERADMIN" && !isProfileRoute && !isPublicRoute && !isDashboardRoute) {
+  if (session && session.user.role !== "SUPERADMIN" && !isProfileRoute && !isPublicRoute) {
     const profileStatus = await checkProfileCompletion(session.user.id);
     
     if (!profileStatus.isComplete) {
@@ -39,16 +34,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (isSuperadminRoute && shouldRedirectRegularUser(pathname, session?.user.role)) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-
-  if (isSharedRoute) {
-    return NextResponse.next();
-  }
-
-  if (shouldRedirectSuperadmin(pathname, session?.user.role)) {
-    return NextResponse.redirect(new URL(DEFAULT_REDIRECTS.superadmin, request.url));
+  if (isSuperadminRoute && session?.user.role !== 'SUPERADMIN') {
+    return NextResponse.redirect(new URL('/feed', request.url));
   }
 
   return NextResponse.next();

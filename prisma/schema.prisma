@@ -8,68 +8,22 @@ datasource db {
 }
 
 model User {
-  id                      String            @id @default(cuid())
-  email                   String            @unique
-  passwordHash            String
-  name                    String
-  role                    UserRole          @default(USER)
-  status                  UserStatus        @default(ACTIVE)
-  createdAt               DateTime          @default(now())
-  updatedAt               DateTime          @updatedAt
-  administeredCommunities Community[]
-  memberships             CommunityMember[]
-  createdEvents           Event[]
-  createdListings         Listing[]
-  eventAttendances        EventAttendee[]
-  profile                 UserProfile?
-  settings                UserSettings?
+  id               String          @id @default(cuid())
+  email            String          @unique
+  passwordHash     String
+  name             String
+  role             UserRole        @default(USER)
+  status           UserStatus      @default(ACTIVE)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  createdEvents    Event[]
+  createdListings  Listing[]
+  eventAttendances EventAttendee[]
+  profile          UserProfile?
+  settings         UserSettings?
 
   @@index([email])
   @@index([role])
-}
-
-model Community {
-  id              String            @id @default(cuid())
-  name            String
-  description     String
-  latitude        Float
-  longitude       Float
-  address         String
-  city            String
-  country         String
-  adminId         String
-  status          CommunityStatus   @default(ACTIVE)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  admin           User              @relation(fields: [adminId], references: [id])
-  members         CommunityMember[]
-  events          Event[]
-  listings        Listing[]
-  defaultForUsers UserSettings[]
-
-  @@index([adminId])
-  @@index([latitude, longitude])
-  @@index([status])
-}
-
-model CommunityMember {
-  id              String       @id @default(cuid())
-  userId          String
-  communityId     String
-  role            MemberRole   @default(MEMBER)
-  status          MemberStatus @default(PENDING)
-  requestMessage  String
-  responseMessage String?
-  requestedAt     DateTime     @default(now())
-  respondedAt     DateTime?
-  joinedAt        DateTime?
-  community       Community    @relation(fields: [communityId], references: [id], onDelete: Cascade)
-  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, communityId])
-  @@index([userId])
-  @@index([communityId])
-  @@index([status])
 }
 
 model UserProfile {
@@ -86,16 +40,12 @@ model UserProfile {
 }
 
 model UserSettings {
-  id                 String     @id @default(cuid())
-  userId             String     @unique
-  defaultCommunityId String?
-  emailNotifications Boolean    @default(true)
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
-  defaultCommunity   Community? @relation(fields: [defaultCommunityId], references: [id])
-  user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([defaultCommunityId])
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  emailNotifications Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Listing {
@@ -104,86 +54,43 @@ model Listing {
   title       String
   description String
   authorId    String
-  communityId String
+  latitude    Float?
+  longitude   Float?
+  city        String?
+  country     String?
   status      ListingStatus @default(ACTIVE)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   author      User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  community   Community     @relation(fields: [communityId], references: [id], onDelete: Cascade)
 
   @@index([authorId])
-  @@index([communityId])
   @@index([type])
   @@index([status])
   @@index([createdAt])
+  @@index([latitude, longitude])
 }
 
 model Event {
   id          String          @id @default(cuid())
-  communityId String
   authorId    String
   type        EventType
   title       String
   description String
   eventDate   DateTime?
   location    String?
+  latitude    Float?
+  longitude   Float?
   isPinned    Boolean         @default(false)
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   author      User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  community   Community       @relation(fields: [communityId], references: [id], onDelete: Cascade)
   attendees   EventAttendee[]
 
-  @@index([communityId])
   @@index([authorId])
   @@index([isPinned])
   @@index([createdAt])
   @@index([eventDate])
-}
-
-enum UserRole {
-  SUPERADMIN
-  ADMIN
-  USER
-}
-
-enum UserStatus {
-  ACTIVE
-  INACTIVE
-  SUSPENDED
-}
-
-enum MemberRole {
-  ADMIN
-  MEMBER
-}
-
-enum MemberStatus {
-  PENDING
-  APPROVED
-  REJECTED
-  REMOVED
-}
-
-enum CommunityStatus {
-  ACTIVE
-  INACTIVE
-}
-
-enum ListingType {
-  OFFER
-  DEMAND
-}
-
-enum ListingStatus {
-  ACTIVE
-  INACTIVE
-  EXPIRED
-}
-
-enum EventType {
-  ANNOUNCEMENT
-  EVENT
+  @@index([latitude, longitude])
 }
 
 model EventAttendee {
@@ -200,6 +107,33 @@ model EventAttendee {
   @@index([eventId])
   @@index([userId])
   @@index([status])
+}
+
+enum UserRole {
+  USER
+  SUPERADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum ListingType {
+  OFFER
+  DEMAND
+}
+
+enum ListingStatus {
+  ACTIVE
+  INACTIVE
+  EXPIRED
+}
+
+enum EventType {
+  ANNOUNCEMENT
+  EVENT
 }
 
 enum AttendeeStatus {

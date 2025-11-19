@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eventTypeEnum, textFieldSchema, timestampSchema } from "./shared";
+import { eventTypeEnum, textFieldSchema, timestampSchema, coordinateSchema } from "./shared";
 
 export { eventTypeEnum };
 
@@ -9,6 +9,8 @@ export const createEventSchema = z.object({
   description: textFieldSchema.extraLong,
   eventDate: timestampSchema.optional().nullable(),
   location: textFieldSchema.medium.optional().nullable(),
+  latitude: coordinateSchema.latitude.optional(),
+  longitude: coordinateSchema.longitude.optional(),
 });
 
 export const updateEventSchema = createEventSchema.partial();

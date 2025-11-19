@@ -17,8 +17,6 @@ export const requireRole = (...roles: UserRole[]): AuthorizationCheck => {
 
 export const requireSuperAdmin: AuthorizationCheck = requireRole(UserRole.SUPERADMIN);
 
-export const requireAdmin: AuthorizationCheck = requireRole(UserRole.ADMIN, UserRole.SUPERADMIN);
-
 export const combineChecks = (...checks: AuthorizationCheck[]): AuthorizationCheck => {
   return async (context) => {
     for (const check of checks) {

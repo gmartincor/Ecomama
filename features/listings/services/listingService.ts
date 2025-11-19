@@ -2,10 +2,9 @@ import { listingRepository, ListingWithAuthor, ListingFilters } from '@/lib/repo
 import type { CreateListingData, UpdateListingData } from '../types';
 
 export const getListings = async (
-  communityId: string,
-  filters?: Omit<ListingFilters, 'communityId'>
+  filters?: ListingFilters
 ): Promise<ListingWithAuthor[]> => {
-  return listingRepository.findByCommunity({ communityId, ...filters });
+  return listingRepository.findAll(filters);
 };
 
 export const getListingById = async (listingId: string): Promise<ListingWithAuthor | null> => {
@@ -13,11 +12,10 @@ export const getListingById = async (listingId: string): Promise<ListingWithAuth
 };
 
 export const createListing = async (
-  communityId: string,
   authorId: string,
   data: CreateListingData
 ): Promise<ListingWithAuthor> => {
-  return listingRepository.createListing(communityId, authorId, data);
+  return listingRepository.createListing(authorId, data);
 };
 
 export const updateListing = async (

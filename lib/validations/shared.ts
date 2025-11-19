@@ -2,11 +2,8 @@ import { z } from "zod";
 
 export const cuidSchema = z.string().cuid();
 
-export const userRoleEnum = z.enum(["USER", "ADMIN", "SUPERADMIN"]);
+export const userRoleEnum = z.enum(["USER", "SUPERADMIN"]);
 export const userStatusEnum = z.enum(["ACTIVE", "INACTIVE", "SUSPENDED"]);
-export const memberRoleEnum = z.enum(["ADMIN", "MEMBER"]);
-export const memberStatusEnum = z.enum(["PENDING", "APPROVED", "REJECTED", "REMOVED"]);
-export const communityStatusEnum = z.enum(["ACTIVE", "INACTIVE"]);
 export const listingTypeEnum = z.enum(["OFFER", "DEMAND"]);
 export const listingStatusEnum = z.enum(["ACTIVE", "INACTIVE", "EXPIRED"]);
 export const eventTypeEnum = z.enum(["ANNOUNCEMENT", "EVENT"]);
@@ -32,9 +29,6 @@ export const coordinateSchema = {
 
 export type UserRole = z.infer<typeof userRoleEnum>;
 export type UserStatus = z.infer<typeof userStatusEnum>;
-export type MemberRole = z.infer<typeof memberRoleEnum>;
-export type MemberStatus = z.infer<typeof memberStatusEnum>;
-export type CommunityStatus = z.infer<typeof communityStatusEnum>;
 export type ListingType = z.infer<typeof listingTypeEnum>;
 export type ListingStatus = z.infer<typeof listingStatusEnum>;
 export type EventType = z.infer<typeof eventTypeEnum>;

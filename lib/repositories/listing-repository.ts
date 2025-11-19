@@ -12,17 +12,23 @@ export type ListingWithAuthor = Listing & {
 };
 
 export type ListingFilters = {
-  communityId: string;
   type?: ListingType;
   status?: ListingStatus;
   authorId?: string;
   search?: string;
+  latitude?: number;
+  longitude?: number;
+  radiusKm?: number;
 };
 
 export type CreateListingData = {
   type: ListingType;
   title: string;
   description: string;
+  latitude?: number;
+  longitude?: number;
+  city?: string;
+  country?: string;
 };
 
 export type UpdateListingData = Partial<CreateListingData & { status: ListingStatus }>;
@@ -30,11 +36,10 @@ export type UpdateListingData = Partial<CreateListingData & { status: ListingSta
 class ListingRepository extends BaseRepository<ListingWithAuthor> {
   protected model = prisma.listing;
 
-  async findByCommunity(filters: ListingFilters): Promise<ListingWithAuthor[]> {
-    const { communityId, search, ...restFilters } = filters;
+  async findAll(filters: ListingFilters = {}): Promise<ListingWithAuthor[]> {
+    const { search, latitude, longitude, radiusKm, ...restFilters } = filters;
 
     const where: any = {
-      communityId,
       ...this.buildSafeUpdateData(restFilters),
     };
 
@@ -49,13 +54,11 @@ class ListingRepository extends BaseRepository<ListingWithAuthor> {
   }
 
   async createListing(
-    communityId: string,
     authorId: string,
     data: CreateListingData
   ): Promise<ListingWithAuthor> {
     return this.create(
       {
-        communityId,
         authorId,
         ...data,
         status: 'ACTIVE',
