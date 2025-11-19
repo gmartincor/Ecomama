@@ -1,0 +1,74 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+const PUBLIC_PATHS = ["/", "/login", "/register", "/legal"];
+const AUTH_PAGES = ["/login", "/register"];
+const API_ROUTES = ["/api"];
+
+function isPublicPath(pathname: string): boolean {
+  return PUBLIC_PATHS.some(path => pathname === path || pathname.startsWith(`${path}/`));
+}
+
+function isAuthPage(pathname: string): boolean {
+  return AUTH_PAGES.includes(pathname);
+}
+
+function hasSession(request: NextRequest): boolean {
+  const sessionToken = request.cookies.get('authjs.session-token')?.value || 
+                       request.cookies.get('__Secure-authjs.session-token')?.value;
+  return !!sessionToken;
+}
+
+function getUserRole(request: NextRequest): string | null {
+  const sessionToken = request.cookies.get('authjs.session-token')?.value || 
+                       request.cookies.get('__Secure-authjs.session-token')?.value;
+  
+  if (!sessionToken) return null;
+  
+  try {
+    const payload = sessionToken.split('.')[1];
+    if (!payload) return null;
+    
+    const decoded = JSON.parse(Buffer.from(payload, 'base64').toString());
+    return decoded.role || null;
+  } catch {
+    return null;
+  }
+}
+
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  if (pathname.startsWith('/api')) {
+    return NextResponse.next();
+  }
+
+  const isPublic = isPublicPath(pathname);
+  const isAuth = isAuthPage(pathname);
+  const authenticated = hasSession(request);
+
+  if (!authenticated && !isPublic) {
+    const url = new URL('/login', request.url);
+    url.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(url);
+  }
+
+  if (authenticated && isAuth) {
+    const role = getUserRole(request);
+    const redirectPath = role === 'SUPERADMIN' ? '/superadmin/dashboard' : '/tablon';
+    return NextResponse.redirect(new URL(redirectPath, request.url));
+  }
+
+  if (pathname.startsWith('/superadmin')) {
+    const role = getUserRole(request);
+    if (role !== 'SUPERADMIN') {
+      return NextResponse.redirect(new URL('/tablon', request.url));
+    }
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)"],
+};
