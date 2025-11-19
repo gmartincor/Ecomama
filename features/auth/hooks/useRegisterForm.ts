@@ -5,9 +5,14 @@ import { registerSchema, type RegisterInput } from '@/lib/validations/auth';
 interface UseRegisterFormReturn {
   formData: RegisterInput;
   errors: Partial<Record<keyof RegisterInput, string>>;
+  legalErrors: { terms?: string; privacy?: string };
+  termsAccepted: boolean;
+  privacyAccepted: boolean;
   isLoading: boolean;
   serverError: string;
   handleChange: (field: keyof RegisterInput) => (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleTermsChange: (checked: boolean) => void;
+  handlePrivacyChange: (checked: boolean) => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
 }
 
@@ -20,6 +25,9 @@ export function useRegisterForm(): UseRegisterFormReturn {
     name: '',
   });
   const [errors, setErrors] = useState<Partial<Record<keyof RegisterInput, string>>>({});
+  const [legalErrors, setLegalErrors] = useState<{ terms?: string; privacy?: string }>({});
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState('');
 
@@ -31,9 +39,22 @@ export function useRegisterForm(): UseRegisterFormReturn {
     setServerError('');
   };
 
+  const handleTermsChange = (checked: boolean) => {
+    setTermsAccepted(checked);
+    setLegalErrors((prev) => ({ ...prev, terms: '' }));
+    setServerError('');
+  };
+
+  const handlePrivacyChange = (checked: boolean) => {
+    setPrivacyAccepted(checked);
+    setLegalErrors((prev) => ({ ...prev, privacy: '' }));
+    setServerError('');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+    setLegalErrors({});
     setServerError('');
 
     const validation = registerSchema.safeParse(formData);
@@ -44,6 +65,19 @@ export function useRegisterForm(): UseRegisterFormReturn {
         fieldErrors[field] = issue.message;
       });
       setErrors(fieldErrors);
+      return;
+    }
+
+    const newLegalErrors: { terms?: string; privacy?: string } = {};
+    if (!termsAccepted) {
+      newLegalErrors.terms = 'Debes aceptar los términos y condiciones';
+    }
+    if (!privacyAccepted) {
+      newLegalErrors.privacy = 'Debes aceptar la política de privacidad';
+    }
+
+    if (Object.keys(newLegalErrors).length > 0) {
+      setLegalErrors(newLegalErrors);
       return;
     }
 
@@ -74,9 +108,14 @@ export function useRegisterForm(): UseRegisterFormReturn {
   return {
     formData,
     errors,
+    legalErrors,
+    termsAccepted,
+    privacyAccepted,
     isLoading,
     serverError,
     handleChange,
+    handleTermsChange,
+    handlePrivacyChange,
     handleSubmit,
   };
 }

@@ -3,15 +3,21 @@
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
+import { LegalConsent } from '@/components/ui/LegalConsent';
 import { useRegisterForm } from '../hooks/useRegisterForm';
 
 export function RegisterForm() {
   const {
     formData,
     errors,
+    legalErrors,
+    termsAccepted,
+    privacyAccepted,
     isLoading,
     serverError,
     handleChange,
+    handleTermsChange,
+    handlePrivacyChange,
     handleSubmit,
   } = useRegisterForm();
 
@@ -55,6 +61,15 @@ export function RegisterForm() {
           autoComplete="new-password"
         />
       </div>
+
+      <LegalConsent
+        termsAccepted={termsAccepted}
+        privacyAccepted={privacyAccepted}
+        onTermsChange={handleTermsChange}
+        onPrivacyChange={handlePrivacyChange}
+        disabled={isLoading}
+        errors={legalErrors}
+      />
 
       {serverError && (
         <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
