@@ -1,13 +1,14 @@
 {
+  "id": "/?source=pwa",
   "name": "Ecomama - Productos Ecológicos",
   "short_name": "Ecomama",
   "description": "Conectando agricultores y consumidores en comunidades locales para el comercio directo de productos ecológicos",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4a9d5f",
-  "orientation": "portrait-primary",
+  "orientation": "any",
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
