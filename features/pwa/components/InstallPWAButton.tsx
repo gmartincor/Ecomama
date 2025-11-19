@@ -10,13 +10,11 @@ interface BeforeInstallPromptEvent extends Event {
 
 export const InstallPWAButton = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [isInstallable, setIsInstallable] = useState(false);
 
   useEffect(() => {
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setIsInstallable(true);
     };
 
     window.addEventListener('beforeinstallprompt', handler);
@@ -27,22 +25,22 @@ export const InstallPWAButton = () => {
   }, []);
 
   const handleInstall = async () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+      alert('Esta PWA solo puede instalarse desde HTTPS o localhost con un navegador compatible (Chrome/Edge)');
+      return;
+    }
 
-    deferredPrompt.prompt();
+    await deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
 
     if (outcome === 'accepted') {
       setDeferredPrompt(null);
-      setIsInstallable(false);
     }
   };
 
-  if (!isInstallable) return null;
-
   return (
     <Button
-      variant="accent"
+      variant={deferredPrompt ? 'accent' : 'ghost'}
       size="sm"
       onClick={handleInstall}
       className="gap-2"

@@ -4,6 +4,7 @@ import { Logo } from "./Logo";
 import { UserAvatar } from "./UserAvatar";
 import { LogoutButton } from "./LogoutButton";
 import { NavLinks } from "./NavLinks";
+import { InstallPWAButton } from "@/features/pwa";
 import type { HeaderUser } from "./types";
 
 type HeaderContentProps = {
@@ -19,6 +20,7 @@ export const HeaderContent = ({ user, onLogout, isLoggingOut }: HeaderContentPro
       
       <div className="flex items-center gap-2 sm:gap-4">
         <NavLinks />
+        <InstallPWAButton />
         <UserAvatar user={user} size="md" />
         <LogoutButton onLogout={onLogout} isLoading={isLoggingOut} />
       </div>
