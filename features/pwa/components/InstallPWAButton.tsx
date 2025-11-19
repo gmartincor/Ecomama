@@ -1,49 +1,30 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
-}
+import { useInstallPrompt } from '../hooks/useInstallPrompt';
 
 export const InstallPWAButton = () => {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const { canInstall, isStandalone, promptInstall } = useInstallPrompt();
 
-  useEffect(() => {
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-    };
-
-    window.addEventListener('beforeinstallprompt', handler);
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handler);
-    };
-  }, []);
+  if (isStandalone) {
+    return null;
+  }
 
   const handleInstall = async () => {
-    if (!deferredPrompt) {
-      alert('Esta PWA solo puede instalarse desde HTTPS o localhost con un navegador compatible (Chrome/Edge)');
+    if (!canInstall) {
       return;
     }
 
-    await deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-
-    if (outcome === 'accepted') {
-      setDeferredPrompt(null);
-    }
+    await promptInstall();
   };
 
   return (
     <Button
-      variant={deferredPrompt ? 'accent' : 'ghost'}
+      variant={canInstall ? 'accent' : 'ghost'}
       size="sm"
       onClick={handleInstall}
       className="gap-2"
+      disabled={!canInstall}
     >
       <span className="text-lg">📱</span>
       <span className="hidden sm:inline">Instalar App</span>

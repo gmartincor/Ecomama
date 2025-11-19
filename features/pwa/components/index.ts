@@ -1,2 +1,2 @@
 export { InstallPWAButton } from './InstallPWAButton';
-export { PWARegister } from './PWARegister';
+export { PWAManager } from './PWAManager';

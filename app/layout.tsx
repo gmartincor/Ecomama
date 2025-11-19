@@ -4,6 +4,7 @@ import "./globals.css";
 import "./leaflet.css";
 import { Providers } from "@/components/common/Providers";
 import { AuthGuard } from "@/components/auth/AuthGuard";
+import { PWAManager } from "@/features/pwa";
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -49,7 +50,10 @@ export default function RootLayout({
     <html lang="es">
       <body className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground antialiased`}>
         <Providers>
-          <AuthGuard>{children}</AuthGuard>
+          <AuthGuard>
+            <PWAManager />
+            {children}
+          </AuthGuard>
         </Providers>
       </body>
     </html>
