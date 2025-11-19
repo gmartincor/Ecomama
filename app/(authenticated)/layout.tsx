@@ -1,12 +1,12 @@
-import { AuthenticatedLayout } from "@/components/layout";
-import { ProfileCheckWrapper } from "@/components/layout/ProfileCheckWrapper";
+'use client';
 
-export const dynamic = 'force-dynamic';
+import { AuthenticatedLayout } from "@/components/layout";
+import { ProfileRedirect } from "@/components/auth";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <ProfileCheckWrapper>
+    <ProfileRedirect>
       <AuthenticatedLayout>{children}</AuthenticatedLayout>
-    </ProfileCheckWrapper>
+    </ProfileRedirect>
   );
 }

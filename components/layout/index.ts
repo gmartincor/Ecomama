@@ -6,7 +6,6 @@ export { HeaderContent } from "./HeaderContent";
 export { NavLinks } from "./NavLinks";
 export { AuthenticatedLayout } from "./AuthenticatedLayout";
 export { SuperadminHeader } from "./SuperadminHeader";
-export { ProfileCheckWrapper } from "./ProfileCheckWrapper";
 export { HEADER_CONFIG, NAV_LINKS } from "./constants";
 export type { HeaderUser } from "./types";
 export { mapToHeaderUser } from "./types";
